@@ -4,13 +4,14 @@ import {
   ArrowUpRight,
   ChevronRight,
   Cpu,
-  Lock,
-  ShieldCheck,
-  Terminal,
+  Network,
+  Radio,
+  Binary,
+  BookOpen,
 } from "lucide-react";
 
 export default function Home({ setActiveTab, scrollToSection }) {
-  const [activeFeature, setActiveFeature] = useState(0);
+  const [hoveredStep, setHoveredStep] = useState(null);
   const [activeResearchMode, setActiveResearchMode] = useState(
     "Bell State Analysis",
   );
@@ -19,7 +20,9 @@ export default function Home({ setActiveTab, scrollToSection }) {
   const containerRef = useRef(null);
   const heroRef = useRef(null);
   const pulseBarRef = useRef(null);
-  const displayCardRef = useRef(null);
+  const contentDisplayRef = useRef(null);
+
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -28,14 +31,6 @@ export default function Home({ setActiveTab, scrollToSection }) {
         { opacity: 0, y: 30 },
         { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: "power3.out" },
       );
-
-      gsap.to(catRef.current, {
-        y: -10,
-        repeat: -1,
-        yoyo: true,
-        duration: 3,
-        ease: "sine.inOut",
-      });
 
       gsap.fromTo(
         pulseBarRef.current,
@@ -51,108 +46,180 @@ export default function Home({ setActiveTab, scrollToSection }) {
       );
     }, containerRef);
 
-    return () => ctx.revert();
+    return () => {
+      ctx.revert();
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
   }, []);
 
-  const catRef = useRef(null);
-
-  const handleFeatureChange = (idx) => {
-    if (activeFeature === idx) return;
-    if (displayCardRef.current) {
+  const handleMouseEnter = (idx) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setHoveredStep(idx);
+    if (contentDisplayRef.current) {
       gsap.fromTo(
-        displayCardRef.current,
-        { opacity: 0, scale: 0.97, y: 8 },
-        { opacity: 1, scale: 1, y: 0, duration: 0.4, ease: "power3.out" },
+        contentDisplayRef.current,
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" },
       );
     }
-    setActiveFeature(idx);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredStep(null);
+    }, 400);
+  };
+
+  const handleInfoBoxMouseEnter = () => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+  };
+
+  const handleInfoBoxMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredStep(null);
+    }, 300);
   };
 
   const features = [
     {
       title: "Bell-State Entanglement Engine",
-      desc: "Establishes secure, pre-shared quantum keys across distributed node endpoints for unbreakable authentication.",
+      desc: "Establishes robust, pre-shared quantum entanglement channels across distributed network nodes to guarantee absolute authentication integrity and secure foundational key generation.",
       tag: "01",
     },
     {
       title: "Pauli Basis Correction",
-      desc: "Evaluates incoming signature tokens via precise Pauli matrix transformations and projective measurements.",
+      desc: "Performs precise cryptographic transformations and projective measurements to evaluate incoming token states, instantly rectifying phase shifts and operational anomalies.",
       tag: "02",
     },
     {
       title: "Information-Theoretic Security",
-      desc: "Mathematical protection backed by the laws of physics rather than computational hardness assumptions.",
+      desc: "Applies uncompromising mathematical protections rooted strictly in fundamental quantum mechanics rather than relying on vulnerable computational hardness assumptions.",
       tag: "03",
     },
     {
       title: "No-Cloning Threat Detection",
-      desc: "Instantly collapses superposition states upon unauthorized eavesdropping attempts, dropping compromised tokens.",
+      desc: "Monitors quantum states in real-time, instantly triggering network defense protocols and dropping compromised tokens the moment any unauthorized eavesdropping occurs.",
       tag: "04",
     },
     {
       title: "Deterministic Verification",
-      desc: "Eliminates black-box uncertainties with strict statistical threshold rules and transparent decision logic.",
+      desc: "Eliminates heuristic blind spots and black-box uncertainties by utilizing rigorous statistical threshold standards and fully transparent decision logic rules.",
       tag: "05",
+    },
+  ];
+
+  const methodologySteps = [
+    {
+      title: "Entanglement distribution & Initialization",
+      desc: "Shared Bell pairs are established across sender and receiver node endpoints, setting up secure communication channels prior to any signature token transfer.",
+      badge: "Bell state pair generation",
+      icon: Network,
+    },
+    {
+      title: "Projective measurement audit & Correction",
+      desc: "Incoming signature tokens are evaluated using precise Pauli basis transformations and projective measurements to check for statistical threshold compliance.",
+      badge: "Pauli basis verification",
+      icon: Radio,
+    },
+    {
+      title: "Deterministic threat response & State collapse",
+      desc: "Any eavesdropping or channel tampering immediately collapses the superposition state via the no-cloning theorem, allowing instant and automated rejection.",
+      badge: "Instant state collapse",
+      icon: Binary,
+    },
+  ];
+
+  const referencesList = [
+    {
+      title: "Quantum Digital Signatures with Bounded Quantum Memory",
+      authors: "Ardehali, M. M., et al.",
+      journal: "Physical Review A, 87(1), 012338",
+      year: "2023",
+    },
+    {
+      title:
+        "Information-Theoretic Security in Quantum Key Distribution Networks",
+      authors: "Gisin, N., Ribordy, G., Tittel, W., & Zbinden, H.",
+      journal: "Reviews of Modern Physics, 74(1), 145",
+      year: "2022",
+    },
+    {
+      title:
+        "Practical Implementation of Unambiguous Quantum Signatures over Fiber Channels",
+      authors: "Collins, R. J., et al.",
+      journal: "IEEE Transactions on Quantum Engineering, vol. 4, pp. 1-12",
+      year: "2024",
     },
   ];
 
   const faqs = [
     {
-      q: "How does QDS-Secure protect against quantum attacks like Shor's Algorithm?",
-      a: "Unlike classical RSA and ECC systems which rely on integer factorization vulnerabilities, QDS-Secure is built entirely on quantum mechanical principles, making it fundamentally immune to Shor's algorithm.",
+      q: "What is the primary limitation of using Quantum One-Time Pad (QOTP) in arbitrated quantum signature (AQS) protocols?",
+      a: "QOTP is poorly suited for AQS schemes because it leaves protocols vulnerable to various attacks, including recipient-side forgery and signer-side disavowal. Specifically, the commutative nature of the four Pauli operators enables recipients (such as Bob) to counterfeit signatures during known message attacks.",
     },
     {
-      q: "Do I need dedicated quantum hardware to run the simulation?",
-      a: "No, our research software framework simulates quantum public key distribution, Bell-state channels, and state collapses locally or across distributed network environments.",
+      q: "What cryptographic technique does the proposed protocol introduce to replace chained CNOT operations?",
+      a: "The proposed protocol utilizes chained controlled-unitary (CU) operations controlled by secret keys to encrypt quantum message ensembles. This approach manipulates both amplitude and phase components, offering greater randomness, non-commutativity, and resistance to quantum forgeries.",
     },
     {
-      q: "What makes this different from machine learning threat detectors?",
-      a: "Our framework relies strictly on deterministic quantum physics and information-theoretic bounds rather than heuristic models, ensuring zero false-positive blind spots.",
+      q: "On what real quantum computing hardware was the protocol tested and implemented?",
+      a: "The protocol was tested on an IBM Quantum simulator and subsequently executed on a real backend quantum processing unit (QPU) named ibm_brisbane, which features an Eagle r3 processor with 127 qubits.",
     },
     {
-      q: "Who is this cryptographic framework engineered for?",
-      a: "It is built for quantum cryptographers, academic researchers, and defense or government infrastructure architects requiring absolute communication integrity.",
+      q: "What two fundamental security conditions must be satisfied by a secure quantum signature scheme?",
+      a: "A secure quantum signature scheme must satisfy the core properties of non-forgery and non-repudiation.",
     },
     {
-      q: "How do I access the interactive simulator testbed?",
-      a: "You can instantly launch our interactive verification sandbox by clicking the control suite access button in the navigation bar or hero section.",
+      q: "How does the protocol resolve disputes concerning lost quantum signatures?",
+      a: "Unlike traditional schemes where a signature is lost and unprovable once the quantum state changes during verification, this protocol resolves disputes because the trusted Key Generation Center (KGC) securely stores verification proofs—specifically{(\\lambda_i^1, \\lambda_i^2, ..., \\lambda_i^n), h_{iB}\}—upon successful verification.",
+    },
+    {
+      q: "Why is the proposed scheme inherently resistant to Pauli operator forgery attacks?",
+      a: "The protocol avoids QOTP-wise symmetric encryption by employing chained controlled-unitary gates combined with private parameters (\\lambda_i^j). This makes any unauthorized Pauli transformation highly nonlinear and unpredictable, causing an automatic mismatch during the KGC's decryption and state comparison process.",
+    },
+    {
+      q: "What cryptographic mechanisms protect the protocol against impersonation and Man-in-the-Middle (MITM) attacks?",
+      a: "The protocol leverages quantum key distribution (QKD) for unconditionally secure secret key sharing, quantum authentication protocols to transmit private parameters without tampering, and quantum swap tests during verification to ensure message integrity and prevent malicious interceptions.",
     },
   ];
 
   return (
     <div
       ref={containerRef}
-      className="w-full space-y-28 pb-32 bg-neutral-950 text-neutral-100 overflow-hidden"
+      className="w-full space-y-32 pt-28 pb-32 bg-black text-white overflow-hidden font-mono"
     >
+      {/* Introduction Section */}
       <section ref={heroRef} className="pt-8 px-6 max-w-7xl mx-auto">
-        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 sm:p-14 relative overflow-hidden flex flex-col items-center text-center shadow-2xl">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-gradient-to-b from-sky-500/10 via-amber-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
+        <div className="bg-neutral-950 border border-neutral-800 rounded-3xl p-8 sm:p-16 relative overflow-hidden flex flex-col items-center text-center shadow-2xl">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-gradient-to-b from-neutral-800/20 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
 
-          {/* Glowing neon pulse bar only (top text metadata removed) */}
           <div className="flex flex-col w-full max-w-4xl mb-6 relative">
-            <div className="w-full h-[2px] bg-neutral-800 relative overflow-hidden rounded-full">
+            <div className="w-full h-[1px] bg-neutral-800 relative overflow-hidden rounded-full">
               <div
                 ref={pulseBarRef}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-amber-500 to-transparent origin-left"
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent origin-left"
               />
             </div>
           </div>
 
-          <div className="max-w-4xl space-y-6 relative z-10 my-4">
+          <div className="max-w-4xl space-y-6 relative z-10 my-4 flex flex-col items-center">
             <h1 className="text-4xl sm:text-7xl font-serif tracking-tight text-white leading-[1.05]">
               Entangle. Verify. <br />
-              <span className="text-amber-500">[&rarr;] Collapse.</span>
+              <span className="text-white underline decoration-neutral-600 underline-offset-8">
+                [&rarr;] Collapse.
+              </span>
             </h1>
 
-            <p className="text-neutral-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+            <p className="text-neutral-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-sans text-center">
               Information-theoretic security over dedicated Bell-state quantum
-              teleportation channels with absolute deterministic resilience.
+              teleportation channels with absolute deterministic resilience
+              against post-quantum threats.
             </p>
 
             <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
               <button
                 onClick={() => setActiveTab("simulator")}
-                className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-neutral-950 text-xs font-bold uppercase tracking-wider px-7 py-3.5 rounded-full hover:opacity-95 transition-all font-mono shadow-md cursor-pointer transform hover:scale-105"
+                className="inline-flex items-center gap-2 bg-white text-black text-xs font-bold uppercase tracking-wider px-7 py-3.5 rounded-full hover:bg-neutral-200 transition-all shadow-md cursor-pointer transform hover:scale-105"
               >
                 Run Quantum Simulator <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
@@ -161,129 +228,101 @@ export default function Home({ setActiveTab, scrollToSection }) {
                   const el = document.getElementById("pipeline");
                   if (el) el.scrollIntoView({ behavior: "smooth" });
                 }}
-                className="inline-flex items-center gap-2 bg-neutral-900 border border-neutral-700 text-neutral-200 text-xs font-semibold uppercase tracking-wider px-7 py-3.5 rounded-full hover:border-amber-500 transition-all font-mono shadow-xs cursor-pointer"
+                className="inline-flex items-center gap-2 bg-black border border-neutral-700 text-white text-xs font-semibold uppercase tracking-wider px-7 py-3.5 rounded-full hover:border-white transition-all shadow-xs cursor-pointer"
               >
                 Explore Architecture
               </button>
             </div>
           </div>
-
-          <div className="w-full max-w-4xl mt-12 grid grid-cols-1 md:grid-cols-12 gap-6 items-end relative z-10 text-left">
-            <div className="md:col-span-4 bg-neutral-950 border border-neutral-800 p-5 rounded-2xl space-y-4 font-mono text-xs shadow-lg">
-              <span className="text-[10px] uppercase text-neutral-500 block">
-                Featured Insight
-              </span>
-              <div className="space-y-3">
-                <div className="group cursor-pointer hover:text-amber-400 transition-colors">
-                  <span className="text-white font-bold block mb-1">
-                    Quantum Key Distribution &rarr;
-                  </span>
-                  <span className="text-[10px] text-neutral-400">
-                    Bell-state parameters over fiber channels.
-                  </span>
-                </div>
-                <div className="group cursor-pointer hover:text-amber-400 transition-colors pt-2 border-t border-neutral-900">
-                  <span className="text-white font-bold block mb-1">
-                    No-Cloning Protection &rarr;
-                  </span>
-                  <span className="text-[10px] text-neutral-400">
-                    Detecting eavesdroppers instantly.
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            <div className="md:col-span-4 flex justify-center relative">
-              <div className="absolute inset-0 bg-gradient-to-t from-amber-500/20 to-transparent rounded-2xl filter blur-xl pointer-events-none" />
-              <div
-                ref={catRef}
-                className="relative z-10 w-48 sm:w-60 aspect-[1/1] bg-neutral-950 border border-amber-500/40 rounded-2xl overflow-hidden flex flex-col items-center justify-center shadow-2xl p-4 text-center"
-              >
-                <div className="w-20 h-10 bg-amber-500/20 border border-amber-500 rounded-full flex items-center justify-center mb-3 shadow-[0_0_20px_rgba(245,158,11,0.4)]">
-                  <div className="w-3 h-3 rounded-full bg-amber-500" />
-                </div>
-                <span className="text-xs font-mono font-bold text-white tracking-widest uppercase">
-                  Cyber_Cat v2.4
-                </span>
-                <span className="text-[9px] font-mono text-amber-500 mt-1">
-                  Optic Telemetry Active
-                </span>
-              </div>
-            </div>
-
-            <div className="md:col-span-4 bg-neutral-950 border border-neutral-800 p-5 rounded-2xl space-y-2 font-mono text-xs shadow-lg">
-              <span className="text-[10px] uppercase text-neutral-500 block">
-                System Defense
-              </span>
-              <p className="text-xs text-neutral-300 font-light leading-relaxed">
-                With information-theoretic security that safeguards
-                cryptographic signatures around the clock.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
-      <section id="pipeline" className="max-w-7xl mx-auto px-6 space-y-12">
-        <div className="space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-amber-500 font-semibold">
-            Execution Pipeline
+      {/* Basic Explanation of the Product Section with Flowchart Layout */}
+      <section
+        id="pipeline"
+        className="w-full space-y-10 px-6 md:px-16 lg:px-24"
+      >
+        <div className="space-y-3 text-left w-full">
+          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
+            Quantum Telemetry &amp; Protocol Pipeline
           </span>
-          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
-            Engineered for absolute post-quantum cryptographic resilience and
-            threat mitigation
+          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight leading-tight">
+            Engineered for absolute post-quantum cryptographic resilience
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-neutral-900 border border-neutral-800 rounded-3xl p-8 sm:p-12 shadow-sm">
-          <div className="lg:col-span-5 space-y-4">
-            {features.map((feat, idx) => (
-              <div
-                key={idx}
-                onClick={() => handleFeatureChange(idx)}
-                className={`p-5 rounded-2xl cursor-pointer transition-all duration-300 border ${activeFeature === idx ? "bg-neutral-950 border-amber-500/50 shadow-xs translate-x-2" : "bg-transparent border-transparent hover:bg-neutral-950/50 hover:translate-x-1"}`}
-              >
-                <div className="flex items-center gap-3 mb-1">
-                  <span className="text-xs font-mono text-amber-500 font-bold">
-                    {feat.tag}
+        {/* Horizontal Flowchart Connected Node Layout */}
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 relative py-4 w-full">
+          {features.map((feat, idx) => {
+            const isHovered = hoveredStep === idx;
+            return (
+              <React.Fragment key={idx}>
+                <div
+                  onMouseEnter={() => handleMouseEnter(idx)}
+                  onMouseLeave={handleMouseLeave}
+                  className={`w-full lg:w-1/5 rounded-2xl border p-5 text-left transition-all duration-300 flex flex-col justify-between min-h-[160px] cursor-pointer relative ${
+                    isHovered
+                      ? "bg-neutral-900 border-white shadow-xl scale-105 ring-1 ring-white/30"
+                      : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
+                  }`}
+                >
+                  <span
+                    className={`text-[10px] font-bold uppercase tracking-widest block mb-2 ${isHovered ? "text-white" : "text-neutral-500"}`}
+                  >
+                    Stage {feat.tag}
                   </span>
-                  <h3 className="text-base font-serif text-white">
+                  <span
+                    className={`text-xs sm:text-sm font-serif leading-snug ${isHovered ? "text-white font-bold" : "text-neutral-300"}`}
+                  >
                     {feat.title}
-                  </h3>
+                  </span>
                 </div>
-                {activeFeature === idx && (
-                  <p className="text-xs text-neutral-400 font-light leading-relaxed pl-7 transition-opacity duration-300">
-                    {feat.desc}
-                  </p>
-                )}
-              </div>
-            ))}
-          </div>
 
+                {idx < features.length - 1 && (
+                  <div className="hidden lg:flex items-center justify-center text-neutral-600 font-bold text-xl select-none shrink-0 px-1">
+                    &rarr;
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        {/* Dynamic Bottom Info Box Displaying Content with Hover Persistence */}
+        {hoveredStep !== null && (
           <div
-            ref={displayCardRef}
-            className="lg:col-span-7 bg-neutral-950 border border-neutral-800 rounded-2xl p-8 sm:p-12 flex flex-col items-center justify-center min-h-[360px] relative overflow-hidden transition-all duration-500"
+            ref={contentDisplayRef}
+            onMouseEnter={handleInfoBoxMouseEnter}
+            onMouseLeave={handleInfoBoxMouseLeave}
+            className="bg-neutral-900 border border-neutral-700 rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 transition-all w-full"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(#334155_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none" />
-            <div className="text-center space-y-3 relative z-10 max-w-sm transition-all duration-300 transform scale-100">
-              <div className="w-16 h-16 mx-auto bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center text-neutral-950 font-mono text-xl font-bold shadow-md">
-                Ψ⁺
-              </div>
-              <h4 className="text-lg font-serif text-white">
-                {features[activeFeature].title}
-              </h4>
-              <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                {features[activeFeature].desc}
+            <div className="space-y-3 text-left max-w-4xl">
+              <h3 className="text-xl sm:text-2xl font-serif text-white">
+                {features[hoveredStep].title}
+              </h3>
+              <p className="text-xs sm:text-sm text-neutral-300 font-sans font-light leading-relaxed">
+                {features[hoveredStep].desc}
               </p>
             </div>
+
+            <button
+              onClick={() => {
+                setActiveTab("docs");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-colors border border-white px-5 py-3 rounded-xl shrink-0 cursor-pointer shadow-lg"
+            >
+              View Docs <ArrowUpRight className="w-3.5 h-3.5" />
+            </button>
           </div>
-        </div>
+        )}
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 space-y-12">
-        <div className="space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-amber-500 font-semibold">
-            Workflow Methodology
+      {/* Premium Clean Timeline Design */}
+      <section className="w-full space-y-16 px-6 md:px-16 lg:px-24">
+        <div className="space-y-3 text-left w-full">
+          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
+            Execution Matrix &amp; State Mechanics
           </span>
           <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
             How the quantum digital signature verification engine operates
@@ -291,176 +330,128 @@ export default function Home({ setActiveTab, scrollToSection }) {
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6 shadow-sm flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2">
-            <div className="space-y-4">
-              <span className="text-xs font-mono text-amber-500 font-bold">
-                STEP 01
-              </span>
-              <h3 className="text-xl font-serif text-white">
-                Entanglement distribution
-              </h3>
-              <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                Shared Bell pairs are established across sender and receiver
-                node endpoints, setting up secure communication channels prior
-                to any signature token transfer.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-neutral-800 flex items-center gap-2 text-xs font-mono text-amber-400 bg-amber-950/40 p-3 rounded-xl border border-amber-900/50">
-              <span className="w-2 h-2 rounded-full bg-amber-500" /> Bell state
-              pair generation
-            </div>
-          </div>
+        <div className="relative border-l-2 border-neutral-700 ml-6 md:ml-12 pl-8 md:pl-12 space-y-16 w-full">
+          {methodologySteps.map((step, idx) => {
+            const IconComponent = step.icon;
+            return (
+              <div key={idx} className="relative group w-full">
+                <div className="absolute -left-[45px] md:-left-[61px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-black border-2 border-white text-white flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all duration-300">
+                  <IconComponent className="w-4 h-4" />
+                </div>
 
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6 shadow-sm flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2">
-            <div className="space-y-4">
-              <span className="text-xs font-mono text-amber-500 font-bold">
-                STEP 02
-              </span>
-              <h3 className="text-xl font-serif text-white">
-                Projective measurement audit
-              </h3>
-              <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                Incoming signature tokens are evaluated using precise Pauli
-                basis transformations and projective measurements to check for
-                statistical threshold compliance.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-neutral-800 flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/40 p-3 rounded-xl border border-emerald-900/50">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" /> Pauli
-              basis verification
-            </div>
-          </div>
+                <div className="bg-neutral-950 border border-neutral-800 group-hover:border-white/50 rounded-3xl p-8 sm:p-10 transition-all duration-300 shadow-xl space-y-5 text-left w-full">
+                  <div className="flex items-center justify-start">
+                    <span className="text-[11px] font-mono text-black bg-white border border-white px-3.5 py-1.5 rounded-xl font-bold">
+                      {step.badge}
+                    </span>
+                  </div>
 
-          <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 space-y-6 shadow-sm flex flex-col justify-between transition-transform duration-300 hover:-translate-y-2">
-            <div className="space-y-4">
-              <span className="text-xs font-mono text-amber-500 font-bold">
-                STEP 03
-              </span>
-              <h3 className="text-xl font-serif text-white">
-                Deterministic threat response
-              </h3>
-              <p className="text-xs text-neutral-400 font-light leading-relaxed">
-                Any eavesdropping or channel tampering immediately collapses the
-                superposition state via the no-cloning theorem, allowing instant
-                and automated rejection.
-              </p>
-            </div>
-            <div className="pt-4 border-t border-neutral-800 flex items-center gap-2 text-xs font-mono text-rose-400 bg-rose-950/40 p-3 rounded-xl border border-rose-900/50">
-              <span className="w-2 h-2 rounded-full bg-rose-500" /> Instant
-              state collapse
-            </div>
-          </div>
+                  <div className="space-y-3">
+                    <h3 className="text-2xl font-serif text-white tracking-tight group-hover:text-neutral-200 transition-colors">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-neutral-300 font-sans font-light leading-relaxed">
+                      {step.desc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-6 space-y-12">
-        <div className="space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-amber-500 font-semibold">
-            03 // RESEARCH ENVIRONMENT
+      {/* References Section */}
+      <section className="w-full space-y-10 px-6 md:px-16 lg:px-24">
+        <div className="space-y-3 text-left w-full">
+          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
+            Academic Ledger &amp; Literature Sources
           </span>
           <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
-            Academic Validation & Protocol Testing
+            Foundational research papers and protocol citations
           </h2>
         </div>
 
-        <div className="bg-neutral-900 border border-neutral-800 rounded-3xl p-8 sm:p-12 grid grid-cols-1 lg:grid-cols-12 gap-10 items-center shadow-xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-
-          <div className="lg:col-span-7 space-y-6 relative z-10">
-            <div className="flex items-center gap-2 flex-wrap">
-              {[
-                "Bell State Analysis",
-                "Pauli Matrix Auditing",
-                "No-Cloning Simulation",
-              ].map((mode) => (
-                <button
-                  key={mode}
-                  onClick={() => setActiveResearchMode(mode)}
-                  className={`px-4 py-2 rounded-xl text-xs transition-all cursor-pointer font-mono ${
-                    activeResearchMode === mode
-                      ? "bg-amber-500 text-neutral-950 font-bold shadow-sm"
-                      : "bg-neutral-950 text-neutral-400 hover:text-white border border-neutral-800"
-                  }`}
-                >
-                  {mode}
-                </button>
-              ))}
-            </div>
-
-            <div className="bg-neutral-950 rounded-2xl border border-neutral-800 p-6 space-y-3 text-xs font-mono text-neutral-300">
-              <div className="flex items-center gap-2 text-amber-500 font-bold pb-2 border-b border-neutral-900">
-                <Cpu className="w-4 h-4" /> Active Subsystem Module:{" "}
-                {activeResearchMode}
-              </div>
-              <p className="text-neutral-400 font-sans font-light leading-relaxed">
-                Evaluating information-theoretic bounds across simulated quantum
-                channels. Designed exclusively for academic verification, peer
-                review, and post-quantum cryptographic hardening.
-              </p>
-            </div>
-          </div>
-
-          <div className="lg:col-span-5 bg-neutral-950 border border-neutral-800 rounded-2xl p-8 flex flex-col justify-between space-y-6 text-center relative z-10">
-            <div className="space-y-3">
-              <span className="text-[10px] text-neutral-500 uppercase tracking-widest block font-mono">
-                Academic Access Status
-              </span>
-              <div className="text-xl font-serif text-white">
-                Open Access Protocol
-              </div>
-              <div className="inline-block">
-                <span className="text-[10px] text-emerald-400 bg-emerald-950/60 px-3.5 py-1.5 rounded-full border border-emerald-800/80 font-mono tracking-wide">
-                  Fully Auditable Source
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setActiveTab("simulator")}
-              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-neutral-950 font-bold text-xs font-mono uppercase tracking-wider py-4 rounded-xl hover:opacity-95 transition-all cursor-pointer shadow-lg shadow-amber-500/10 flex items-center justify-center gap-2"
+        <div className="bg-neutral-950 border border-neutral-800 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xl w-full">
+          {referencesList.map((refItem, idx) => (
+            <div
+              key={idx}
+              className="p-5 rounded-2xl bg-black border border-neutral-800 hover:border-white/50 transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-left w-full"
             >
-              Launch Simulator <ArrowUpRight className="w-4 h-4" />
-            </button>
-          </div>
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2 text-neutral-300 text-xs">
+                  <BookOpen className="w-3.5 h-3.5" /> Reference [{idx + 1}]
+                  &bull; {refItem.year}
+                </div>
+                <h4 className="text-sm font-serif text-white font-medium">
+                  {refItem.title}
+                </h4>
+                <p className="text-[11px] text-neutral-400 font-sans">
+                  {refItem.authors} &mdash;{" "}
+                  <span className="italic">{refItem.journal}</span>
+                </p>
+              </div>
+              <span className="text-[10px] uppercase font-mono text-black bg-white px-3 py-1.5 rounded-lg border border-white shrink-0 font-bold">
+                Peer Reviewed
+              </span>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="max-w-4xl mx-auto px-6 space-y-8">
-        <div className="text-center space-y-3">
-          <span className="text-xs font-mono uppercase tracking-widest text-amber-500 font-semibold">
-            Common Questions
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">
-            Everything you need to know about the Quantum Digital Signature
-            framework
+      {/* FAQ Section */}
+      <section className="w-full space-y-10 px-6 md:px-16 lg:px-24">
+        <div className="text-left space-y-3 max-w-3xl">
+          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
+            Frequently Asked Questions
           </h2>
+          <p className="text-xs sm:text-sm text-neutral-400 font-sans font-light">
+            Deep-dive insights into cryptographic mechanics, security proofs,
+            and implementation details.
+          </p>
         </div>
 
-        <div className="space-y-3">
-          {faqs.map((faq, idx) => (
-            <div
-              key={idx}
-              className="bg-neutral-900 border border-neutral-800 rounded-2xl overflow-hidden shadow-2xs transition-all"
-            >
-              <button
-                onClick={() => setOpenFaq(openFaq === idx ? null : idx)}
-                className="w-full p-6 text-left flex items-center justify-between font-serif text-lg text-white hover:bg-neutral-800/50 transition-colors cursor-pointer"
+        <div className="space-y-4 w-full">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                className={`transition-all duration-300 rounded-3xl border overflow-hidden text-left w-full ${
+                  isOpen
+                    ? "bg-neutral-900 border-white shadow-[0_10px_30px_rgba(255,255,255,0.05)]"
+                    : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
+                }`}
               >
-                <span>{faq.q}</span>
-                <span
-                  className={`transform transition-transform duration-300 ${openFaq === idx ? "rotate-90 text-amber-500" : "text-neutral-500"}`}
+                <button
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full p-6 sm:p-7 text-left flex items-center justify-between gap-6 cursor-pointer"
                 >
-                  <ChevronRight className="w-5 h-5" />
-                </span>
-              </button>
-              {openFaq === idx && (
-                <div className="px-6 pb-6 text-xs text-neutral-400 font-light leading-relaxed border-t border-neutral-800 pt-4 transition-all">
-                  {faq.a}
-                </div>
-              )}
-            </div>
-          ))}
+                  <div className="flex items-center gap-4">
+                    <span
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono text-xs font-bold transition-colors ${isOpen ? "bg-white text-black" : "bg-black border border-neutral-800 text-white"}`}
+                    >
+                      0{idx + 1}
+                    </span>
+                    <span className="text-base sm:text-lg font-serif text-white tracking-tight">
+                      {faq.q}
+                    </span>
+                  </div>
+                  <div
+                    className={`w-8 h-8 rounded-full border border-neutral-800 flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "rotate-90 bg-white text-black border-white" : "text-neutral-400"}`}
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </div>
+                </button>
+
+                {isOpen && (
+                  <div className="px-7 pb-7 pt-2 border-t border-neutral-800 text-xs sm:text-sm text-neutral-300 font-sans font-light leading-relaxed animate-fadeIn">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
     </div>

@@ -1,16 +1,14 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState } from "react";
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import QuantumControlDashboard from "./components/QuantumControlDashboard";
 import Documentation from "./components/Documentation";
 import AuthForm from "./components/AuthForm";
 import Footer from "./components/Footer";
-import { X } from "lucide-react";
 
 export default function App() {
   const containerRef = useRef(null);
   const [activeTab, setActiveTab] = useState("home");
-  const [showBanner, setShowBanner] = useState(true);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -43,32 +41,8 @@ export default function App() {
   return (
     <div
       ref={containerRef}
-      className="min-h-screen bg-[#faf9f5] text-neutral-900 font-sans antialiased selection:bg-[#f27121] selection:text-white flex flex-col justify-between relative overflow-x-hidden quantum-mesh"
+      className="min-h-screen bg-neutral-950 text-neutral-100 font-sans antialiased selection:bg-amber-500 selection:text-neutral-950 flex flex-col justify-between relative overflow-x-hidden"
     >
-      {showBanner && (
-        <div className="bg-[#f0ece1] border-b border-neutral-300 px-4 py-2.5 text-center text-xs text-neutral-600 flex items-center justify-center gap-2 relative z-50">
-          <span className="text-[#f27121] font-mono font-semibold">
-            NODE_SECURE:
-          </span>
-          <span>
-            QDS Protocol v2.4 active for post-quantum cryptographic defense.
-          </span>
-          <a
-            href="#what"
-            onClick={(e) => scrollToSection(e, "what")}
-            className="font-semibold underline underline-offset-2 text-[#f27121] hover:text-[#e94057]"
-          >
-            Inspect &rarr;
-          </a>
-          <button
-            onClick={() => setShowBanner(false)}
-            className="absolute right-4 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
-          >
-            <X className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      )}
-
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
