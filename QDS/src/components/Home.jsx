@@ -1,70 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-
-const features = [
-  {
-    tag: "01",
-    short: "ENTANGLEMENT",
-    title: "BELL-STATE ENTANGLEMENT",
-    desc: "Creates shared quantum states between trusted endpoints before signature verification begins.",
-  },
-  {
-    tag: "02",
-    short: "BASIS CONTROL",
-    title: "PAULI BASIS CORRECTION",
-    desc: "Applies controlled basis transformations to preserve state integrity during quantum transmission.",
-  },
-  {
-    tag: "03",
-    short: "SECURITY MODEL",
-    title: "INFORMATION-THEORETIC SECURITY",
-    desc: "Uses quantum information principles to establish security guarantees independent of computational assumptions.",
-  },
-  {
-    tag: "04",
-    short: "THREAT DETECTION",
-    title: "NO-CLONING DETECTION",
-    desc: "Detects anomalous state duplication and identifies potential interference inside the transmission channel.",
-  },
-  {
-    tag: "05",
-    short: "VERIFICATION",
-    title: "DETERMINISTIC VERIFICATION",
-    desc: "Performs deterministic signature validation before accepting the transmitted quantum-secured message.",
-  },
-];
-
-const faqs = [
-  {
-    question: "What is QDS.Engine?",
-    answer:
-      "QDS.Engine is a quantum-oriented digital signature and security framework designed around entanglement, state verification, threat detection, and deterministic authentication.",
-  },
-  {
-    question: "How does the quantum security pipeline work?",
-    answer:
-      "The security pipeline establishes an entangled state, performs basis correction, applies information-theoretic security validation, monitors for cloning or interference, and finally performs deterministic verification.",
-  },
-  {
-    question: "What does zero-trust mean in this architecture?",
-    answer:
-      "Zero-trust means that no endpoint, state, or transmission is automatically trusted. Each stage must independently satisfy the required verification conditions before the next stage can proceed.",
-  },
-  {
-    question: "How is a compromised quantum state detected?",
-    answer:
-      "The threat detection layer continuously evaluates the transmitted state for unexpected changes, duplication indicators, or interference patterns that violate the expected security model.",
-  },
-  {
-    question: "Can the simulator be used for testing?",
-    answer:
-      "Yes. The simulator provides a controlled environment for observing protocol behavior, security telemetry, verification states, and threat detection events.",
-  },
-  {
-    question: "Is this intended to replace conventional cryptography?",
-    answer:
-      "The platform is designed as a quantum security research and simulation framework. Its purpose is to explore quantum-oriented authentication and verification concepts rather than automatically replace established cryptographic systems.",
-  },
-];
+import Footer from "./Footer";
 
 function ParticleBackground() {
   const canvasRef = useRef(null);
@@ -171,47 +106,72 @@ function ParticleBackground() {
   );
 }
 
-function Reveal({ children, className = "", delay = 0 }) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-
-  useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.1 },
-    );
-
-    observer.observe(element);
-
-    return () => observer.disconnect();
-  }, []);
-
-  return (
-    <div
-      ref={ref}
-      className={`${className} ${
-        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-      } transition-all duration-800 ease-out`}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
-      {children}
-    </div>
-  );
-}
-
 export default function Home({ setActiveTab }) {
   const [hoveredStep, setHoveredStep] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const [integrity, setIntegrity] = useState(0);
   const [confidence, setConfidence] = useState(0);
+
+  const features = [
+    {
+      tag: "01",
+      title: "BELL-STATE ENTANGLEMENT",
+      desc: "Creates shared quantum states between trusted endpoints before signature verification begins.",
+    },
+    {
+      tag: "02",
+      title: "PAULI BASIS CORRECTION",
+      desc: "Applies controlled basis transformations to preserve state integrity during quantum transmission.",
+    },
+    {
+      tag: "03",
+      title: "INFORMATION-THEORETIC SECURITY",
+      desc: "Uses quantum information principles to establish security guarantees independent of computational assumptions.",
+    },
+    {
+      tag: "04",
+      title: "NO-CLONING DETECTION",
+      desc: "Detects anomalous state duplication and identifies potential interference inside the transmission channel.",
+    },
+    {
+      tag: "05",
+      title: "DETERMINISTIC VERIFICATION",
+      desc: "Performs deterministic signature validation before accepting the transmitted quantum-secured message.",
+    },
+  ];
+
+  const faqs = [
+    {
+      question: "What is QDS.Engine?",
+      answer:
+        "QDS.Engine is a quantum-oriented digital signature and security framework designed around entanglement, state verification, threat detection, and deterministic authentication.",
+    },
+    {
+      question: "How does the quantum security pipeline work?",
+      answer:
+        "The security pipeline establishes an entangled state, performs basis correction, applies information-theoretic security validation, monitors for cloning or interference, and finally performs deterministic verification.",
+    },
+    {
+      question: "What does zero-trust mean in this architecture?",
+      answer:
+        "Zero-trust means that no endpoint, state, or transmission is automatically trusted. Each stage must independently satisfy the required verification conditions before the next stage can proceed.",
+    },
+    {
+      question: "How is a compromised quantum state detected?",
+      answer:
+        "The threat detection layer continuously evaluates the transmitted state for unexpected changes, duplication indicators, or interference patterns that violate the expected security model.",
+    },
+    {
+      question: "Can the simulator be used for testing?",
+      answer:
+        "Yes. The simulator provides a controlled environment for observing protocol behavior, security telemetry, verification states, and threat detection events.",
+    },
+    {
+      question: "Is this intended to replace conventional cryptography?",
+      answer:
+        "The platform is designed as a quantum security research and simulation framework. Its purpose is to explore quantum-oriented authentication and verification concepts rather than automatically replace established cryptographic systems.",
+    },
+  ];
 
   useEffect(() => {
     let integrityFrame;
@@ -221,14 +181,16 @@ export default function Home({ setActiveTab }) {
     const animateIntegrity = (time) => {
       const progress = Math.min((time - start) / 1200, 1);
       setIntegrity((99.8 * progress).toFixed(1));
-      if (progress < 1) integrityFrame = requestAnimationFrame(animateIntegrity);
+      if (progress < 1)
+        integrityFrame = requestAnimationFrame(animateIntegrity);
     };
 
     const confidenceStart = performance.now();
     const animateConfidence = (time) => {
       const progress = Math.min((time - confidenceStart) / 1400, 1);
       setConfidence(Math.floor(92 * progress));
-      if (progress < 1) confidenceFrame = requestAnimationFrame(animateConfidence);
+      if (progress < 1)
+        confidenceFrame = requestAnimationFrame(animateConfidence);
     };
 
     integrityFrame = requestAnimationFrame(animateIntegrity);
@@ -276,7 +238,6 @@ export default function Home({ setActiveTab }) {
           from { transform: rotate(360deg); }
           to { transform: rotate(0deg); }
         }
-        .scan-animation { animation: scan 6s linear infinite; }
         .pulse-ring { animation: pulseRing 3s ease-out infinite; }
         .rotate-slow { animation: rotateSlow 20s linear infinite; }
         .rotate-reverse { animation: rotateReverse 15s linear infinite; }
@@ -289,23 +250,24 @@ export default function Home({ setActiveTab }) {
         .faq-inner { overflow: hidden; }
       `}</style>
 
-      <main className="w-full bg-[#07090e] text-slate-100 font-sans overflow-x-hidden selection:bg-indigo-500/30 flex flex-col">
-        
-        <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden border-b border-slate-800/80 px-8 sm:px-12 lg:px-20 pt-32 pb-20">
+      <main className="w-full bg-[#07090e] text-slate-100 font-sans overflow-x-hidden selection:bg-indigo-500/30 flex flex-col pt-20">
+
+        <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden border-b border-slate-800/80 px-8 sm:px-12 lg:px-20 py-20">
           <div className="absolute inset-0 pointer-events-none">
             <ParticleBackground />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(99,102,241,0.07),transparent_65%)]" />
           </div>
 
           <div className="relative z-10 w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-
             <div className="lg:col-span-7 space-y-6">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif tracking-tight text-white leading-[1.08]">
                 Absolute security backed by quantum mechanics, not complexity.
               </h1>
 
               <p className="text-base sm:text-lg text-slate-400 font-light leading-relaxed max-w-xl">
-                A high-performance cryptographic simulation framework engineered around Bell-state entanglement, real-time wave function collapse, and zero-trust verification engines.
+                A high-performance cryptographic simulation framework engineered
+                around Bell-state entanglement, real-time wave function
+                collapse, and zero-trust verification engines.
               </p>
 
               <div className="flex flex-wrap items-center gap-4 pt-2 font-mono text-xs">
@@ -326,20 +288,32 @@ export default function Home({ setActiveTab }) {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs">
                 <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Protocol</span>
-                  <span className="text-slate-200 font-semibold">QDS / AQS</span>
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                    Protocol
+                  </span>
+                  <span className="text-slate-200 font-semibold">
+                    QDS / AQS
+                  </span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Encryption</span>
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                    Encryption
+                  </span>
                   <span className="text-indigo-400 font-semibold">QUANTUM</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Detection</span>
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                    Detection
+                  </span>
                   <span className="text-emerald-400 font-semibold">ACTIVE</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Trust Model</span>
-                  <span className="text-slate-200 font-semibold">ZERO-TRUST</span>
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                    Trust Model
+                  </span>
+                  <span className="text-slate-200 font-semibold">
+                    ZERO-TRUST
+                  </span>
                 </div>
               </div>
             </div>
@@ -347,19 +321,25 @@ export default function Home({ setActiveTab }) {
             <div className="lg:col-span-5">
               <div className="bg-[#0b0e17]/90 border border-slate-800/90 rounded-2xl p-7 space-y-5 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-                
+
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
                   <span className="text-slate-400 uppercase tracking-widest flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                     Core Telemetry
                   </span>
-                  <span className="text-indigo-400 font-semibold text-xs">[LIVE]</span>
+                  <span className="text-indigo-400 font-semibold text-xs">
+                    [LIVE]
+                  </span>
                 </div>
 
                 <div className="flex items-center justify-between p-5 rounded-xl bg-[#07090e] border border-slate-800/80">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">System Integrity</span>
-                    <span className="text-3xl font-serif font-bold text-white">{integrity}%</span>
+                    <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">
+                      System Integrity
+                    </span>
+                    <span className="text-3xl font-serif font-bold text-white">
+                      {integrity}%
+                    </span>
                   </div>
                   <div className="relative w-14 h-14 flex items-center justify-center">
                     <div className="absolute inset-0 rounded-full border border-indigo-500/20" />
@@ -372,41 +352,66 @@ export default function Home({ setActiveTab }) {
 
                 <div className="grid grid-cols-2 gap-3 font-mono text-xs">
                   <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">Entanglement</span>
-                    <span className="text-indigo-400 font-bold block text-xs">STABLE</span>
+                    <span className="text-slate-500 uppercase text-[10px]">
+                      Entanglement
+                    </span>
+                    <span className="text-indigo-400 font-bold block text-xs">
+                      STABLE
+                    </span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">No-Cloning</span>
-                    <span className="text-emerald-400 font-bold block text-xs">ACTIVE</span>
+                    <span className="text-slate-500 uppercase text-[10px]">
+                      No-Cloning
+                    </span>
+                    <span className="text-emerald-400 font-bold block text-xs">
+                      ACTIVE
+                    </span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">Threat Level</span>
-                    <span className="text-slate-200 font-bold block text-xs">NOMINAL</span>
+                    <span className="text-slate-500 uppercase text-[10px]">
+                      Threat Level
+                    </span>
+                    <span className="text-slate-200 font-bold block text-xs">
+                      NOMINAL
+                    </span>
                   </div>
                   <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">Response</span>
-                    <span className="text-indigo-300 font-bold block text-xs">READY</span>
+                    <span className="text-slate-500 uppercase text-[10px]">
+                      Response
+                    </span>
+                    <span className="text-indigo-300 font-bold block text-xs">
+                      READY
+                    </span>
                   </div>
                 </div>
 
                 <div className="space-y-2 pt-1">
                   <div className="flex justify-between font-mono text-xs text-slate-400">
                     <span>Verification Confidence</span>
-                    <span className="text-indigo-400 font-bold">{confidence}%</span>
+                    <span className="text-indigo-400 font-bold">
+                      {confidence}%
+                    </span>
                   </div>
                   <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                    <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${confidence}%` }} />
+                    <div
+                      className="bg-indigo-500 h-full transition-all duration-300"
+                      style={{ width: `${confidence}%` }}
+                    />
                   </div>
                 </div>
               </div>
             </div>
-
           </div>
         </section>
 
-        <section id="pipeline" className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
+        <section
+          id="pipeline"
+          className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full"
+        >
           <div className="space-y-2">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Protocol Pipeline</span>
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+              Protocol Pipeline
+            </span>
             <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">
               Engineered for absolute post-quantum resilience
             </h2>
@@ -420,23 +425,33 @@ export default function Home({ setActiveTab }) {
                   key={idx}
                   onMouseEnter={() => setHoveredStep(idx)}
                   onMouseLeave={() => setHoveredStep(null)}
-                  className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[170px] ${
+                  className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between h-[230px] ${
                     isHovered
-                      ? "bg-[#131826] border-indigo-500 shadow-xl shadow-indigo-950/50 scale-[1.02]"
+                      ? "bg-[#131826] border-indigo-500 shadow-xl shadow-indigo-950/50"
                       : "bg-[#0b0e17] border-slate-800/80 hover:border-slate-700"
                   }`}
                 >
-                  <div>
-                    <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-indigo-400 block mb-2">
+                  <div className="space-y-1">
+                    <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-indigo-400 block">
                       Stage {feat.tag}
                     </span>
+                  </div>
+
+                  <div className="my-auto">
                     <h3 className="text-sm sm:text-base font-serif text-slate-100 font-medium leading-snug">
                       {feat.title}
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-400 font-sans font-light mt-4 leading-relaxed">
-                    {feat.desc}
-                  </p>
+
+                  <div className="h-[75px] flex flex-col justify-end">
+                    <div
+                      className={`transition-all duration-300 overflow-hidden ${isHovered ? "opacity-100 max-h-40 pt-2 border-t border-slate-800/80" : "opacity-0 max-h-0 pt-0 border-t-0 border-transparent"}`}
+                    >
+                      <p className="text-xs text-slate-400 font-sans font-light leading-relaxed">
+                        {feat.desc}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               );
             })}
@@ -445,8 +460,12 @@ export default function Home({ setActiveTab }) {
 
         <section className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
           <div className="space-y-2 max-w-2xl">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Security Framework</span>
-            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">Built for Zero-Trust</h2>
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+              Security Framework
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">
+              Built for Zero-Trust
+            </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -467,23 +486,37 @@ export default function Home({ setActiveTab }) {
                 text: "Digital signatures are validated through a deterministic security pipeline before transmission is accepted.",
               },
             ].map((pillar, i) => (
-              <div key={i} className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl">
+              <div
+                key={i}
+                className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl"
+              >
                 <span className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-800/80 flex items-center justify-center font-mono text-xs font-bold text-indigo-400">
                   {pillar.number}
                 </span>
                 <div className="space-y-2">
-                  <h3 className="text-lg font-serif text-white">{pillar.title}</h3>
-                  <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">{pillar.text}</p>
+                  <h3 className="text-lg font-serif text-white">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">
+                    {pillar.text}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        <section id="faq" className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1000px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
+        <section
+          id="faq"
+          className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1000px] mx-auto space-y-8 border-b border-slate-800/80 w-full"
+        >
           <div className="space-y-2 text-center max-w-xl mx-auto">
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Knowledge Base</span>
-            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">Frequently Asked Questions</h2>
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+              Knowledge Base
+            </span>
+            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">
+              Frequently Asked Questions
+            </h2>
           </div>
 
           <div className="space-y-3">
@@ -532,10 +565,15 @@ export default function Home({ setActiveTab }) {
           <div className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
             <div className="space-y-2 text-center sm:text-left">
-              <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Secure Node Active</span>
-              <h4 className="text-xl sm:text-2xl font-serif text-white">Ready to test the telemetry engine?</h4>
+              <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+                Secure Node Active
+              </span>
+              <h4 className="text-xl sm:text-2xl font-serif text-white">
+                Ready to test the telemetry engine?
+              </h4>
               <p className="text-xs sm:text-sm text-slate-400 font-light max-w-md">
-                Initialize a live quantum transmission stream or test individual pulses in the advanced simulator interface.
+                Initialize a live quantum transmission stream or test individual
+                pulses in the advanced simulator interface.
               </p>
             </div>
 
@@ -547,6 +585,8 @@ export default function Home({ setActiveTab }) {
             </button>
           </div>
         </section>
+
+        <Footer setActiveTab={setActiveTab} />
       </main>
     </>
   );
