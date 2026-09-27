@@ -88,11 +88,11 @@ def runSignature(message: bytes, shots: int, execute_attack: bool = False, attac
             "qber": 100.0,
             "fidelity": 0.0,
             "verdict": "REJECT",
-            "status": "HALTED_BY_EVE",
+            "status": "haltedddddd",
             "attack_type": attack_type
         }
         
-    mock_qber = random.uniform(0.0, 5.0)
+    mock_qber = random.uniform(0.0, 0.2)
     return {
         "qber": mock_qber,
         "fidelity": 100 - (mock_qber * 2),
