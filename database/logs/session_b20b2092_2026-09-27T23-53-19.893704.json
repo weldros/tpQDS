@@ -1,0 +1,175 @@
+{
+    "session_id": "b20b2092",
+    "timestamp": "2026-09-27T23:53:19.893704",
+    "total_transmissions": 21,
+    "logs": [
+        {
+            "message_sent": "qubit collapse cryptography verification",
+            "message_received": "qubit collapse cryptography verification",
+            "qber": 2.89,
+            "fidelity": 94.21,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon channel fidelity collapse",
+            "message_received": "photon channel fidelity collapse",
+            "qber": 3.16,
+            "fidelity": 93.69,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse fidelity qubit superposition",
+            "message_received": "collapse fidelity qubit superposition",
+            "qber": 0.84,
+            "fidelity": 98.32,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "entangled deterministic teleportation pauli",
+            "message_received": "entangled deterministic teleportation pauli",
+            "qber": 0.98,
+            "fidelity": 98.05,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification degradation qubit signature",
+            "message_received": "verification degradation qubit signature",
+            "qber": 2.86,
+            "fidelity": 94.28,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "measurement gate transmission qubit",
+            "message_received": "measurement gate transmission qubit",
+            "qber": 1.31,
+            "fidelity": 97.39,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification quantum cryptography secure",
+            "message_received": "verification quantum cryptography secure",
+            "qber": 4.03,
+            "fidelity": 91.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis fidelity cryptography teleportation",
+            "message_received": "basis fidelity cryptography teleportation",
+            "qber": 0.68,
+            "fidelity": 98.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "entangled noise encryption pauli",
+            "message_received": "entangled noise encryption pauli",
+            "qber": 0.54,
+            "fidelity": 98.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse transmission cryptography fidelity",
+            "message_received": "collapse transmission cryptography fidelity",
+            "qber": 2.47,
+            "fidelity": 95.06,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity collapse cryptography verification",
+            "message_received": "fidelity collapse cryptography verification",
+            "qber": 4.43,
+            "fidelity": 91.13,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "algorithm basis qubit deterministic",
+            "message_received": "algorithm basis qubit deterministic",
+            "qber": 3.22,
+            "fidelity": 93.57,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis algorithm entangled encryption",
+            "message_received": "basis algorithm entangled encryption",
+            "qber": 2.91,
+            "fidelity": 94.17,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "gate secure hadamard fidelity",
+            "message_received": "gate secure hadamard fidelity",
+            "qber": 0.35,
+            "fidelity": 99.3,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic circuit pauli verification",
+            "message_received": "deterministic circuit pauli verification",
+            "qber": 0.37,
+            "fidelity": 99.26,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification degradation secure algorithm",
+            "message_received": "verification degradation secure algorithm",
+            "qber": 0.4,
+            "fidelity": 99.2,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition cryptography degradation pauli",
+            "message_received": "superposition cryptography degradation pauli",
+            "qber": 3.56,
+            "fidelity": 92.89,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise measurement signature verification",
+            "message_received": "noise measurement signature verification",
+            "qber": 2.5,
+            "fidelity": 95.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit degradation cryptography gate",
+            "message_received": "circuit degradation cryptography gate",
+            "qber": 2.71,
+            "fidelity": 94.58,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli collapse qubit signature",
+            "message_received": "pauli collapse qubit signature",
+            "qber": 2.41,
+            "fidelity": 95.18,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel hadamard pauli state",
+            "message_received": "channel hadamard pauli state",
+            "qber": 4.94,
+            "fidelity": 90.12,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

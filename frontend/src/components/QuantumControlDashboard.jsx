@@ -38,10 +38,61 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [isPulseModalOpen, setIsPulseModalOpen] = useState(false);
   const [customMessage, setCustomMessage] = useState("");
   const [pulseResult, setPulseResult] = useState(null);
+  
+  const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
+  const [livePayloads, setLivePayloads] = useState([]);
+  const [liveAttackAlert, setLiveAttackAlert] = useState(false);
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
   const stageTimerRef = useRef(null);
+  const [ws, setWs] = useState(null);
+
+  useEffect(() => {
+    const websocket = new WebSocket("ws://127.0.0.1:8000/ws/stream");
+    
+    websocket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      if (data.payload) {
+        setLivePayloads(prev => [{
+          timestamp: new Date().toLocaleTimeString(),
+          text: data.payload,
+          status: "TRANSMITTING"
+        }, ...prev.slice(0, 19)]);
+      }
+      
+      if (data.step) {
+        setTransmissionLogs(prev => [`[LIVE] ${data.step}`, ...prev.slice(0, 5)]);
+      }
+
+      if (data.metrics) {
+        setErrorRate(data.metrics.qber);
+        setTelemetry({
+          entanglement: data.metrics.fidelity,
+          noise: data.metrics.qber,
+          degradation: data.metrics.qber * 1.5,
+        });
+        setThreatLevel(data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "SECURE");
+        
+        // Update the last payload status
+        setLivePayloads(prev => {
+          if (prev.length === 0) return prev;
+          const updated = [...prev];
+          updated[0].status = data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "DELIVERED";
+          return updated;
+        });
+      }
+
+      if (data.status === "HALTED") {
+        setIsLiveActive(false);
+        setLiveAttackAlert(true);
+      }
+    };
+
+    setWs(websocket);
+    return () => websocket.close();
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -111,38 +162,40 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     }, 400);
   };
 
-  const handleSendPulseMessage = (e) => {
+  const handleSendPulseMessage = async (e) => {
     e.preventDefault();
     if (!customMessage.trim()) return;
 
-    executeTransmissionCycle();
-    setPulseResult({
-      message: customMessage,
-      timestamp: new Date().toLocaleTimeString(),
-      status: "Message sent and verified securely!",
-    });
+    try {
+      const res = await fetch("http://127.0.0.1:8000/signatures/transmit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: customMessage, sender: "Alice", receiver: "Bob" })
+      });
+      const data = await res.json();
+
+      setPulseResult({
+        message: customMessage,
+        timestamp: new Date().toLocaleTimeString(),
+        status: `Sent securely. Backend Verdict: ${data.verdict} (QBER: ${data.qber.toFixed(2)}%)`,
+      });
+    } catch (err) {
+      setPulseResult({ status: "Backend Offline." });
+    }
     setCustomMessage("");
   };
 
-  const toggleLiveTelemetryStream = () => {
+  const toggleLiveTelemetryStream = async () => {
     if (isLiveActive) {
-      clearInterval(streamTimerRef.current);
-      clearInterval(stageTimerRef.current);
       setIsLiveActive(false);
+      await fetch("http://127.0.0.1:8000/stream/stop", { method: "POST" });
       compileAuditReport();
     } else {
       setIsLiveActive(true);
+      setLiveAttackAlert(false);
+      setLivePayloads([]);
       setAuditReport(null);
-      executeTransmissionCycle();
-      setTeleportStep(1);
-
-      streamTimerRef.current = setInterval(() => {
-        executeTransmissionCycle();
-      }, 2500);
-
-      stageTimerRef.current = setInterval(() => {
-        setTeleportStep((prev) => (prev >= 5 ? 1 : prev + 1));
-      }, 600);
+      await fetch("http://127.0.0.1:8000/stream/start", { method: "POST" });
     }
   };
 
@@ -283,6 +336,12 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               }`}
             >
               {isLiveActive ? "Halt Stream" : "Initialize Stream"}
+            </button>
+            <button
+              onClick={() => setIsLiveModalOpen(true)}
+              className="px-6 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950 shadow-md"
+            >
+              View Live Transmission
             </button>
           </div>
         </div>
@@ -673,6 +732,65 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* --- NEW: Live Transmission Modal --- */}
+      {isLiveModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#0b0e17] border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4 text-xs">
+              <span className="text-emerald-400 font-bold">
+                Live Data Stream
+              </span>
+              <button
+                onClick={() => setIsLiveModalOpen(false)}
+                className="text-slate-400 hover:text-white cursor-pointer font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-serif text-white">
+                Continuous Transmission Log
+              </h2>
+              <p className="text-xs text-slate-400 font-light">
+                Monitoring secure payloads transmitted over the quantum fiber channel in real-time.
+              </p>
+            </div>
+
+            {liveAttackAlert && (
+              <div className="w-full bg-[#07090e] border border-red-500/40 rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg shadow-red-950/20">
+                <span className="text-2xl mb-1">🚨</span>
+                <span className="text-red-500 font-bold">TRANSMISSION HALTED</span>
+                <span className="text-red-300 text-center">Eavesdropper Interception Detected.<br/>Wavefunction Collapsed.</span>
+              </div>
+            )}
+
+            <div className="w-full bg-[#07090e] border border-slate-800 rounded-xl p-4 h-64 overflow-y-auto space-y-3 shadow-inner">
+              {livePayloads.length === 0 ? (
+                <div className="text-xs text-slate-500 text-center mt-20">Waiting for stream to begin...</div>
+              ) : (
+                livePayloads.map((pl, idx) => (
+                  <div key={idx} className="flex flex-col space-y-1 pb-3 border-b border-slate-800/50 last:border-0 last:pb-0">
+                    <div className="flex justify-between items-center text-[11px] font-bold">
+                      <span className={`${pl.status === 'DELIVERED' ? 'text-emerald-400' : pl.status === 'INTERCEPTED' ? 'text-red-400' : 'text-amber-400 animate-pulse'}`}>
+                        {pl.status}
+                      </span>
+                      <span className="text-slate-500">{pl.timestamp}</span>
+                    </div>
+                    <div className="text-xs text-slate-300 break-words leading-relaxed">
+                      &quot;{pl.text}&quot;
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
           </div>
         </div>
       )}

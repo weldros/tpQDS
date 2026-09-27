@@ -1,0 +1,39 @@
+{
+    "session_id": "c10ecab8",
+    "timestamp": "2026-09-27T23:46:13.091802",
+    "total_transmissions": 4,
+    "logs": [
+        {
+            "message_sent": "encryption state pauli basis",
+            "message_received": "encryption state pauli basis",
+            "qber": 4.4,
+            "fidelity": 91.21,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "measurement photon degradation secure",
+            "message_received": "measurement photon degradation secure",
+            "qber": 3.96,
+            "fidelity": 92.08,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification basis qubit transmission",
+            "message_received": "verification basis qubit transmission",
+            "qber": 0.58,
+            "fidelity": 98.84,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel state gate collapse",
+            "message_received": "channel state gate collapse",
+            "qber": 3.22,
+            "fidelity": 93.56,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

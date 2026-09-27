@@ -1,0 +1,48 @@
+{
+    "session_id": "db0ba9d6",
+    "timestamp": "2026-09-27T23:54:50.132761",
+    "total_transmissions": 5,
+    "logs": [
+        {
+            "message_sent": "encryption qubit noise signature",
+            "message_received": "encryption qubit noise signature",
+            "qber": 3.44,
+            "fidelity": 93.12,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography pauli secure eavesdropper",
+            "message_received": "cryptography pauli secure eavesdropper",
+            "qber": 0.69,
+            "fidelity": 98.61,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "gate photon entangled deterministic",
+            "message_received": "gate photon entangled deterministic",
+            "qber": 2.6,
+            "fidelity": 94.81,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition channel eavesdropper measurement",
+            "message_received": "superposition channel eavesdropper measurement",
+            "qber": 4.84,
+            "fidelity": 90.33,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon basis noise deterministic",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "HALTED_BY_EVE",
+            "attack_type": "Intercept-Resend"
+        }
+    ]
+}
