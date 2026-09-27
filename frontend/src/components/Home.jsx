@@ -107,7 +107,6 @@ function ParticleBackground() {
 }
 
 export default function Home({ setActiveTab }) {
-  const [hoveredStep, setHoveredStep] = useState(null);
   const [openFaq, setOpenFaq] = useState(null);
   const [integrity, setIntegrity] = useState(0);
   const [confidence, setConfidence] = useState(0);
@@ -251,7 +250,6 @@ export default function Home({ setActiveTab }) {
       `}</style>
 
       <main className="w-full bg-[#07090e] text-slate-100 font-sans overflow-x-hidden selection:bg-indigo-500/30 flex flex-col pt-20">
-
         <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden border-b border-slate-800/80 px-8 sm:px-12 lg:px-20 py-20">
           <div className="absolute inset-0 pointer-events-none">
             <ParticleBackground />
@@ -264,7 +262,7 @@ export default function Home({ setActiveTab }) {
                 Absolute security backed by quantum mechanics, not complexity.
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-400 font-light leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed max-w-xl">
                 A high-performance cryptographic simulation framework engineered
                 around Bell-state entanglement, real-time wave function
                 collapse, and zero-trust verification engines.
@@ -280,50 +278,46 @@ export default function Home({ setActiveTab }) {
 
                 <button
                   onClick={goToPipeline}
-                  className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer font-semibold hover:border-slate-700"
+                  className="bg-[#0b0e17] border border-slate-700 text-slate-200 hover:text-white uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer font-semibold hover:border-slate-500"
                 >
                   Explore Architecture
                 </button>
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs">
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                  <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Protocol
                   </span>
-                  <span className="text-slate-200 font-semibold">
-                    QDS / AQS
-                  </span>
+                  <span className="text-white font-semibold">QDS / AQS</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                  <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Encryption
                   </span>
-                  <span className="text-indigo-400 font-semibold">QUANTUM</span>
+                  <span className="text-indigo-300 font-semibold">QUANTUM</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                  <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Detection
                   </span>
-                  <span className="text-emerald-400 font-semibold">ACTIVE</span>
+                  <span className="text-emerald-300 font-semibold">ACTIVE</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
-                  <span className="text-slate-500 uppercase text-[10px] block mb-1">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                  <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Trust Model
                   </span>
-                  <span className="text-slate-200 font-semibold">
-                    ZERO-TRUST
-                  </span>
+                  <span className="text-white font-semibold">ZERO-TRUST</span>
                 </div>
               </div>
             </div>
 
             <div className="lg:col-span-5">
-              <div className="bg-[#0b0e17]/90 border border-slate-800/90 rounded-2xl p-7 space-y-5 shadow-xl backdrop-blur-xl relative overflow-hidden">
+              <div className="bg-[#0b0e17]/90 border border-slate-700 rounded-2xl p-7 space-y-5 shadow-xl backdrop-blur-xl relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
 
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
-                  <span className="text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                  <span className="text-slate-300 uppercase tracking-widest flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
                     Core Telemetry
                   </span>
@@ -332,9 +326,9 @@ export default function Home({ setActiveTab }) {
                   </span>
                 </div>
 
-                <div className="flex items-center justify-between p-5 rounded-xl bg-[#07090e] border border-slate-800/80">
+                <div className="flex items-center justify-between p-5 rounded-xl bg-[#07090e] border border-slate-800">
                   <div>
-                    <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">
+                    <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
                       System Integrity
                     </span>
                     <span className="text-3xl font-serif font-bold text-white">
@@ -351,32 +345,32 @@ export default function Home({ setActiveTab }) {
                 </div>
 
                 <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                    <span className="text-slate-400 uppercase text-[10px]">
                       Entanglement
                     </span>
-                    <span className="text-indigo-400 font-bold block text-xs">
+                    <span className="text-indigo-300 font-bold block text-xs">
                       STABLE
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                    <span className="text-slate-400 uppercase text-[10px]">
                       No-Cloning
                     </span>
-                    <span className="text-emerald-400 font-bold block text-xs">
+                    <span className="text-emerald-300 font-bold block text-xs">
                       ACTIVE
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                    <span className="text-slate-400 uppercase text-[10px]">
                       Threat Level
                     </span>
-                    <span className="text-slate-200 font-bold block text-xs">
+                    <span className="text-white font-bold block text-xs">
                       NOMINAL
                     </span>
                   </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
-                    <span className="text-slate-500 uppercase text-[10px]">
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                    <span className="text-slate-400 uppercase text-[10px]">
                       Response
                     </span>
                     <span className="text-indigo-300 font-bold block text-xs">
@@ -386,7 +380,7 @@ export default function Home({ setActiveTab }) {
                 </div>
 
                 <div className="space-y-2 pt-1">
-                  <div className="flex justify-between font-mono text-xs text-slate-400">
+                  <div className="flex justify-between font-mono text-xs text-slate-300">
                     <span>Verification Confidence</span>
                     <span className="text-indigo-400 font-bold">
                       {confidence}%
@@ -417,44 +411,31 @@ export default function Home({ setActiveTab }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-            {features.map((feat, idx) => {
-              const isHovered = hoveredStep === idx;
-              return (
-                <div
-                  key={idx}
-                  onMouseEnter={() => setHoveredStep(idx)}
-                  onMouseLeave={() => setHoveredStep(null)}
-                  className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between h-[230px] ${
-                    isHovered
-                      ? "bg-[#131826] border-indigo-500 shadow-xl shadow-indigo-950/50"
-                      : "bg-[#0b0e17] border-slate-800/80 hover:border-slate-700"
-                  }`}
-                >
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-indigo-400 block">
-                      Stage {feat.tag}
-                    </span>
-                  </div>
-
-                  <div className="my-auto">
-                    <h3 className="text-sm sm:text-base font-serif text-slate-100 font-medium leading-snug">
-                      {feat.title}
-                    </h3>
-                  </div>
-
-                  <div className="h-[75px] flex flex-col justify-end">
-                    <div
-                      className={`transition-all duration-300 overflow-hidden ${isHovered ? "opacity-100 max-h-40 pt-2 border-t border-slate-800/80" : "opacity-0 max-h-0 pt-0 border-t-0 border-transparent"}`}
-                    >
-                      <p className="text-xs text-slate-400 font-sans font-light leading-relaxed">
-                        {feat.desc}
-                      </p>
-                    </div>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
+            {features.map((feat, idx) => (
+              <div
+                key={idx}
+                className="p-6 rounded-2xl border bg-[#0b0e17] border-slate-700/90 flex flex-col justify-between min-h-[300px] shadow-lg hover:border-indigo-500/60 transition-all"
+              >
+                <div className="space-y-1">
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-indigo-400 block">
+                    Stage {feat.tag}
+                  </span>
                 </div>
-              );
-            })}
+
+                <div className="py-4">
+                  <h3 className="text-sm sm:text-base font-serif text-white font-semibold leading-snug">
+                    {feat.title}
+                  </h3>
+                </div>
+
+                <div className="pt-4 border-t border-slate-800">
+                  <p className="text-xs text-slate-300 font-sans font-normal leading-relaxed">
+                    {feat.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -488,16 +469,16 @@ export default function Home({ setActiveTab }) {
             ].map((pillar, i) => (
               <div
                 key={i}
-                className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl"
+                className="bg-[#0b0e17] border border-slate-700/90 rounded-2xl p-7 space-y-4 hover:border-slate-500 transition-all shadow-xl"
               >
-                <span className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-800/80 flex items-center justify-center font-mono text-xs font-bold text-indigo-400">
+                <span className="w-9 h-9 rounded-xl bg-indigo-950 border border-indigo-700 flex items-center justify-center font-mono text-xs font-bold text-indigo-300">
                   {pillar.number}
                 </span>
                 <div className="space-y-2">
-                  <h3 className="text-lg font-serif text-white">
+                  <h3 className="text-lg font-serif text-white font-semibold">
                     {pillar.title}
                   </h3>
-                  <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
                     {pillar.text}
                   </p>
                 </div>
@@ -527,22 +508,22 @@ export default function Home({ setActiveTab }) {
                   key={idx}
                   className={`rounded-2xl border transition-all overflow-hidden ${
                     isOpen
-                      ? "bg-[#0b0e17] border-indigo-500/50 shadow-xl"
-                      : "bg-[#0b0e17] border-slate-800/80 hover:border-slate-700"
+                      ? "bg-[#0b0e17] border-indigo-500 shadow-xl"
+                      : "bg-[#0b0e17] border-slate-700/90 hover:border-slate-500"
                   }`}
                 >
                   <button
                     onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer font-serif text-sm sm:text-base text-white"
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer font-serif text-sm sm:text-base text-white font-medium"
                   >
                     <div className="flex items-center gap-4">
-                      <span className="w-6 h-6 rounded-lg bg-[#07090e] border border-slate-800 flex items-center justify-center font-mono text-xs font-bold text-indigo-400">
+                      <span className="w-6 h-6 rounded-lg bg-[#07090e] border border-slate-700 flex items-center justify-center font-mono text-xs font-bold text-indigo-300">
                         0{idx + 1}
                       </span>
                       <span>{faq.question}</span>
                     </div>
                     <span
-                      className={`font-mono text-sm transition-transform duration-300 ${isOpen ? "rotate-90 text-indigo-400" : "text-slate-500"}`}
+                      className={`font-mono text-sm transition-transform duration-300 ${isOpen ? "rotate-90 text-indigo-400" : "text-slate-400"}`}
                     >
                       &rarr;
                     </span>
@@ -550,7 +531,7 @@ export default function Home({ setActiveTab }) {
 
                   <div className={`faq-content ${isOpen ? "open" : ""}`}>
                     <div className="faq-inner">
-                      <div className="px-5 pb-5 pt-2 border-t border-slate-800/60 text-xs sm:text-sm text-slate-300 font-sans font-light leading-relaxed">
+                      <div className="px-5 pb-5 pt-2 border-t border-slate-800 text-xs sm:text-sm text-slate-300 font-normal leading-relaxed">
                         {faq.answer}
                       </div>
                     </div>
@@ -562,16 +543,16 @@ export default function Home({ setActiveTab }) {
         </section>
 
         <section className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto w-full">
-          <div className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-[#0b0e17] border border-slate-700/90 rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
             <div className="space-y-2 text-center sm:text-left">
               <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
                 Secure Node Active
               </span>
-              <h4 className="text-xl sm:text-2xl font-serif text-white">
+              <h4 className="text-xl sm:text-2xl font-serif text-white font-semibold">
                 Ready to test the telemetry engine?
               </h4>
-              <p className="text-xs sm:text-sm text-slate-400 font-light max-w-md">
+              <p className="text-xs sm:text-sm text-slate-300 font-normal max-w-md">
                 Initialize a live quantum transmission stream or test individual
                 pulses in the advanced simulator interface.
               </p>
