@@ -4,7 +4,6 @@ import gsap from "gsap";
 export default function QuantumControlDashboard({ setActiveTab }) {
   const [telemetry, setTelemetry] = useState({
     entanglement: 90.5,
-    teleportation: 83.8,
     noise: 7.1,
     degradation: 5.7,
   });
@@ -35,6 +34,10 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   });
   const [activeNav, setActiveNav] = useState("telemetry");
   const [teleportStep, setTeleportStep] = useState(1);
+
+  const [isPulseModalOpen, setIsPulseModalOpen] = useState(false);
+  const [customMessage, setCustomMessage] = useState("");
+  const [pulseResult, setPulseResult] = useState(null);
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -93,7 +96,6 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
     const updatedMetrics = {
       entanglement: Number((100 - currentErrorRate * 1.5).toFixed(1)),
-      teleportation: Number((97 - currentErrorRate * 2.1).toFixed(1)),
       noise: Number((currentErrorRate + 0.8).toFixed(1)),
       degradation: Number((currentErrorRate * 0.9).toFixed(1)),
     };
@@ -107,6 +109,19 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     setTimeout(() => {
       setQuantumState(currentErrorRate > 10 ? "COLLAPSED" : "VERIFIED");
     }, 400);
+  };
+
+  const handleSendPulseMessage = (e) => {
+    e.preventDefault();
+    if (!customMessage.trim()) return;
+
+    executeTransmissionCycle();
+    setPulseResult({
+      message: customMessage,
+      timestamp: new Date().toLocaleTimeString(),
+      status: "Message sent and verified securely!",
+    });
+    setCustomMessage("");
   };
 
   const toggleLiveTelemetryStream = () => {
@@ -155,9 +170,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   return (
     <div
       ref={containerRef}
-      className="w-full h-screen bg-[#07090e] text-slate-100 font-sans flex flex-col md:flex-row select-none overflow-hidden"
+      className="w-full min-h-screen bg-[#07090e] text-slate-100 font-sans flex flex-col md:flex-row select-none relative overflow-y-auto"
     >
-      <aside className="w-full md:w-64 bg-[#0b0e17] border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0 space-y-4 md:h-screen shadow-2xl">
+      <aside className="w-full md:w-64 bg-[#0b0e17] border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0 space-y-4 shadow-2xl">
         <div className="space-y-6">
           <div className="space-y-3">
             <button
@@ -167,12 +182,12 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
               }}
-              className="text-xs uppercase tracking-wider text-indigo-400 hover:text-white transition-colors cursor-pointer font-mono font-semibold"
+              className="text-xs uppercase tracking-wider text-indigo-400 hover:text-white transition-colors cursor-pointer font-semibold"
             >
-              &larr; Return to Workspace
+              &larr; Back to Home
             </button>
             <div>
-              <span className="text-[10px] uppercase tracking-widest text-slate-500 font-mono block mb-0.5">
+              <span className="text-xs text-slate-400 block mb-0.5">
                 Architecture
               </span>
               <h2 className="text-base font-serif text-white tracking-tight">
@@ -181,70 +196,68 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </div>
           </div>
 
-          <nav className="space-y-2 font-mono text-xs uppercase tracking-wider">
+          <nav className="space-y-2 text-sm">
             <button
               onClick={() => setActiveNav("telemetry")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-semibold ${
+              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
                 activeNav === "telemetry"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
               }`}
             >
-              01. Overview
+              Overview
             </button>
 
             <button
               onClick={() => setActiveNav("bitstream")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-semibold ${
+              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
                 activeNav === "bitstream"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
               }`}
             >
-              02. Bitstreams
+              Bitstreams
             </button>
 
             <button
               onClick={() => setActiveNav("engine")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-semibold ${
+              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
                 activeNav === "engine"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
               }`}
             >
-              03. Engine Logic
+              Engine Logic
             </button>
 
             <button
               onClick={() => setActiveNav("logs")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-semibold ${
+              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
                 activeNav === "logs"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
               }`}
             >
-              04. Archive Log
+              Archive Log
             </button>
           </nav>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-1 font-mono">
-          <span className="text-[10px] uppercase tracking-widest text-slate-500 block">
-            Stream Status
-          </span>
+        <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+          <span className="text-xs text-slate-400 block">Stream Status</span>
           <div className="text-xs font-semibold text-emerald-400 flex items-center gap-2">
             <span
               className={`w-2 h-2 rounded-full ${isLiveActive ? "bg-emerald-400 animate-ping" : "bg-slate-600"}`}
             />
-            {isLiveActive ? "ACTIVE_TELEMETRY" : "SYSTEM_IDLE"}
+            {isLiveActive ? "Active" : "Idle"}
           </div>
         </div>
       </aside>
 
-      <main className="flex-1 p-8 space-y-6 overflow-hidden bg-[#07090e] flex flex-col justify-between h-screen">
+      <main className="flex-1 p-6 md:p-8 space-y-6 bg-[#07090e] flex flex-col justify-between overflow-x-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5 shrink-0">
           <div>
-            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block mb-1">
+            <span className="text-xs text-indigo-400 font-semibold block mb-1">
               Execution Node
             </span>
             <h1 className="text-2xl sm:text-3xl font-serif tracking-tight text-white">
@@ -254,16 +267,16 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
           <div className="flex items-center gap-3">
             <button
-              onClick={executeTransmissionCycle}
+              onClick={() => setIsPulseModalOpen(true)}
               disabled={isLiveActive}
-              className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs font-mono uppercase tracking-wider px-5 py-3 rounded-xl transition-all cursor-pointer disabled:opacity-30 font-semibold shadow"
+              className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs px-5 py-3 rounded-xl transition-all cursor-pointer disabled:opacity-30 font-medium shadow"
             >
               Test Single Pulse
             </button>
 
             <button
               onClick={toggleLiveTelemetryStream}
-              className={`text-xs font-mono uppercase tracking-wider px-6 py-3 rounded-xl transition-all cursor-pointer font-bold shadow-lg ${
+              className={`text-xs px-6 py-3 rounded-xl transition-all cursor-pointer font-bold shadow-lg ${
                 isLiveActive
                   ? "bg-amber-500 text-slate-950 animate-pulse"
                   : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-950"
@@ -275,10 +288,10 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         </div>
 
         {activeNav === "telemetry" && (
-          <div className="space-y-5 shrink-0 overflow-y-auto max-h-[calc(100vh-140px)] pr-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 font-mono">
+          <div className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
-                <span className="uppercase tracking-widest text-[10px] text-slate-400 block font-semibold">
+                <span className="text-xs text-slate-400 block font-medium">
                   Entanglement Purity
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
@@ -293,22 +306,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               </div>
 
               <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
-                <span className="uppercase tracking-widest text-[10px] text-slate-400 block font-semibold">
-                  Teleportation Index
-                </span>
-                <div className="text-2xl font-serif text-white tracking-tight font-bold">
-                  {telemetry.teleportation}%
-                </div>
-                <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
-                  <div
-                    className="bg-indigo-500 h-full transition-all duration-300"
-                    style={{ width: `${telemetry.teleportation}%` }}
-                  />
-                </div>
-              </div>
-
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
-                <span className="uppercase tracking-widest text-[10px] text-slate-400 block font-semibold">
+                <span className="text-xs text-slate-400 block font-medium">
                   Channel Noise
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
@@ -323,7 +321,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               </div>
 
               <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
-                <span className="uppercase tracking-widest text-[10px] text-slate-400 block font-semibold">
+                <span className="text-xs text-slate-400 block font-medium">
                   Degradation Factor
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
@@ -339,16 +337,16 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </div>
 
             <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3 font-mono">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                 <div>
-                  <span className="text-xs text-indigo-400 uppercase tracking-widest block font-semibold">
+                  <span className="text-xs text-indigo-400 block font-medium">
                     Quantum Teleportation
                   </span>
                   <h3 className="text-sm font-serif text-white tracking-tight">
-                    ALICE &rarr; QUANTUM CHANNEL &rarr; BOB
+                    Alice &rarr; Quantum Channel &rarr; Bob
                   </h3>
                 </div>
-                <div className="text-xs text-slate-400 font-semibold font-mono">
+                <div className="text-xs text-slate-400 font-medium">
                   Stage{" "}
                   <span className="text-indigo-400 font-bold">
                     {teleportStep}
@@ -357,7 +355,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-8 py-4 bg-[#07090e] border border-slate-800 rounded-xl font-mono text-xs shadow-inner">
+              <div className="flex items-center justify-between px-8 py-4 bg-[#07090e] border border-slate-800 rounded-xl text-xs shadow-inner">
                 <div className="flex flex-col items-center space-y-1.5">
                   <div
                     className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-bold text-sm transition-all ${teleportStep >= 1 ? "border-indigo-500 text-indigo-300 bg-indigo-950/60 shadow-[0_0_15px_rgba(99,102,241,0.5)]" : "border-slate-800 text-slate-600 bg-slate-900"}`}
@@ -367,18 +365,18 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   <span className="text-xs text-white font-semibold uppercase">
                     Alice
                   </span>
-                  <span className="text-[10px] text-indigo-400">SIGNER</span>
+                  <span className="text-[10px] text-indigo-400">Signer</span>
                 </div>
 
                 <div className="flex-1 px-8 flex flex-col items-center space-y-2 text-center">
                   <span
-                    className={`text-[11px] tracking-wider uppercase font-semibold transition-colors ${teleportStep >= 2 ? "text-indigo-300 animate-pulse" : "text-slate-600"}`}
+                    className={`text-[11px] font-medium transition-colors ${teleportStep >= 2 ? "text-indigo-300 animate-pulse" : "text-slate-600"}`}
                   >
                     --- Quantum State (Bell Pair) ---
                   </span>
                   <div className="w-full border-t border-dashed border-indigo-500/40 my-1" />
                   <span
-                    className={`text-[11px] tracking-wider uppercase font-semibold transition-colors ${teleportStep >= 4 ? "text-indigo-300 animate-pulse" : "text-slate-600"}`}
+                    className={`text-[11px] font-medium transition-colors ${teleportStep >= 4 ? "text-indigo-300 animate-pulse" : "text-slate-600"}`}
                   >
                     --- Classical Correction Bits ---
                   </span>
@@ -393,7 +391,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   <span className="text-xs text-white font-semibold uppercase">
                     Bob
                   </span>
-                  <span className="text-[10px] text-emerald-400">VERIFIER</span>
+                  <span className="text-[10px] text-emerald-400">Verifier</span>
                 </div>
               </div>
 
@@ -412,14 +410,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                       }`}
                     >
                       <span
-                        className={`text-[10px] font-mono font-bold block ${isActive ? "text-indigo-400" : "text-slate-500"}`}
+                        className={`text-[10px] font-bold block ${isActive ? "text-indigo-400" : "text-slate-500"}`}
                       >
                         {st.badge}
                       </span>
                       <h4 className="text-xs font-serif text-white font-medium">
                         {st.title}
                       </h4>
-                      <p className="text-[11px] text-slate-400 font-sans font-light leading-snug">
+                      <p className="text-[11px] text-slate-400 font-light leading-snug">
                         {st.desc}
                       </p>
                     </div>
@@ -434,14 +432,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   <h3 className="text-sm font-serif text-white font-semibold">
                     Comprehensive Audit Verdict
                   </h3>
-                  <span className="text-xs font-mono text-indigo-400 font-semibold">
+                  <span className="text-xs text-indigo-400 font-semibold">
                     {auditReport.timestamp}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
                   <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                    <span className="text-[10px] text-slate-400 block font-medium">
                       Avg Entanglement
                     </span>
                     <span className="text-white font-bold text-sm">
@@ -449,7 +447,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                     </span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                    <span className="text-[10px] text-slate-400 block font-medium">
                       Max Error Rate
                     </span>
                     <span className="text-white font-bold text-sm">
@@ -457,7 +455,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                     </span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                    <span className="text-[10px] text-slate-400 block font-medium">
                       Total Packets
                     </span>
                     <span className="text-white font-bold text-sm">
@@ -465,10 +463,10 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                     </span>
                   </div>
                   <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-[10px] text-slate-500 uppercase font-semibold block">
+                    <span className="text-[10px] text-slate-400 block font-medium">
                       Final Verdict
                     </span>
-                    <span className="text-indigo-400 font-bold text-sm uppercase tracking-wider">
+                    <span className="text-indigo-400 font-bold text-sm">
                       {auditReport.finalStatus}
                     </span>
                   </div>
@@ -483,20 +481,20 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
               <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-xl">
                 <div className="space-y-2">
-                  <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+                  <span className="text-xs text-indigo-400 font-semibold block">
                     Wave Mechanics
                   </span>
                   <h3 className="text-xl font-serif text-white">
                     Quantum Collapse
                   </h3>
-                  <p className="text-xs text-slate-400 font-sans font-light leading-relaxed">
+                  <p className="text-xs text-slate-400 font-light leading-relaxed">
                     External measurement attempts immediately collapse
                     superpositional states into classical values.
                   </p>
                 </div>
 
-                <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 text-center space-y-1 font-mono shadow-inner">
-                  <span className="text-[10px] uppercase tracking-widest text-slate-500 block">
+                <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 text-center space-y-1 shadow-inner">
+                  <span className="text-[10px] text-slate-400 block">
                     Current Vector State
                   </span>
                   <div className="text-sm font-serif text-indigo-400 font-bold">
@@ -507,7 +505,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
               <div className="lg:col-span-2 bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+                  <span className="text-xs text-indigo-400 font-semibold block">
                     Bitstream Comparison
                   </span>
                   <h3 className="text-xl font-serif text-white">
@@ -515,9 +513,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   </h3>
                 </div>
 
-                <div className="space-y-4 font-mono text-xs">
+                <div className="space-y-4 text-xs">
                   <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 flex items-center justify-between gap-4 shadow-inner">
-                    <span className="text-[11px] text-slate-500 uppercase shrink-0 font-semibold">
+                    <span className="text-[11px] text-slate-400 shrink-0 font-medium">
                       Alice Sent
                     </span>
                     <div className="text-indigo-300 tracking-wider font-bold overflow-x-auto text-sm">
@@ -526,7 +524,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   </div>
 
                   <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 flex items-center justify-between gap-4 shadow-inner">
-                    <span className="text-[11px] text-slate-500 uppercase shrink-0 font-semibold">
+                    <span className="text-[11px] text-slate-400 shrink-0 font-medium">
                       Bob Recv
                     </span>
                     <div className="text-indigo-300 tracking-wider font-bold overflow-x-auto text-sm">
@@ -543,7 +541,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           <div className="flex-1 flex items-center justify-center my-auto">
             <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-8 space-y-6 w-full max-w-xl shadow-xl shrink-0">
               <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+                <span className="text-xs text-indigo-400 font-semibold block">
                   Deterministic Engine
                 </span>
                 <h3 className="text-xl font-serif text-white">
@@ -551,9 +549,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </h3>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 font-mono">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="p-5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1.5 shadow-inner">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">
+                  <span className="text-[10px] text-slate-400 font-medium block">
                     Calculated Error
                   </span>
                   <div className="text-3xl font-serif text-white font-bold">
@@ -562,10 +560,10 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
 
                 <div className="p-5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1.5 shadow-inner">
-                  <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold block">
+                  <span className="text-[10px] text-slate-400 font-medium block">
                     System Security
                   </span>
-                  <div className="text-sm font-bold text-indigo-400 pt-2 uppercase tracking-wider">
+                  <div className="text-sm font-bold text-indigo-400 pt-2">
                     {threatLevel}
                   </div>
                 </div>
@@ -578,7 +576,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           <div className="flex-1 flex items-center justify-center my-auto">
             <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5 w-full max-w-2xl shadow-xl shrink-0">
               <div>
-                <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">
+                <span className="text-xs text-indigo-400 font-semibold block">
                   Event Ledger
                 </span>
                 <h3 className="text-xl font-serif text-white">
@@ -586,7 +584,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </h3>
               </div>
 
-              <div className="bg-[#07090e] border border-slate-800 rounded-xl p-5 h-48 overflow-y-auto font-mono text-xs space-y-2.5 text-slate-300 shadow-inner">
+              <div className="bg-[#07090e] border border-slate-800 rounded-xl p-5 h-48 overflow-y-auto text-xs space-y-2.5 text-slate-300 shadow-inner">
                 {transmissionLogs.length === 0 ? (
                   <span className="text-slate-500 italic font-light">
                     No historical entries available. Run a pulse or start
@@ -604,6 +602,80 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           </div>
         )}
       </main>
+
+      {isPulseModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="bg-[#0b0e17] border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4 text-xs">
+              <span className="text-indigo-400 font-bold">
+                Send Test Message
+              </span>
+              <button
+                onClick={() => {
+                  setIsPulseModalOpen(false);
+                  setPulseResult(null);
+                }}
+                className="text-slate-400 hover:text-white cursor-pointer font-bold text-sm"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-serif text-white">
+                Quantum Pulse Transmission
+              </h2>
+              <p className="text-xs text-slate-400 font-light">
+                Type your message below to send it securely through the quantum
+                channel.
+              </p>
+            </div>
+
+            <form
+              onSubmit={handleSendPulseMessage}
+              className="space-y-4 text-xs"
+            >
+              <div className="space-y-1.5">
+                <label className="block text-slate-400 font-medium text-[11px]">
+                  Your Message
+                </label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="Type your secure message here..."
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#07090e] border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all shadow-inner resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl transition-all cursor-pointer font-bold shadow-lg shadow-indigo-950"
+              >
+                Send Message &rarr;
+              </button>
+            </form>
+
+            {pulseResult && (
+              <div className="p-4 rounded-xl bg-[#07090e] border border-emerald-500/40 space-y-2 text-xs">
+                <div className="flex items-center justify-between text-emerald-400 font-bold">
+                  <span>{pulseResult.status}</span>
+                  <span>{pulseResult.timestamp}</span>
+                </div>
+                <div className="text-slate-300">
+                  <span className="text-slate-500 block text-[11px]">
+                    Sent Message:
+                  </span>
+                  &quot;{pulseResult.message}&quot;
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
