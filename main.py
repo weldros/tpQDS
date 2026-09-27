@@ -1,7 +1,7 @@
 import math
 from qiskit_aer import AerSimulator
-from tpQDS.module1.qkdHandshake import runQkdHandshake
-from tpQDS.module1.qdsEngine import buildTeleportationCircuit
+from backend.module1.qkdHandshake import runQkdHandshake
+from backend.module1.qdsEngine import buildTeleportationCircuit
 
 def main():
     print("=== QDS Protocol (Module 1) Execution ===")

@@ -56,7 +56,6 @@ def runQkdHandshake(nQubits: int, threshold: float = 0.11) -> bytes | None:
     sharedSecretInt = int("".join(sharedSecretBits), 2) if sharedSecretBits else 0
     return sharedSecretInt.to_bytes((len(sharedSecretBits) + 7) // 8, byteorder="big")
 
-
 if __name__ == "__main__":
     print("Running QKD Handshake (BB84)...")
     secret = runQkdHandshake(nQubits=16)

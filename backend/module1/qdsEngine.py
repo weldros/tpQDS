@@ -27,7 +27,7 @@ def buildTeleportationCircuit(theta: float, phi: float) -> QuantumCircuit:
     # --- Step 1+2: Entanglement Generation ---
     qc.h(alice[0])
     qc.cx(alice[0], bob[0])
-    qc.barrier()
+    qc.barrier() #acts as a barrier between different gates, otherwise sometimes, qiskit merges 2 angle measurements into one
 
     # --- Step 3+4: Teleportation Process ---
     qc.cx(msg[0], alice[0])
@@ -57,14 +57,48 @@ def buildVerificationCircuit(basis: str) -> QuantumCircuit:
     return qc
 
 
-def runSignature(message: bytes, shots: int) -> dict:
+def runSignature(message: bytes, shots: int, execute_attack: bool = False, attack_type: str = None) -> dict:
     """
     Orchestrates generation, teleportation, and verification across all chunks.
     Will run AerSimulator().run(transpile(qc, backend), shots=shots).
     """
-    # Placeholder for full mapping of message to theta/phi and running the circuit
-    # to be implemented as needed when integration with other modules occurs.
-    pass
+    # [STEP 1: Hashing & Chunking]
+    # - Compute a secure hash (e.g., SHA-256) of the incoming file/message bytes.
+    # - Split the resulting hash bits into logical chunks.
+    
+    # [STEP 2: Angle Mapping]
+    # - For each chunk, map the bit sequence to precise theta and phi rotation angles.
+    # - These angles define the unique quantum signature state for this file.
+    
+    # [STEP 3: Teleportation Loop]
+    # - Loop over each mapped angle pair (theta, phi).
+    # - For each pair, call `buildTeleportationCircuit(theta, phi)`.
+    # - Execute the circuit using AerSimulator to generate the classical correction bits (crz, crx).
+    
+    # [STEP 4: Aggregation]
+    # - Collect all resulting classical correction bits across all loops.
+    # - Package these bits alongside the classical file/message payload to be sent to Bob.
+    # - Bob will later use these correction bits to deterministically verify the signature via Module 3.
+    
+    import random
+    
+    # --- TEMPORARY MOCK LOGIC FOR API INTEGRATION ---
+    if execute_attack:
+        return {
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "HALTED_BY_EVE",
+            "attack_type": attack_type
+        }
+        
+    mock_qber = random.uniform(0.0, 5.0)
+    return {
+        "qber": mock_qber,
+        "fidelity": 100 - (mock_qber * 2),
+        "verdict": "ACCEPT",
+        "status": "SUCCESS"
+    }
 
 if __name__ == "__main__":
     import math
