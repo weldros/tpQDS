@@ -1,597 +1,214 @@
 import React, { useState } from "react";
 
-const sections = [
+const articles = [
   {
-    id: "introduction",
+    id: "overview",
     number: "01",
-    title: "Introduction & Background",
-    label: "FOUNDATION",
-    content:
-      "Quantum computing threatens classical public-key cryptography. Algorithms like Shor's efficiently solve integer factorization, rendering RSA and ECC obsolete. QDS-Secure introduces an alternative approach grounded in quantum mechanics for absolute security.",
+    title: "Executive Overview & Core Principles",
+    category: "FOUNDATION",
+    readTime: "4 MIN READ",
+    summary:
+      "A high-level examination of quantum-oriented digital signatures, zero-trust endpoint architectures, and the elimination of reliance on classical computational hardness assumptions.",
+    content: [
+      "Quantum computing fundamentally shifts the paradigm of cryptographic trust. Algorithms designed to run on scalable quantum processors—most notably Shor's algorithm—solve discrete logarithms and integer factorization in polynomial time, entirely compromising classical public-key infrastructures such as RSA, DSA, and Elliptic Curve Cryptography (ECC).",
+      "To counter this existential vector, QDS.Engine establishes an information-theoretic security model. Security is derived directly from the fundamental laws of quantum mechanics rather than unproven mathematical complexity.",
+      "By anchoring digital signatures to microscopic physical phenomena, any unauthorized eavesdropping or intermediate interception physically alters the transmission state, providing absolute mathematical certainty against forgery and undetected data tampering.",
+    ],
+    highlights: [
+      "Information-theoretic security guarantees independent of compute power",
+      "Immunity against polynomial-time quantum attacks (Shor's & Grover's)",
+      "Zero reliance on classical mathematical trapdoor functions",
+    ],
   },
   {
-    id: "teleportation",
+    id: "bell-state",
     number: "02",
-    title: "Teleportation-Based Protocols",
-    label: "QUANTUM CHANNEL",
-    content:
-      "To handle real-world deployment challenges, the framework utilizes teleportation-based QDS protocols, leveraging pre-shared Bell-state entanglement pairs to securely transfer signature tokens.",
+    title: "Bell-State Entanglement Pipeline",
+    category: "QUANTUM CHANNEL",
+    readTime: "6 MIN READ",
+    summary:
+      "Detailed breakdown of how multi-endpoint state generation, shared particle correlation, and synchronized verification establish baseline session trust.",
+    content: [
+      "The core transmission pipeline begins before any payload or signature token is transferred. Trusted nodes (historically modeled as Alice and Bob) initialize a synchronized generation of maximally entangled Bell states (|Φ⁺⟩, |Φ⁻⟩, |Ψ⁺⟩, or |Ψ⁻⟩).",
+      "These entangled pairs serve as the atomic foundation for subsequent signature validation. Because measuring one entangled qubit instantly dictates the state of its paired counterpart across the channel, any active man-in-the-middle intervention forces premature wave function collapse.",
+      "The protocol enforces strict threshold validation: if environmental or malicious noise exceeds predetermined parameters, the session drops instantly before signature payload decryption can be initiated.",
+    ],
+    highlights: [
+      "Pre-shared Bell-state pair generation across trusted endpoints",
+      "Immediate wave function collapse upon external state observation",
+      "Configurable environmental noise tolerance and drift thresholds",
+    ],
   },
   {
-    id: "threat",
+    id: "pauli-basis",
     number: "03",
-    title: "Threat Detection Model",
-    label: "THREAT ANALYSIS",
-    content:
-      "Instead of black-box machine learning, QDS-Secure relies on deterministic physics. Forgery attempts trigger state collapse via the no-cloning theorem, which is caught by statistical threshold rules.",
+    title: "Pauli Basis Correction & Wave Mechanics",
+    category: "STATE TRANSFORMATION",
+    readTime: "5 MIN READ",
+    summary:
+      "Mathematical and algorithmic execution of rotational matrix adjustments, basis reconciliation, and classical bit calibration.",
+    content: [
+      "During transit, quantum states are susceptible to phase shifts and bit-flip errors caused by environmental decoherence. The Pauli Basis Correction layer applies controlled unitary transformations (using Pauli operators X, Y, and Z) to reconcile discrepancies.",
+      "Once the quantum transmission phase concludes, endpoints execute a classical reconciliation handshake over an authenticated public channel, comparing a randomized subset of test bits to calculate exact error rates.",
+      "If the evaluated error rate remains within acceptable boundary parameters, the system applies deterministic correction matrices to restore complete signal fidelity prior to final digital signature acceptance.",
+    ],
+    highlights: [
+      "Real-time application of Pauli X, Y, and Z rotational operators",
+      "Statistically rigorous subset sampling for error rate estimation",
+      "Deterministic post-processing calibration for high signal fidelity",
+    ],
+  },
+  {
+    id: "no-cloning",
+    number: "04",
+    title: "No-Cloning Theorem & Threat Detection",
+    category: "SECURITY ASSURANCE",
+    readTime: "5 MIN READ",
+    summary:
+      "Exploiting the quantum no-cloning theorem to build deterministic intrusion detection systems that bypass classical heuristic limitations.",
+    content: [
+      "Conventional security systems rely on heuristic anomaly detection, signature databases, and machine learning models that remain inherently vulnerable to zero-day exploits and sophisticated evasion techniques.",
+      "QDS.Engine replaces heuristic guesswork with the physical laws of quantum mechanics—specifically the No-Cloning Theorem, which dictates that it is physically impossible to create an identical independent copy of an unknown arbitrary quantum state.",
+      "Any attempt by an adversary to duplicate or inspect signature packets in transit causes irreversible modification. The threat detection module continuously audits packet telemetry, instantly isolating and rejecting compromised communication vectors.",
+    ],
+    highlights: [
+      "Physical enforcement via the quantum no-cloning theorem",
+      "Zero reliance on historical attack signature databases",
+      "Instantaneous session termination upon intrusion detection",
+    ],
   },
 ];
 
 export default function Documentation() {
-  const [activeSection, setActiveSection] = useState("introduction");
-
-  const scrollToSection = (id) => {
-    const element = document.getElementById(id);
-
-    if (element) {
-      element.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-
-      setActiveSection(id);
-    }
-  };
+  const [activeArticleId, setActiveArticleId] = useState("overview");
+  const activeArticle =
+    articles.find((a) => a.id === activeArticleId) || articles[0];
 
   return (
-    <main className="min-h-screen bg-[#050708] text-white font-mono pt-20 overflow-hidden">
-      <style>{`
-        @keyframes documentationScan {
-          0% {
-            transform: translateY(-100%);
-            opacity: 0;
-          }
+    <main className="min-h-screen bg-[#07090e] text-slate-100 font-sans pt-28 pb-20 px-6 sm:px-10 lg:px-20 selection:bg-indigo-500/30 overflow-x-hidden">
+      <div className="absolute inset-0 pointer-events-none opacity-30 bg-[radial-gradient(circle_at_50%_0%,rgba(99,102,241,0.08),transparent_50%)]" />
 
-          15% {
-            opacity: 0.5;
-          }
+      <div className="max-w-[1400px] mx-auto space-y-12 relative z-10">
+        <div className="border-b border-slate-800 pb-8 space-y-3">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-950/60 border border-indigo-800/60 font-mono text-xs text-indigo-300">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
+            <span>QDS.ENGINE // TECHNICAL KNOWLEDGE BASE</span>
+          </div>
+          <h1 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
+            Architecture Documentation
+          </h1>
+          <p className="text-sm sm:text-base text-slate-400 font-light max-w-2xl leading-relaxed">
+            Deep-dive technical specifications, quantum pipeline mechanics, and
+            security model doctrines governing the QDS.Engine framework.
+          </p>
+        </div>
 
-          85% {
-            opacity: 0.5;
-          }
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          {/* Left Navigation Menu (List of Articles) */}
+          <div className="lg:col-span-4 space-y-3">
+            <div className="font-mono text-xs uppercase tracking-widest text-slate-500 px-2 pb-2">
+              Documentation Index
+            </div>
 
-          100% {
-            transform: translateY(100%);
-            opacity: 0;
-          }
-        }
+            <div className="space-y-2">
+              {articles.map((article) => {
+                const isSelected = article.id === activeArticleId;
+                return (
+                  <button
+                    key={article.id}
+                    onClick={() => {
+                      setActiveArticleId(article.id);
+                      window.scrollTo({ top: 180, behavior: "smooth" });
+                    }}
+                    className={`w-full text-left p-5 rounded-2xl border transition-all cursor-pointer flex flex-col space-y-2 ${
+                      isSelected
+                        ? "bg-[#0b0e17] border-indigo-500 shadow-xl shadow-indigo-950/40 ring-1 ring-indigo-500/50"
+                        : "bg-[#0b0e17]/60 border-slate-800/80 hover:border-slate-700 hover:bg-[#0b0e17]"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between font-mono text-xs">
+                      <span
+                        className={`font-bold ${isSelected ? "text-indigo-400" : "text-slate-500"}`}
+                      >
+                        {article.number}
+                      </span>
+                      <span className="text-[10px] uppercase tracking-wider text-slate-500 px-2 py-0.5 rounded bg-slate-900 border border-slate-800">
+                        {article.readTime}
+                      </span>
+                    </div>
 
-        @keyframes documentationPulse {
-          0%,
-          100% {
-            opacity: 0.3;
-          }
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-indigo-400 block font-medium">
+                        {article.category}
+                      </span>
+                      <h3
+                        className={`text-base font-serif transition-colors ${isSelected ? "text-white" : "text-slate-300"}`}
+                      >
+                        {article.title}
+                      </h3>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
-          50% {
-            opacity: 1;
-          }
-        }
+          <div className="lg:col-span-8">
+            <div className="bg-[#0b0e17] border border-slate-800/90 rounded-3xl p-8 sm:p-12 space-y-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        @keyframes documentationSignal {
-          0% {
-            transform: translateX(-120%);
-          }
-
-          100% {
-            transform: translateX(500%);
-          }
-        }
-
-        @keyframes documentationRotate {
-          from {
-            transform: rotate(0deg);
-          }
-
-          to {
-            transform: rotate(360deg);
-          }
-        }
-
-        .documentation-scan {
-          animation: documentationScan 7s linear infinite;
-        }
-
-        .documentation-pulse {
-          animation: documentationPulse 2s ease-in-out infinite;
-        }
-
-        .documentation-signal {
-          animation: documentationSignal 3s linear infinite;
-        }
-
-        .documentation-rotate {
-          animation: documentationRotate 18s linear infinite;
-        }
-
-        .documentation-grid {
-          background-image:
-            linear-gradient(to right, rgba(34,211,238,0.035) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(34,211,238,0.035) 1px, transparent 1px);
-          background-size: 56px 56px;
-        }
-
-        html {
-          scroll-behavior: smooth;
-        }
-      `}</style>
-
-      <div className="fixed inset-0 pointer-events-none documentation-grid opacity-40" />
-
-      <div className="fixed left-0 right-0 h-24 pointer-events-none bg-gradient-to-b from-transparent via-cyan-400/[0.025] to-transparent documentation-scan" />
-
-      <div className="relative z-10">
-        <section className="border-b border-cyan-400/10">
-          <div className="max-w-[1500px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-24 py-16 lg:py-20">
-            <div className="grid grid-cols-1 lg:grid-cols-[1.4fr_0.6fr] gap-12 items-end">
-              <div>
-                <div className="flex items-center gap-3 text-[9px] uppercase tracking-[0.35em] text-cyan-400">
-                  <span>QDS_ENGINE</span>
-
-                  <span className="w-10 h-px bg-cyan-400/40" />
-
-                  <span>Technical Documentation</span>
+              <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-6 font-mono text-xs">
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 rounded-lg bg-indigo-950 border border-indigo-800/80 text-indigo-300 font-bold">
+                    MODULE {activeArticle.number}
+                  </span>
+                  <span className="text-slate-400 uppercase tracking-widest">
+                    {activeArticle.category}
+                  </span>
                 </div>
+                <span className="text-slate-500">{activeArticle.readTime}</span>
+              </div>
 
-                <h1 className="mt-7 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold uppercase tracking-[-0.04em] leading-[0.95]">
-                  Security
-                  <span className="block text-cyan-400">Architecture.</span>
-                </h1>
 
-                <p className="mt-8 max-w-3xl text-xs sm:text-sm leading-7 text-slate-500">
-                  Technical specifications covering the quantum security model,
-                  teleportation-based protocols, deterministic threat detection,
-                  and simulator deployment.
+              <div className="space-y-4">
+                <h2 className="text-3xl sm:text-4xl font-serif text-white leading-snug">
+                  {activeArticle.title}
+                </h2>
+                <p className="text-sm sm:text-base text-indigo-200/80 font-sans font-light leading-relaxed p-4 rounded-xl bg-indigo-950/20 border border-indigo-900/40">
+                  {activeArticle.summary}
                 </p>
               </div>
 
-              <div className="lg:justify-self-end w-full max-w-sm border border-cyan-400/15 bg-[#070a0c]/80">
-                <div className="flex justify-between items-center px-5 py-4 border-b border-cyan-400/10">
-                  <span className="text-[8px] uppercase tracking-[0.25em] text-slate-600">
-                    Documentation Status
-                  </span>
-
-                  <span className="text-[8px] text-emerald-400">ONLINE</span>
-                </div>
-
-                <div className="p-5">
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-12 h-12 flex items-center justify-center">
-                      <div className="absolute inset-0 border border-cyan-400/20 rounded-full documentation-rotate" />
-
-                      <div className="absolute inset-2 border border-emerald-400/20 rounded-full" />
-
-                      <span className="w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.8)] documentation-pulse" />
-                    </div>
-
-                    <div>
-                      <span className="block text-[8px] uppercase tracking-widest text-slate-700">
-                        System Documentation
-                      </span>
-
-                      <span className="block mt-1 text-sm text-white">
-                        VERSION 2.4
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-5 h-px bg-white/10 relative overflow-hidden">
-                    <div className="absolute top-0 left-0 w-16 h-full bg-cyan-400 documentation-signal" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <div className="max-w-[1500px] mx-auto px-6 sm:px-10 lg:px-16 xl:px-24">
-          <div className="grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-12 lg:gap-20">
-            <aside className="lg:sticky lg:top-28 lg:self-start py-10 lg:py-16">
-              <div className="border border-white/10 bg-[#070a0c]/70">
-                <div className="px-5 py-4 border-b border-white/10">
-                  <span className="text-[8px] uppercase tracking-[0.3em] text-slate-600">
-                    System Index
-                  </span>
-                </div>
-
-                <nav className="p-3">
-                  {sections.map((section) => {
-                    const active = activeSection === section.id;
-
-                    return (
-                      <button
-                        key={section.id}
-                        onClick={() => scrollToSection(section.id)}
-                        className={`w-full flex items-center gap-3 px-3 py-3 text-left transition-all duration-300 ${
-                          active
-                            ? "bg-cyan-400/[0.06] text-cyan-400"
-                            : "text-slate-600 hover:text-white hover:bg-white/[0.025]"
-                        }`}
-                      >
-                        <span className="text-[8px]">{section.number}</span>
-
-                        <span className="text-[9px] uppercase tracking-wider">
-                          {section.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-
-                  <button
-                    onClick={() => scrollToSection("quick-start")}
-                    className={`w-full flex items-center gap-3 px-3 py-3 text-left transition-all duration-300 ${
-                      activeSection === "quick-start"
-                        ? "bg-cyan-400/[0.06] text-cyan-400"
-                        : "text-slate-600 hover:text-white hover:bg-white/[0.025]"
-                    }`}
-                  >
-                    <span className="text-[8px]">04</span>
-
-                    <span className="text-[9px] uppercase tracking-wider">
-                      Quick Start
-                    </span>
-                  </button>
-                </nav>
+              <div className="space-y-6 text-slate-300 font-sans font-light text-sm sm:text-base leading-relaxed">
+                {activeArticle.content.map((paragraph, index) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
               </div>
 
-              <div className="mt-5 px-4 py-4 border-l border-cyan-400/30">
-                <span className="block text-[8px] uppercase tracking-widest text-slate-700">
-                  Security Status
+              <div className="pt-4 space-y-4 border-t border-slate-800">
+                <h4 className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold">
+                  Core Architectural Highlights
+                </h4>
+
+                <div className="grid grid-cols-1 gap-3">
+                  {activeArticle.highlights.map((highlight, hIndex) => (
+                    <div
+                      key={hIndex}
+                      className="flex items-start gap-3 p-4 rounded-xl bg-[#07090e] border border-slate-800/80 font-mono text-xs text-slate-200"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+                      <span>{highlight}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+
+              <div className="pt-6 border-t border-slate-800 flex items-center justify-between font-mono text-xs text-slate-500">
+                <span>QDS.ENGINE SPECIFICATION DOCS</span>
+                <span className="text-indigo-400 font-semibold">
+                  [SECURE VERIFIED]
                 </span>
-
-                <div className="flex items-center gap-2 mt-3">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 documentation-pulse" />
-
-                  <span className="text-[8px] text-emerald-400">
-                    DOCUMENTATION VERIFIED
-                  </span>
-                </div>
-              </div>
-            </aside>
-
-            <div className="py-10 lg:py-16 pb-28">
-              <section
-                id="introduction"
-                className="scroll-mt-28 border border-white/10 bg-[#070a0c]/80 mb-8"
-                onMouseEnter={() => setActiveSection("introduction")}
-              >
-                <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[9px] text-cyan-400">01</span>
-
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-slate-600">
-                      Foundation
-                    </span>
-                  </div>
-
-                  <span className="text-[8px] uppercase tracking-widest text-slate-800">
-                    SEC_01
-                  </span>
-                </div>
-
-                <div className="p-6 md:p-8 lg:p-10">
-                  <h2 className="text-2xl md:text-3xl font-bold uppercase text-white">
-                    Introduction &
-                    <span className="text-cyan-400"> Background</span>
-                  </h2>
-
-                  <div className="mt-7 border-l border-cyan-400/30 pl-5">
-                    <p className="text-xs md:text-sm leading-7 text-slate-500">
-                      Quantum computing threatens classical public-key
-                      cryptography. Algorithms like Shor's efficiently solve
-                      integer factorization, rendering RSA and ECC obsolete.
-                      QDS-Secure introduces an alternative approach grounded in
-                      quantum mechanics for absolute security.
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 mt-9">
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Threat
-                      </span>
-
-                      <span className="block mt-3 text-sm text-white">
-                        QUANTUM COMPUTING
-                      </span>
-                    </div>
-
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Target
-                      </span>
-
-                      <span className="block mt-3 text-sm text-cyan-400">
-                        RSA / ECC
-                      </span>
-                    </div>
-
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Approach
-                      </span>
-
-                      <span className="block mt-3 text-sm text-emerald-400">
-                        QUANTUM SECURITY
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                id="teleportation"
-                className="scroll-mt-28 border border-white/10 bg-[#070a0c]/80 mb-8"
-                onMouseEnter={() => setActiveSection("teleportation")}
-              >
-                <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[9px] text-cyan-400">02</span>
-
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-slate-600">
-                      Quantum Channel
-                    </span>
-                  </div>
-
-                  <span className="text-[8px] uppercase tracking-widest text-slate-800">
-                    SEC_02
-                  </span>
-                </div>
-
-                <div className="p-6 md:p-8 lg:p-10">
-                  <h2 className="text-2xl md:text-3xl font-bold uppercase text-white">
-                    Teleportation-Based
-                    <span className="block text-cyan-400">Protocols</span>
-                  </h2>
-
-                  <div className="mt-8 grid grid-cols-1 lg:grid-cols-[1fr_0.7fr] gap-10 items-center">
-                    <div className="border-l border-cyan-400/30 pl-5">
-                      <p className="text-xs md:text-sm leading-7 text-slate-500">
-                        To handle real-world deployment challenges, the
-                        framework utilizes teleportation-based QDS protocols,
-                        leveraging pre-shared Bell-state entanglement pairs to
-                        securely transfer signature tokens.
-                      </p>
-                    </div>
-
-                    <div className="relative h-48 border border-cyan-400/10 bg-black/20 overflow-hidden">
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="relative w-32 h-32">
-                          <div className="absolute inset-0 rounded-full border border-cyan-400/20 documentation-rotate" />
-
-                          <div className="absolute inset-5 rounded-full border border-cyan-400/30 documentation-rotate" />
-
-                          <div className="absolute inset-10 rounded-full border border-emerald-400/20 documentation-rotate" />
-
-                          <div className="absolute top-1/2 left-0 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.9)]" />
-
-                          <div className="absolute top-1/2 right-0 w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_15px_rgba(52,211,153,0.9)]" />
-
-                          <div className="absolute left-1/2 top-1/2 w-2 h-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white" />
-                        </div>
-                      </div>
-
-                      <div className="absolute bottom-3 left-4 text-[7px] uppercase tracking-widest text-slate-700">
-                        ENTANGLEMENT_CHANNEL
-                      </div>
-
-                      <div className="absolute bottom-3 right-4 text-[7px] uppercase tracking-widest text-emerald-400">
-                        SECURE
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                id="threat"
-                className="scroll-mt-28 border border-white/10 bg-[#070a0c]/80 mb-8"
-                onMouseEnter={() => setActiveSection("threat")}
-              >
-                <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-white/10">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[9px] text-cyan-400">03</span>
-
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-slate-600">
-                      Threat Analysis
-                    </span>
-                  </div>
-
-                  <span className="text-[8px] uppercase tracking-widest text-slate-800">
-                    SEC_03
-                  </span>
-                </div>
-
-                <div className="p-6 md:p-8 lg:p-10">
-                  <h2 className="text-2xl md:text-3xl font-bold uppercase text-white">
-                    Threat Detection
-                    <span className="block text-cyan-400">Model</span>
-                  </h2>
-
-                  <div className="mt-7 border-l border-cyan-400/30 pl-5">
-                    <p className="text-xs md:text-sm leading-7 text-slate-500">
-                      Instead of black-box machine learning, QDS-Secure relies
-                      on deterministic physics. Forgery attempts trigger state
-                      collapse via the no-cloning theorem, which is caught by
-                      statistical threshold rules.
-                    </p>
-                  </div>
-
-                  <div className="mt-9 border border-white/10 p-5">
-                    <div className="flex items-center justify-between mb-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-600">
-                        Threat Monitor
-                      </span>
-
-                      <span className="text-[8px] text-emerald-400">
-                        ACTIVE
-                      </span>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between text-[8px] mb-2">
-                          <span className="text-slate-700">
-                            STATE_INTEGRITY
-                          </span>
-
-                          <span className="text-cyan-400">99.8%</span>
-                        </div>
-
-                        <div className="h-1 bg-white/5 overflow-hidden">
-                          <div className="h-full w-[99.8%] bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.6)]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[8px] mb-2">
-                          <span className="text-slate-700">INTERFERENCE</span>
-
-                          <span className="text-emerald-400">CLEAR</span>
-                        </div>
-
-                        <div className="h-1 bg-white/5 overflow-hidden">
-                          <div className="h-full w-[8%] bg-emerald-400 shadow-[0_0_12px_rgba(52,211,153,0.5)]" />
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="flex justify-between text-[8px] mb-2">
-                          <span className="text-slate-700">FORGERY_SIGNAL</span>
-
-                          <span className="text-white">0.4%</span>
-                        </div>
-
-                        <div className="h-1 bg-white/5 overflow-hidden">
-                          <div className="h-full w-[4%] bg-white" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <section
-                id="quick-start"
-                className="scroll-mt-28 border border-cyan-400/20 bg-[#070a0c]/90"
-                onMouseEnter={() => setActiveSection("quick-start")}
-              >
-                <div className="flex items-center justify-between px-6 md:px-8 py-5 border-b border-cyan-400/10">
-                  <div className="flex items-center gap-4">
-                    <span className="text-[9px] text-cyan-400">04</span>
-
-                    <span className="text-[9px] uppercase tracking-[0.25em] text-slate-600">
-                      Deployment
-                    </span>
-                  </div>
-
-                  <span className="text-[8px] uppercase tracking-widest text-emerald-400">
-                    READY
-                  </span>
-                </div>
-
-                <div className="p-6 md:p-8 lg:p-10">
-                  <h2 className="text-2xl md:text-3xl font-bold uppercase">
-                    Quick Start &
-                    <span className="text-cyan-400"> Installation</span>
-                  </h2>
-
-                  <p className="mt-6 text-xs md:text-sm leading-7 text-slate-500 max-w-3xl">
-                    Initialize the QDS-Secure framework, install the required
-                    dependencies, and launch the simulator environment.
-                  </p>
-
-                  <div className="mt-8 border border-white/10 bg-black/40">
-                    <div className="flex items-center justify-between px-5 py-3 border-b border-white/10">
-                      <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-red-400/60" />
-                        <span className="w-2 h-2 rounded-full bg-yellow-400/60" />
-                        <span className="w-2 h-2 rounded-full bg-emerald-400/60" />
-                      </div>
-
-                      <span className="text-[7px] uppercase tracking-widest text-slate-800">
-                        terminal / qds-engine
-                      </span>
-                    </div>
-
-                    <div className="p-6 text-xs leading-7 overflow-x-auto">
-                      <div className="text-slate-700">
-                        # Clone the repository
-                      </div>
-
-                      <div className="text-cyan-400">
-                        git clone https://github.com/qds-secure/framework.git
-                      </div>
-
-                      <div className="mt-4 text-slate-700">
-                        # Install dependencies & run simulator
-                      </div>
-
-                      <div className="text-emerald-400">
-                        npm install && npm run simulator
-                      </div>
-
-                      <div className="mt-5 flex items-center gap-2 text-slate-700">
-                        <span className="text-cyan-400">qds@secure-node</span>
-
-                        <span>:</span>
-
-                        <span>~/framework</span>
-
-                        <span className="text-white">$</span>
-
-                        <span className="w-2 h-4 bg-cyan-400 documentation-pulse" />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-px bg-white/10 mt-8">
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Runtime
-                      </span>
-
-                      <span className="block mt-2 text-xs text-white">
-                        NODE.JS
-                      </span>
-                    </div>
-
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Protocol
-                      </span>
-
-                      <span className="block mt-2 text-xs text-cyan-400">
-                        QDS
-                      </span>
-                    </div>
-
-                    <div className="bg-[#070a0c] p-5">
-                      <span className="text-[8px] uppercase tracking-widest text-slate-700">
-                        Status
-                      </span>
-
-                      <span className="block mt-2 text-xs text-emerald-400">
-                        READY
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              <div className="mt-8 flex flex-col sm:flex-row justify-between gap-4 text-[8px] uppercase tracking-[0.2em] text-slate-800">
-                <span>QDS_ENGINE / TECHNICAL SPECIFICATIONS</span>
-
-                <span>DOCUMENTATION v2.4</span>
               </div>
             </div>
           </div>
