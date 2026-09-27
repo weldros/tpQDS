@@ -1,459 +1,553 @@
 import React, { useEffect, useRef, useState } from "react";
-import gsap from "gsap";
-import {
-  ArrowUpRight,
-  ChevronRight,
-  Cpu,
-  Network,
-  Radio,
-  Binary,
-  BookOpen,
-} from "lucide-react";
 
-export default function Home({ setActiveTab, scrollToSection }) {
-  const [hoveredStep, setHoveredStep] = useState(null);
-  const [activeResearchMode, setActiveResearchMode] = useState(
-    "Bell State Analysis",
-  );
-  const [openFaq, setOpenFaq] = useState(0);
+const features = [
+  {
+    tag: "01",
+    short: "ENTANGLEMENT",
+    title: "BELL-STATE ENTANGLEMENT",
+    desc: "Creates shared quantum states between trusted endpoints before signature verification begins.",
+  },
+  {
+    tag: "02",
+    short: "BASIS CONTROL",
+    title: "PAULI BASIS CORRECTION",
+    desc: "Applies controlled basis transformations to preserve state integrity during quantum transmission.",
+  },
+  {
+    tag: "03",
+    short: "SECURITY MODEL",
+    title: "INFORMATION-THEORETIC SECURITY",
+    desc: "Uses quantum information principles to establish security guarantees independent of computational assumptions.",
+  },
+  {
+    tag: "04",
+    short: "THREAT DETECTION",
+    title: "NO-CLONING DETECTION",
+    desc: "Detects anomalous state duplication and identifies potential interference inside the transmission channel.",
+  },
+  {
+    tag: "05",
+    short: "VERIFICATION",
+    title: "DETERMINISTIC VERIFICATION",
+    desc: "Performs deterministic signature validation before accepting the transmitted quantum-secured message.",
+  },
+];
 
-  const containerRef = useRef(null);
-  const heroRef = useRef(null);
-  const pulseBarRef = useRef(null);
-  const contentDisplayRef = useRef(null);
+const faqs = [
+  {
+    question: "What is QDS.Engine?",
+    answer:
+      "QDS.Engine is a quantum-oriented digital signature and security framework designed around entanglement, state verification, threat detection, and deterministic authentication.",
+  },
+  {
+    question: "How does the quantum security pipeline work?",
+    answer:
+      "The security pipeline establishes an entangled state, performs basis correction, applies information-theoretic security validation, monitors for cloning or interference, and finally performs deterministic verification.",
+  },
+  {
+    question: "What does zero-trust mean in this architecture?",
+    answer:
+      "Zero-trust means that no endpoint, state, or transmission is automatically trusted. Each stage must independently satisfy the required verification conditions before the next stage can proceed.",
+  },
+  {
+    question: "How is a compromised quantum state detected?",
+    answer:
+      "The threat detection layer continuously evaluates the transmitted state for unexpected changes, duplication indicators, or interference patterns that violate the expected security model.",
+  },
+  {
+    question: "Can the simulator be used for testing?",
+    answer:
+      "Yes. The simulator provides a controlled environment for observing protocol behavior, security telemetry, verification states, and threat detection events.",
+  },
+  {
+    question: "Is this intended to replace conventional cryptography?",
+    answer:
+      "The platform is designed as a quantum security research and simulation framework. Its purpose is to explore quantum-oriented authentication and verification concepts rather than automatically replace established cryptographic systems.",
+  },
+];
 
-  const timeoutRef = useRef(null);
+function ParticleBackground() {
+  const canvasRef = useRef(null);
 
   useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        heroRef.current.children,
-        { opacity: 0, y: 30 },
-        { opacity: 1, y: 0, duration: 1, stagger: 0.15, ease: "power3.out" },
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let animationFrame;
+    let particles = [];
+    let width = 0;
+    let height = 0;
+
+    const resize = () => {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      width = rect.width;
+      height = rect.height;
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const count = Math.min(
+        80,
+        Math.max(35, Math.floor((width * height) / 18000)),
       );
 
-      gsap.fromTo(
-        pulseBarRef.current,
-        { scaleX: 0.2, opacity: 0.3 },
-        {
-          scaleX: 1,
-          opacity: 1,
-          repeat: -1,
-          yoyo: true,
-          duration: 1.8,
-          ease: "power1.inOut",
-        },
-      );
-    }, containerRef);
+      particles = Array.from({ length: count }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: (Math.random() - 0.5) * 0.28,
+        size: Math.random() * 1.6 + 0.5,
+        opacity: Math.random() * 0.45 + 0.15,
+      }));
+    };
+
+    const draw = () => {
+      ctx.clearRect(0, 0, width, height);
+
+      for (const particle of particles) {
+        particle.x += particle.vx;
+        particle.y += particle.vy;
+
+        if (particle.x < 0 || particle.x > width) particle.vx *= -1;
+        if (particle.y < 0 || particle.y > height) particle.vy *= -1;
+      }
+
+      for (let i = 0; i < particles.length; i++) {
+        const p1 = particles[i];
+
+        ctx.beginPath();
+        ctx.arc(p1.x, p1.y, p1.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(129, 140, 248, ${p1.opacity})`;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = "rgba(129, 140, 248, 0.6)";
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        for (let j = i + 1; j < particles.length; j++) {
+          const p2 = particles[j];
+          const dx = p1.x - p2.x;
+          const dy = p1.y - p2.y;
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          if (distance < 130) {
+            const opacity = (1 - distance / 130) * 0.18;
+
+            ctx.beginPath();
+            ctx.moveTo(p1.x, p1.y);
+            ctx.lineTo(p2.x, p2.y);
+            ctx.strokeStyle = `rgba(129, 140, 248, ${opacity})`;
+            ctx.lineWidth = 0.6;
+            ctx.stroke();
+          }
+        }
+      }
+
+      animationFrame = requestAnimationFrame(draw);
+    };
+
+    resize();
+    draw();
+
+    window.addEventListener("resize", resize);
 
     return () => {
-      ctx.revert();
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+      cancelAnimationFrame(animationFrame);
+      window.removeEventListener("resize", resize);
     };
   }, []);
 
-  const handleMouseEnter = (idx) => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setHoveredStep(idx);
-    if (contentDisplayRef.current) {
-      gsap.fromTo(
-        contentDisplayRef.current,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.35, ease: "power3.out" },
-      );
-    }
-  };
+  return (
+    <canvas
+      ref={canvasRef}
+      className="absolute inset-0 w-full h-full pointer-events-none opacity-80"
+    />
+  );
+}
 
-  const handleMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setHoveredStep(null);
-    }, 400);
-  };
+function Reveal({ children, className = "", delay = 0 }) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
 
-  const handleInfoBoxMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-  };
+  useEffect(() => {
+    const element = ref.current;
+    if (!element) return;
 
-  const handleInfoBoxMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      setHoveredStep(null);
-    }, 300);
-  };
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 },
+    );
 
-  const features = [
-    {
-      title: "Bell-State Entanglement Engine",
-      desc: "Establishes robust, pre-shared quantum entanglement channels across distributed network nodes to guarantee absolute authentication integrity and secure foundational key generation.",
-      tag: "01",
-    },
-    {
-      title: "Pauli Basis Correction",
-      desc: "Performs precise cryptographic transformations and projective measurements to evaluate incoming token states, instantly rectifying phase shifts and operational anomalies.",
-      tag: "02",
-    },
-    {
-      title: "Information-Theoretic Security",
-      desc: "Applies uncompromising mathematical protections rooted strictly in fundamental quantum mechanics rather than relying on vulnerable computational hardness assumptions.",
-      tag: "03",
-    },
-    {
-      title: "No-Cloning Threat Detection",
-      desc: "Monitors quantum states in real-time, instantly triggering network defense protocols and dropping compromised tokens the moment any unauthorized eavesdropping occurs.",
-      tag: "04",
-    },
-    {
-      title: "Deterministic Verification",
-      desc: "Eliminates heuristic blind spots and black-box uncertainties by utilizing rigorous statistical threshold standards and fully transparent decision logic rules.",
-      tag: "05",
-    },
-  ];
+    observer.observe(element);
 
-  const methodologySteps = [
-    {
-      title: "Entanglement distribution & Initialization",
-      desc: "Shared Bell pairs are established across sender and receiver node endpoints, setting up secure communication channels prior to any signature token transfer.",
-      badge: "Bell state pair generation",
-      icon: Network,
-    },
-    {
-      title: "Projective measurement audit & Correction",
-      desc: "Incoming signature tokens are evaluated using precise Pauli basis transformations and projective measurements to check for statistical threshold compliance.",
-      badge: "Pauli basis verification",
-      icon: Radio,
-    },
-    {
-      title: "Deterministic threat response & State collapse",
-      desc: "Any eavesdropping or channel tampering immediately collapses the superposition state via the no-cloning theorem, allowing instant and automated rejection.",
-      badge: "Instant state collapse",
-      icon: Binary,
-    },
-  ];
-
-  const referencesList = [
-    {
-      title: "Quantum Digital Signatures with Bounded Quantum Memory",
-      authors: "Ardehali, M. M., et al.",
-      journal: "Physical Review A, 87(1), 012338",
-      year: "2023",
-    },
-    {
-      title:
-        "Information-Theoretic Security in Quantum Key Distribution Networks",
-      authors: "Gisin, N., Ribordy, G., Tittel, W., & Zbinden, H.",
-      journal: "Reviews of Modern Physics, 74(1), 145",
-      year: "2022",
-    },
-    {
-      title:
-        "Practical Implementation of Unambiguous Quantum Signatures over Fiber Channels",
-      authors: "Collins, R. J., et al.",
-      journal: "IEEE Transactions on Quantum Engineering, vol. 4, pp. 1-12",
-      year: "2024",
-    },
-  ];
-
-  const faqs = [
-    {
-      q: "What is the primary limitation of using Quantum One-Time Pad (QOTP) in arbitrated quantum signature (AQS) protocols?",
-      a: "QOTP is poorly suited for AQS schemes because it leaves protocols vulnerable to various attacks, including recipient-side forgery and signer-side disavowal. Specifically, the commutative nature of the four Pauli operators enables recipients (such as Bob) to counterfeit signatures during known message attacks.",
-    },
-    {
-      q: "What cryptographic technique does the proposed protocol introduce to replace chained CNOT operations?",
-      a: "The proposed protocol utilizes chained controlled-unitary (CU) operations controlled by secret keys to encrypt quantum message ensembles. This approach manipulates both amplitude and phase components, offering greater randomness, non-commutativity, and resistance to quantum forgeries.",
-    },
-    {
-      q: "On what real quantum computing hardware was the protocol tested and implemented?",
-      a: "The protocol was tested on an IBM Quantum simulator and subsequently executed on a real backend quantum processing unit (QPU) named ibm_brisbane, which features an Eagle r3 processor with 127 qubits.",
-    },
-    {
-      q: "What two fundamental security conditions must be satisfied by a secure quantum signature scheme?",
-      a: "A secure quantum signature scheme must satisfy the core properties of non-forgery and non-repudiation.",
-    },
-    {
-      q: "How does the protocol resolve disputes concerning lost quantum signatures?",
-      a: "Unlike traditional schemes where a signature is lost and unprovable once the quantum state changes during verification, this protocol resolves disputes because the trusted Key Generation Center (KGC) securely stores verification proofs—specifically{(\\lambda_i^1, \\lambda_i^2, ..., \\lambda_i^n), h_{iB}\}—upon successful verification.",
-    },
-    {
-      q: "Why is the proposed scheme inherently resistant to Pauli operator forgery attacks?",
-      a: "The protocol avoids QOTP-wise symmetric encryption by employing chained controlled-unitary gates combined with private parameters (\\lambda_i^j). This makes any unauthorized Pauli transformation highly nonlinear and unpredictable, causing an automatic mismatch during the KGC's decryption and state comparison process.",
-    },
-    {
-      q: "What cryptographic mechanisms protect the protocol against impersonation and Man-in-the-Middle (MITM) attacks?",
-      a: "The protocol leverages quantum key distribution (QKD) for unconditionally secure secret key sharing, quantum authentication protocols to transmit private parameters without tampering, and quantum swap tests during verification to ensure message integrity and prevent malicious interceptions.",
-    },
-  ];
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <div
-      ref={containerRef}
-      className="w-full space-y-32 pt-28 pb-32 bg-black text-white overflow-hidden font-mono"
+      ref={ref}
+      className={`${className} ${
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      } transition-all duration-800 ease-out`}
+      style={{ transitionDelay: `${delay}ms` }}
     >
-      {/* Introduction Section */}
-      <section ref={heroRef} className="pt-8 px-6 max-w-7xl mx-auto">
-        <div className="bg-neutral-950 border border-neutral-800 rounded-3xl p-8 sm:p-16 relative overflow-hidden flex flex-col items-center text-center shadow-2xl">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-gradient-to-b from-neutral-800/20 via-transparent to-transparent rounded-full blur-3xl pointer-events-none" />
+      {children}
+    </div>
+  );
+}
 
-          <div className="flex flex-col w-full max-w-4xl mb-6 relative">
-            <div className="w-full h-[1px] bg-neutral-800 relative overflow-hidden rounded-full">
-              <div
-                ref={pulseBarRef}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent origin-left"
-              />
-            </div>
+export default function Home({ setActiveTab }) {
+  const [hoveredStep, setHoveredStep] = useState(null);
+  const [openFaq, setOpenFaq] = useState(null);
+  const [integrity, setIntegrity] = useState(0);
+  const [confidence, setConfidence] = useState(0);
+
+  useEffect(() => {
+    let integrityFrame;
+    let confidenceFrame;
+    const start = performance.now();
+
+    const animateIntegrity = (time) => {
+      const progress = Math.min((time - start) / 1200, 1);
+      setIntegrity((99.8 * progress).toFixed(1));
+      if (progress < 1) integrityFrame = requestAnimationFrame(animateIntegrity);
+    };
+
+    const confidenceStart = performance.now();
+    const animateConfidence = (time) => {
+      const progress = Math.min((time - confidenceStart) / 1400, 1);
+      setConfidence(Math.floor(92 * progress));
+      if (progress < 1) confidenceFrame = requestAnimationFrame(animateConfidence);
+    };
+
+    integrityFrame = requestAnimationFrame(animateIntegrity);
+    confidenceFrame = requestAnimationFrame(animateConfidence);
+
+    return () => {
+      cancelAnimationFrame(integrityFrame);
+      cancelAnimationFrame(confidenceFrame);
+    };
+  }, []);
+
+  const launchSimulator = () => {
+    if (setActiveTab) {
+      setActiveTab("simulator");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const goToPipeline = () => {
+    const element = document.getElementById("pipeline");
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  return (
+    <>
+      <style>{`
+        @keyframes scan {
+          0% { transform: translateY(-100%); opacity: 0; }
+          15% { opacity: 1; }
+          85% { opacity: 1; }
+          100% { transform: translateY(100%); opacity: 0; }
+        }
+        @keyframes pulseRing {
+          0% { transform: scale(0.85); opacity: 0.7; }
+          70% { transform: scale(1.15); opacity: 0; }
+          100% { transform: scale(1.15); opacity: 0; }
+        }
+        @keyframes rotateSlow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes rotateReverse {
+          from { transform: rotate(360deg); }
+          to { transform: rotate(0deg); }
+        }
+        .scan-animation { animation: scan 6s linear infinite; }
+        .pulse-ring { animation: pulseRing 3s ease-out infinite; }
+        .rotate-slow { animation: rotateSlow 20s linear infinite; }
+        .rotate-reverse { animation: rotateReverse 15s linear infinite; }
+        .faq-content {
+          display: grid;
+          grid-template-rows: 0fr;
+          transition: grid-template-rows 400ms ease-in-out;
+        }
+        .faq-content.open { grid-template-rows: 1fr; }
+        .faq-inner { overflow: hidden; }
+      `}</style>
+
+      <main className="w-full bg-[#07090e] text-slate-100 font-sans overflow-x-hidden selection:bg-indigo-500/30 flex flex-col">
+        
+        <section className="relative min-h-[calc(100vh-80px)] flex items-center justify-center overflow-hidden border-b border-slate-800/80 px-8 sm:px-12 lg:px-20 pt-32 pb-20">
+          <div className="absolute inset-0 pointer-events-none">
+            <ParticleBackground />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(99,102,241,0.07),transparent_65%)]" />
           </div>
 
-          <div className="max-w-4xl space-y-6 relative z-10 my-4 flex flex-col items-center">
-            <h1 className="text-4xl sm:text-7xl font-serif tracking-tight text-white leading-[1.05]">
-              Entangle. Verify. <br />
-              <span className="text-white underline decoration-neutral-600 underline-offset-8">
-                [&rarr;] Collapse.
-              </span>
-            </h1>
+          <div className="relative z-10 w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
 
-            <p className="text-neutral-400 font-light text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-sans text-center">
-              Information-theoretic security over dedicated Bell-state quantum
-              teleportation channels with absolute deterministic resilience
-              against post-quantum threats.
-            </p>
+            <div className="lg:col-span-7 space-y-6">
+              <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif tracking-tight text-white leading-[1.08]">
+                Absolute security backed by quantum mechanics, not complexity.
+              </h1>
 
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
-              <button
-                onClick={() => setActiveTab("simulator")}
-                className="inline-flex items-center gap-2 bg-white text-black text-xs font-bold uppercase tracking-wider px-7 py-3.5 rounded-full hover:bg-neutral-200 transition-all shadow-md cursor-pointer transform hover:scale-105"
-              >
-                Run Quantum Simulator <ArrowUpRight className="w-3.5 h-3.5" />
-              </button>
-              <button
-                onClick={() => {
-                  const el = document.getElementById("pipeline");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="inline-flex items-center gap-2 bg-black border border-neutral-700 text-white text-xs font-semibold uppercase tracking-wider px-7 py-3.5 rounded-full hover:border-white transition-all shadow-xs cursor-pointer"
-              >
-                Explore Architecture
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+              <p className="text-base sm:text-lg text-slate-400 font-light leading-relaxed max-w-xl">
+                A high-performance cryptographic simulation framework engineered around Bell-state entanglement, real-time wave function collapse, and zero-trust verification engines.
+              </p>
 
-      {/* Basic Explanation of the Product Section with Flowchart Layout */}
-      <section
-        id="pipeline"
-        className="w-full space-y-10 px-6 md:px-16 lg:px-24"
-      >
-        <div className="space-y-3 text-left w-full">
-          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
-            Quantum Telemetry &amp; Protocol Pipeline
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight leading-tight">
-            Engineered for absolute post-quantum cryptographic resilience
-          </h2>
-        </div>
-
-        {/* Horizontal Flowchart Connected Node Layout */}
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 relative py-4 w-full">
-          {features.map((feat, idx) => {
-            const isHovered = hoveredStep === idx;
-            return (
-              <React.Fragment key={idx}>
-                <div
-                  onMouseEnter={() => handleMouseEnter(idx)}
-                  onMouseLeave={handleMouseLeave}
-                  className={`w-full lg:w-1/5 rounded-2xl border p-5 text-left transition-all duration-300 flex flex-col justify-between min-h-[160px] cursor-pointer relative ${
-                    isHovered
-                      ? "bg-neutral-900 border-white shadow-xl scale-105 ring-1 ring-white/30"
-                      : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
-                  }`}
+              <div className="flex flex-wrap items-center gap-4 pt-2 font-mono text-xs">
+                <button
+                  onClick={launchSimulator}
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-950 font-semibold"
                 >
-                  <span
-                    className={`text-[10px] font-bold uppercase tracking-widest block mb-2 ${isHovered ? "text-white" : "text-neutral-500"}`}
-                  >
-                    Stage {feat.tag}
+                  Launch Simulator &rarr;
+                </button>
+
+                <button
+                  onClick={goToPipeline}
+                  className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer font-semibold hover:border-slate-700"
+                >
+                  Explore Architecture
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Protocol</span>
+                  <span className="text-slate-200 font-semibold">QDS / AQS</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Encryption</span>
+                  <span className="text-indigo-400 font-semibold">QUANTUM</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Detection</span>
+                  <span className="text-emerald-400 font-semibold">ACTIVE</span>
+                </div>
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/80 border border-slate-800/60">
+                  <span className="text-slate-500 uppercase text-[10px] block mb-1">Trust Model</span>
+                  <span className="text-slate-200 font-semibold">ZERO-TRUST</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="bg-[#0b0e17]/90 border border-slate-800/90 rounded-2xl p-7 space-y-5 shadow-xl backdrop-blur-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+                
+                <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
+                  <span className="text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                    Core Telemetry
                   </span>
-                  <span
-                    className={`text-xs sm:text-sm font-serif leading-snug ${isHovered ? "text-white font-bold" : "text-neutral-300"}`}
-                  >
-                    {feat.title}
-                  </span>
+                  <span className="text-indigo-400 font-semibold text-xs">[LIVE]</span>
                 </div>
 
-                {idx < features.length - 1 && (
-                  <div className="hidden lg:flex items-center justify-center text-neutral-600 font-bold text-xl select-none shrink-0 px-1">
-                    &rarr;
+                <div className="flex items-center justify-between p-5 rounded-xl bg-[#07090e] border border-slate-800/80">
+                  <div>
+                    <span className="text-[10px] font-mono uppercase text-slate-500 block mb-1">System Integrity</span>
+                    <span className="text-3xl font-serif font-bold text-white">{integrity}%</span>
                   </div>
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
+                  <div className="relative w-14 h-14 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border border-indigo-500/20" />
+                    <div className="absolute inset-1 rounded-full border border-indigo-500/40 rotate-slow" />
+                    <div className="absolute inset-2.5 rounded-full border border-emerald-400/40 rotate-reverse" />
+                    <div className="w-2 h-2 rounded-full bg-indigo-400 shadow-[0_0_12px_rgba(99,102,241,1)]" />
+                    <div className="absolute inset-0 rounded-full border border-indigo-500/30 pulse-ring" />
+                  </div>
+                </div>
 
-        {/* Dynamic Bottom Info Box Displaying Content with Hover Persistence */}
-        {hoveredStep !== null && (
-          <div
-            ref={contentDisplayRef}
-            onMouseEnter={handleInfoBoxMouseEnter}
-            onMouseLeave={handleInfoBoxMouseLeave}
-            className="bg-neutral-900 border border-neutral-700 rounded-3xl p-8 sm:p-10 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-8 transition-all w-full"
-          >
-            <div className="space-y-3 text-left max-w-4xl">
-              <h3 className="text-xl sm:text-2xl font-serif text-white">
-                {features[hoveredStep].title}
-              </h3>
-              <p className="text-xs sm:text-sm text-neutral-300 font-sans font-light leading-relaxed">
-                {features[hoveredStep].desc}
+                <div className="grid grid-cols-2 gap-3 font-mono text-xs">
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
+                    <span className="text-slate-500 uppercase text-[10px]">Entanglement</span>
+                    <span className="text-indigo-400 font-bold block text-xs">STABLE</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
+                    <span className="text-slate-500 uppercase text-[10px]">No-Cloning</span>
+                    <span className="text-emerald-400 font-bold block text-xs">ACTIVE</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
+                    <span className="text-slate-500 uppercase text-[10px]">Threat Level</span>
+                    <span className="text-slate-200 font-bold block text-xs">NOMINAL</span>
+                  </div>
+                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800/80 space-y-1">
+                    <span className="text-slate-500 uppercase text-[10px]">Response</span>
+                    <span className="text-indigo-300 font-bold block text-xs">READY</span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <div className="flex justify-between font-mono text-xs text-slate-400">
+                    <span>Verification Confidence</span>
+                    <span className="text-indigo-400 font-bold">{confidence}%</span>
+                  </div>
+                  <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
+                    <div className="bg-indigo-500 h-full transition-all duration-300" style={{ width: `${confidence}%` }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <section id="pipeline" className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
+          <div className="space-y-2">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Protocol Pipeline</span>
+            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">
+              Engineered for absolute post-quantum resilience
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            {features.map((feat, idx) => {
+              const isHovered = hoveredStep === idx;
+              return (
+                <div
+                  key={idx}
+                  onMouseEnter={() => setHoveredStep(idx)}
+                  onMouseLeave={() => setHoveredStep(null)}
+                  className={`p-6 rounded-2xl border transition-all duration-300 cursor-pointer flex flex-col justify-between min-h-[170px] ${
+                    isHovered
+                      ? "bg-[#131826] border-indigo-500 shadow-xl shadow-indigo-950/50 scale-[1.02]"
+                      : "bg-[#0b0e17] border-slate-800/80 hover:border-slate-700"
+                  }`}
+                >
+                  <div>
+                    <span className="text-[10px] font-mono font-semibold uppercase tracking-widest text-indigo-400 block mb-2">
+                      Stage {feat.tag}
+                    </span>
+                    <h3 className="text-sm sm:text-base font-serif text-slate-100 font-medium leading-snug">
+                      {feat.title}
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 font-sans font-light mt-4 leading-relaxed">
+                    {feat.desc}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
+          <div className="space-y-2 max-w-2xl">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Security Framework</span>
+            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">Built for Zero-Trust</h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                number: "01",
+                title: "Zero-Trust Architecture",
+                text: "Every state, signature, and communication channel is independently verified before trust is established.",
+              },
+              {
+                number: "02",
+                title: "Real-Time Telemetry",
+                text: "Security telemetry continuously evaluates the quantum channel for anomalies, interference, and compromised states.",
+              },
+              {
+                number: "03",
+                title: "Deterministic Validation",
+                text: "Digital signatures are validated through a deterministic security pipeline before transmission is accepted.",
+              },
+            ].map((pillar, i) => (
+              <div key={i} className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-7 space-y-4 hover:border-slate-700 transition-all shadow-xl">
+                <span className="w-9 h-9 rounded-xl bg-indigo-950/80 border border-indigo-800/80 flex items-center justify-center font-mono text-xs font-bold text-indigo-400">
+                  {pillar.number}
+                </span>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-serif text-white">{pillar.title}</h3>
+                  <p className="text-xs sm:text-sm text-slate-400 font-light leading-relaxed">{pillar.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="faq" className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1000px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
+          <div className="space-y-2 text-center max-w-xl mx-auto">
+            <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Knowledge Base</span>
+            <h2 className="text-3xl sm:text-4xl font-serif text-white tracking-tight">Frequently Asked Questions</h2>
+          </div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaq === idx;
+              return (
+                <div
+                  key={idx}
+                  className={`rounded-2xl border transition-all overflow-hidden ${
+                    isOpen
+                      ? "bg-[#0b0e17] border-indigo-500/50 shadow-xl"
+                      : "bg-[#0b0e17] border-slate-800/80 hover:border-slate-700"
+                  }`}
+                >
+                  <button
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
+                    className="w-full p-5 text-left flex items-center justify-between gap-4 cursor-pointer font-serif text-sm sm:text-base text-white"
+                  >
+                    <div className="flex items-center gap-4">
+                      <span className="w-6 h-6 rounded-lg bg-[#07090e] border border-slate-800 flex items-center justify-center font-mono text-xs font-bold text-indigo-400">
+                        0{idx + 1}
+                      </span>
+                      <span>{faq.question}</span>
+                    </div>
+                    <span
+                      className={`font-mono text-sm transition-transform duration-300 ${isOpen ? "rotate-90 text-indigo-400" : "text-slate-500"}`}
+                    >
+                      &rarr;
+                    </span>
+                  </button>
+
+                  <div className={`faq-content ${isOpen ? "open" : ""}`}>
+                    <div className="faq-inner">
+                      <div className="px-5 pb-5 pt-2 border-t border-slate-800/60 text-xs sm:text-sm text-slate-300 font-sans font-light leading-relaxed">
+                        {faq.answer}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        <section className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto w-full">
+          <div className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-8 sm:p-10 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-48 h-48 bg-indigo-500/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="space-y-2 text-center sm:text-left">
+              <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-semibold block">Secure Node Active</span>
+              <h4 className="text-xl sm:text-2xl font-serif text-white">Ready to test the telemetry engine?</h4>
+              <p className="text-xs sm:text-sm text-slate-400 font-light max-w-md">
+                Initialize a live quantum transmission stream or test individual pulses in the advanced simulator interface.
               </p>
             </div>
 
             <button
-              onClick={() => {
-                setActiveTab("docs");
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-              className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-black bg-white hover:bg-neutral-200 transition-colors border border-white px-5 py-3 rounded-xl shrink-0 cursor-pointer shadow-lg"
+              onClick={launchSimulator}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white font-mono text-xs uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer font-bold whitespace-nowrap shadow-lg shadow-indigo-950"
             >
-              View Docs <ArrowUpRight className="w-3.5 h-3.5" />
+              Open Simulator &rarr;
             </button>
           </div>
-        )}
-      </section>
-
-      {/* Premium Clean Timeline Design */}
-      <section className="w-full space-y-16 px-6 md:px-16 lg:px-24">
-        <div className="space-y-3 text-left w-full">
-          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
-            Execution Matrix &amp; State Mechanics
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
-            How the quantum digital signature verification engine operates
-            securely
-          </h2>
-        </div>
-
-        <div className="relative border-l-2 border-neutral-700 ml-6 md:ml-12 pl-8 md:pl-12 space-y-16 w-full">
-          {methodologySteps.map((step, idx) => {
-            const IconComponent = step.icon;
-            return (
-              <div key={idx} className="relative group w-full">
-                <div className="absolute -left-[45px] md:-left-[61px] top-1/2 -translate-y-1/2 w-10 h-10 rounded-2xl bg-black border-2 border-white text-white flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.15)] group-hover:scale-110 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                  <IconComponent className="w-4 h-4" />
-                </div>
-
-                <div className="bg-neutral-950 border border-neutral-800 group-hover:border-white/50 rounded-3xl p-8 sm:p-10 transition-all duration-300 shadow-xl space-y-5 text-left w-full">
-                  <div className="flex items-center justify-start">
-                    <span className="text-[11px] font-mono text-black bg-white border border-white px-3.5 py-1.5 rounded-xl font-bold">
-                      {step.badge}
-                    </span>
-                  </div>
-
-                  <div className="space-y-3">
-                    <h3 className="text-2xl font-serif text-white tracking-tight group-hover:text-neutral-200 transition-colors">
-                      {step.title}
-                    </h3>
-                    <p className="text-sm text-neutral-300 font-sans font-light leading-relaxed">
-                      {step.desc}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* References Section */}
-      <section className="w-full space-y-10 px-6 md:px-16 lg:px-24">
-        <div className="space-y-3 text-left w-full">
-          <span className="text-xs uppercase tracking-widest text-neutral-400 font-semibold block">
-            Academic Ledger &amp; Literature Sources
-          </span>
-          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
-            Foundational research papers and protocol citations
-          </h2>
-        </div>
-
-        <div className="bg-neutral-950 border border-neutral-800 rounded-3xl p-8 sm:p-10 space-y-6 shadow-xl w-full">
-          {referencesList.map((refItem, idx) => (
-            <div
-              key={idx}
-              className="p-5 rounded-2xl bg-black border border-neutral-800 hover:border-white/50 transition-colors flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-left w-full"
-            >
-              <div className="space-y-1.5">
-                <div className="flex items-center gap-2 text-neutral-300 text-xs">
-                  <BookOpen className="w-3.5 h-3.5" /> Reference [{idx + 1}]
-                  &bull; {refItem.year}
-                </div>
-                <h4 className="text-sm font-serif text-white font-medium">
-                  {refItem.title}
-                </h4>
-                <p className="text-[11px] text-neutral-400 font-sans">
-                  {refItem.authors} &mdash;{" "}
-                  <span className="italic">{refItem.journal}</span>
-                </p>
-              </div>
-              <span className="text-[10px] uppercase font-mono text-black bg-white px-3 py-1.5 rounded-lg border border-white shrink-0 font-bold">
-                Peer Reviewed
-              </span>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="w-full space-y-10 px-6 md:px-16 lg:px-24">
-        <div className="text-left space-y-3 max-w-3xl">
-          <h2 className="text-3xl sm:text-5xl font-serif text-white tracking-tight">
-            Frequently Asked Questions
-          </h2>
-          <p className="text-xs sm:text-sm text-neutral-400 font-sans font-light">
-            Deep-dive insights into cryptographic mechanics, security proofs,
-            and implementation details.
-          </p>
-        </div>
-
-        <div className="space-y-4 w-full">
-          {faqs.map((faq, idx) => {
-            const isOpen = openFaq === idx;
-            return (
-              <div
-                key={idx}
-                className={`transition-all duration-300 rounded-3xl border overflow-hidden text-left w-full ${
-                  isOpen
-                    ? "bg-neutral-900 border-white shadow-[0_10px_30px_rgba(255,255,255,0.05)]"
-                    : "bg-neutral-950 border-neutral-800 hover:border-neutral-700"
-                }`}
-              >
-                <button
-                  onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full p-6 sm:p-7 text-left flex items-center justify-between gap-6 cursor-pointer"
-                >
-                  <div className="flex items-center gap-4">
-                    <span
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center font-mono text-xs font-bold transition-colors ${isOpen ? "bg-white text-black" : "bg-black border border-neutral-800 text-white"}`}
-                    >
-                      0{idx + 1}
-                    </span>
-                    <span className="text-base sm:text-lg font-serif text-white tracking-tight">
-                      {faq.q}
-                    </span>
-                  </div>
-                  <div
-                    className={`w-8 h-8 rounded-full border border-neutral-800 flex items-center justify-center shrink-0 transition-transform duration-300 ${isOpen ? "rotate-90 bg-white text-black border-white" : "text-neutral-400"}`}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </div>
-                </button>
-
-                {isOpen && (
-                  <div className="px-7 pb-7 pt-2 border-t border-neutral-800 text-xs sm:text-sm text-neutral-300 font-sans font-light leading-relaxed animate-fadeIn">
-                    {faq.a}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </section>
-    </div>
+        </section>
+      </main>
+    </>
   );
 }
