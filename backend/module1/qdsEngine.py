@@ -1,0 +1,78 @@
+from qiskit import ClassicalRegister, QuantumCircuit, QuantumRegister
+
+
+def prepareSignatureCircuit(theta: float, phi: float) -> QuantumCircuit:
+    """Initializes the signature qubit."""
+    qc = QuantumCircuit(1, name="sigInit")
+    qc.ry(theta, 0)
+    qc.p(phi, 0)
+    return qc
+
+
+def buildTeleportationCircuit(theta: float, phi: float) -> QuantumCircuit:
+    """Builds the pinned 6-step teleportation circuit."""
+    msg = QuantumRegister(1, "this is a big ass message that is stupid")
+    alice = QuantumRegister(1, "alice")
+    bob = QuantumRegister(1, "bob")
+    crz = ClassicalRegister(1, "crz")
+    crx = ClassicalRegister(1, "crx")
+
+    qc = QuantumCircuit(msg, alice, bob, crz, crx)
+
+    # --- Signature initialization ---
+    qc.ry(theta, msg[0])
+    qc.p(phi, msg[0])
+    qc.barrier()
+
+    # --- Step 1+2: Entanglement Generation ---
+    qc.h(alice[0])
+    qc.cx(alice[0], bob[0])
+    qc.barrier()
+
+    # --- Step 3+4: Teleportation Process ---
+    qc.cx(msg[0], alice[0])
+    qc.h(msg[0])
+    qc.barrier()
+
+    # --- Step 5: Projective Measurement ---
+    qc.measure(msg[0], crz[0])
+    qc.measure(alice[0], crx[0])
+    qc.barrier()
+
+    # --- Step 6: Correction (classically conditioned) ---
+    with qc.if_test((crx, 1)):
+        qc.x(bob[0])
+    with qc.if_test((crz, 1)):
+        qc.z(bob[0])
+
+    return qc
+
+
+def buildVerificationCircuit(basis: str) -> QuantumCircuit:
+    """Builds Bob's post-teleportation measurement circuit."""
+    qc = QuantumCircuit(1, 1, name="verify")
+    if basis == "X":
+        qc.h(0)
+    qc.measure(0, 0)
+    return qc
+
+
+def runSignature(message: bytes, shots: int) -> dict:
+    """
+    Orchestrates generation, teleportation, and verification across all chunks.
+    Will run AerSimulator().run(transpile(qc, backend), shots=shots).
+    """
+    # Placeholder for full mapping of message to theta/phi and running the circuit
+    # to be implemented as needed when integration with other modules occurs.
+    pass
+
+if __name__ == "__main__":
+    import math
+    from qiskit_aer import AerSimulator
+    
+    print("Testing Signature Teleportation Circuit...")
+    theta, phi = math.pi/4, 3*math.pi/4
+    qcTeleport = buildTeleportationCircuit(theta, phi)
+    sim = AerSimulator()
+    result = sim.run(qcTeleport, shots=1).result()
+    print(f"Teleportation measurement outcomes: {result.get_counts()}")
