@@ -21,6 +21,20 @@ app.add_middleware(
 
 init_db()
 
+@app.on_event("startup")
+def startup_event():
+    from backend.module2.networkTopology import build_network
+    network, alice, eve, bob = build_network(verbose=True)
+    state.network = network
+    state.alice = alice
+    state.eve = eve
+    state.bob = bob
+
+@app.on_event("shutdown")
+def shutdown_event():
+    if state.network:
+        state.network.stop(True)
+
 # Load dictionary
 DICT_PATH = os.path.join(os.path.dirname(__file__), "dictionary.json")
 try:
@@ -38,6 +52,10 @@ class AppState:
         self.current_session_logs = []
         self.active_websockets = set()
         self.run_id = None
+        self.network = None
+        self.alice = None
+        self.eve = None
+        self.bob = None
 
 state = AppState()
 
@@ -73,9 +91,27 @@ async def transmission_worker():
             attack_type=state.configured_attack_type
         )
         
+        # Convert payload to bits for QuNetSim physical routing
+        bits = [int(b) for b in ''.join(format(ord(c), '08b') for c in payload)]
+        bits = bits[:32] # Limit for QuNetSim performance
+        
+        # Run the Network Topology Simulation (Module 2)
+        loop = asyncio.get_running_loop()
+        import concurrent.futures
+        from backend.module2.networkTopology import run_topology_test
+        with concurrent.futures.ThreadPoolExecutor() as pool:
+            network_log = await loop.run_in_executor(
+                pool, 
+                run_topology_test, 
+                state.alice, state.eve, state.bob, len(bits), bits, None, None, 3, False
+            )
+            
+        topology_qber = network_log["qber"] * 100.0
+        total_qber = engine_result["qber"] + topology_qber
+        
         # Round metrics to 2 decimal places
-        engine_result["qber"] = round(engine_result["qber"], 2)
-        engine_result["fidelity"] = round(engine_result["fidelity"], 2)
+        engine_result["qber"] = round(total_qber, 2)
+        engine_result["fidelity"] = round(max(0.0, 100.0 - (total_qber * 2)), 2)
         
         # Check engine's verdict to dictate the halt signal
         if engine_result["verdict"] == "REJECT":
@@ -135,7 +171,25 @@ async def transmit_message(req: TransmitRequest):
         attack_type=state.configured_attack_type
     )
     
-    mock_qber = round(engine_result["qber"], 2)
+    # Convert payload to bits for QuNetSim physical routing
+    bits = [int(b) for b in ''.join(format(ord(c), '08b') for c in req.text)]
+    bits = bits[:32]
+    
+    loop = asyncio.get_running_loop()
+    import concurrent.futures
+    from backend.module2.networkTopology import run_topology_test
+    with concurrent.futures.ThreadPoolExecutor() as pool:
+        network_log = await loop.run_in_executor(
+            pool, 
+            run_topology_test, 
+            state.alice, state.eve, state.bob, len(bits), bits, None, None, 3, False
+        )
+        
+    topology_qber = network_log["qber"] * 100.0
+    total_qber = engine_result["qber"] + topology_qber
+    
+    mock_qber = round(total_qber, 2)
+    engine_result["fidelity"] = round(max(0.0, 100.0 - (total_qber * 2)), 2)
     verdict = engine_result["verdict"]
     
     filepath = save_message(req.sender, req.receiver, req.text, mock_qber, verdict)
