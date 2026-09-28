@@ -1,0 +1,15 @@
+{
+    "session_id": "0864419e",
+    "timestamp": "2026-09-28T23:12:06.611370",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "deterministic secure circuit measurement",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 17.0,
+            "fidelity": 66.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

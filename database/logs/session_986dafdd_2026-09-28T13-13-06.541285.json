@@ -1,0 +1,56 @@
+{
+    "session_id": "986dafdd",
+    "timestamp": "2026-09-28T13:13:06.541285",
+    "total_transmissions": 6,
+    "logs": [
+        {
+            "message_sent": "bell basis transmission teleportation",
+            "message_received": "bell basis transmission teleportation",
+            "qber": 0.18,
+            "fidelity": 99.63,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "transmission noise fidelity secure",
+            "message_received": "transmission noise fidelity secure",
+            "qber": 0.03,
+            "fidelity": 99.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise state basis quantum",
+            "message_received": "noise state basis quantum",
+            "qber": 0.11,
+            "fidelity": 99.79,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state encryption teleportation channel",
+            "message_received": "state encryption teleportation channel",
+            "qber": 0.01,
+            "fidelity": 99.98,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit hadamard fidelity channel",
+            "message_received": "circuit hadamard fidelity channel",
+            "qber": 0.02,
+            "fidelity": 99.96,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "bell entangled eavesdropper teleportation",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "haltedddddd",
+            "attack_type": "Intercept-Resend"
+        }
+    ]
+}

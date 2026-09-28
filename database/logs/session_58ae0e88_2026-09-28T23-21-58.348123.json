@@ -1,0 +1,271 @@
+{
+    "session_id": "58ae0e88",
+    "timestamp": "2026-09-28T23:21:58.348123",
+    "total_transmissions": 33,
+    "logs": [
+        {
+            "message_sent": "secure bell gate deterministic",
+            "message_received": "secure bell gate deterministic",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation noise secure collapse",
+            "message_received": "teleportation noise secure collapse",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli noise superposition degradation",
+            "message_received": "pauli noise superposition degradation",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "quantum circuit basis bell",
+            "message_received": "quantum circuit basis bell",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification superposition secure signature",
+            "message_received": "verification superposition secure signature",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "measurement hadamard pauli bell",
+            "message_received": "measurement hadamard pauli bell",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure transmission hadamard measurement",
+            "message_received": "secure transmission hadamard measurement",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography quantum transmission algorithm",
+            "message_received": "cryptography quantum transmission algorithm",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification deterministic transmission entangled",
+            "message_received": "verification deterministic transmission entangled",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition signature photon noise",
+            "message_received": "superposition signature photon noise",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli verification algorithm fidelity",
+            "message_received": "pauli verification algorithm fidelity",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "bell deterministic superposition measurement",
+            "message_received": "bell deterministic superposition measurement",
+            "qber": 3.0,
+            "fidelity": 94.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse quantum measurement verification",
+            "message_received": "collapse quantum measurement verification",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography entangled channel collapse",
+            "message_received": "cryptography entangled channel collapse",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "signature noise measurement verification",
+            "message_received": "signature noise measurement verification",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis entangled channel photon",
+            "message_received": "basis entangled channel photon",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise teleportation hadamard state",
+            "message_received": "noise teleportation hadamard state",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic fidelity gate signature",
+            "message_received": "deterministic fidelity gate signature",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification pauli channel entangled",
+            "message_received": "verification pauli channel entangled",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "encryption measurement transmission channel",
+            "message_received": "encryption measurement transmission channel",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography hadamard circuit eavesdropper",
+            "message_received": "cryptography hadamard circuit eavesdropper",
+            "qber": 3.0,
+            "fidelity": 94.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli entangled transmission qubit",
+            "message_received": "pauli entangled transmission qubit",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "encryption qubit superposition quantum",
+            "message_received": "encryption qubit superposition quantum",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification qubit basis signature",
+            "message_received": "verification qubit basis signature",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli fidelity degradation circuit",
+            "message_received": "pauli fidelity degradation circuit",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel collapse transmission pauli",
+            "message_received": "channel collapse transmission pauli",
+            "qber": 3.0,
+            "fidelity": 94.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state superposition transmission encryption",
+            "message_received": "state superposition transmission encryption",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "transmission secure noise qubit",
+            "message_received": "transmission secure noise qubit",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "entangled gate channel bell",
+            "message_received": "entangled gate channel bell",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "signature gate transmission pauli",
+            "message_received": "signature gate transmission pauli",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit superposition cryptography collapse",
+            "message_received": "circuit superposition cryptography collapse",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity deterministic degradation signature",
+            "message_received": "fidelity deterministic degradation signature",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "entangled qubit pauli secure",
+            "message_received": "entangled qubit pauli secure",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

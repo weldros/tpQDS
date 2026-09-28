@@ -1,0 +1,16 @@
+{
+    "session_id": "503749a7",
+    "timestamp": "2026-09-28T21:09:19.732472",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "measurement collapse pauli photon",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "haltedddddd",
+            "attack_type": "Intercept-Resend"
+        }
+    ]
+}

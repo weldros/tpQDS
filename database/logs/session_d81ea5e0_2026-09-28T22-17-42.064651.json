@@ -1,0 +1,63 @@
+{
+    "session_id": "d81ea5e0",
+    "timestamp": "2026-09-28T22:17:42.064651",
+    "total_transmissions": 7,
+    "logs": [
+        {
+            "message_sent": "photon bell transmission cryptography",
+            "message_received": "photon bell transmission cryptography",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse bell pauli state",
+            "message_received": "collapse bell pauli state",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel measurement qubit quantum",
+            "message_received": "channel measurement qubit quantum",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography circuit superposition degradation",
+            "message_received": "cryptography circuit superposition degradation",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel gate teleportation noise",
+            "message_received": "channel gate teleportation noise",
+            "qber": 7.0,
+            "fidelity": 86.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "encryption qubit pauli verification",
+            "message_received": "encryption qubit pauli verification",
+            "qber": 8.0,
+            "fidelity": 84.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure bell entangled verification",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 12.0,
+            "fidelity": 76.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

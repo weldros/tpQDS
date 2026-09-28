@@ -1,0 +1,79 @@
+{
+    "session_id": "71a972d9",
+    "timestamp": "2026-09-28T22:48:48.708907",
+    "total_transmissions": 9,
+    "logs": [
+        {
+            "message_sent": "fidelity entangled collapse circuit",
+            "message_received": "fidelity entangled collapse circuit",
+            "qber": 5.0,
+            "fidelity": 90.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse algorithm deterministic transmission",
+            "message_received": "collapse algorithm deterministic transmission",
+            "qber": 7.0,
+            "fidelity": 86.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli deterministic measurement teleportation",
+            "message_received": "pauli deterministic measurement teleportation",
+            "qber": 4.0,
+            "fidelity": 92.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise hadamard circuit state",
+            "message_received": "noise hadamard circuit state",
+            "qber": 8.0,
+            "fidelity": 84.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "eavesdropper gate entangled algorithm",
+            "message_received": "eavesdropper gate entangled algorithm",
+            "qber": 6.0,
+            "fidelity": 88.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit qubit entangled pauli",
+            "message_received": "circuit qubit entangled pauli",
+            "qber": 8.0,
+            "fidelity": 84.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise transmission superposition eavesdropper",
+            "message_received": "noise transmission superposition eavesdropper",
+            "qber": 9.0,
+            "fidelity": 82.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "algorithm transmission cryptography noise",
+            "message_received": "algorithm transmission cryptography noise",
+            "qber": 9.0,
+            "fidelity": 82.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse teleportation secure hadamard",
+            "message_received": "collapse teleportation secure hadamard",
+            "qber": 8.0,
+            "fidelity": 84.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

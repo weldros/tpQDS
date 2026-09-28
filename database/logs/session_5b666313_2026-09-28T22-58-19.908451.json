@@ -1,0 +1,55 @@
+{
+    "session_id": "5b666313",
+    "timestamp": "2026-09-28T22:58:19.908451",
+    "total_transmissions": 6,
+    "logs": [
+        {
+            "message_sent": "quantum cryptography qubit degradation",
+            "message_received": "quantum cryptography qubit degradation",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "eavesdropper pauli signature deterministic",
+            "message_received": "eavesdropper pauli signature deterministic",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "degradation qubit algorithm photon",
+            "message_received": "degradation qubit algorithm photon",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity eavesdropper signature qubit",
+            "message_received": "fidelity eavesdropper signature qubit",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic qubit algorithm teleportation",
+            "message_received": "deterministic qubit algorithm teleportation",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis verification noise measurement",
+            "message_received": "basis verification noise measurement",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

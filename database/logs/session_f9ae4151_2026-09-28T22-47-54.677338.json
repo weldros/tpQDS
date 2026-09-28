@@ -1,0 +1,23 @@
+{
+    "session_id": "f9ae4151",
+    "timestamp": "2026-09-28T22:47:54.677338",
+    "total_transmissions": 2,
+    "logs": [
+        {
+            "message_sent": "pauli entangled hadamard teleportation",
+            "message_received": "pauli entangled hadamard teleportation",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "measurement state collapse bell",
+            "message_received": "measurement state collapse bell",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

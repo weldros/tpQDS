@@ -1,0 +1,39 @@
+{
+    "session_id": "503749a7",
+    "timestamp": "2026-09-28T21:09:10.759163",
+    "total_transmissions": 4,
+    "logs": [
+        {
+            "message_sent": "gate measurement transmission pauli",
+            "message_received": "gate measurement transmission pauli",
+            "qber": 0.1,
+            "fidelity": 99.81,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation circuit cryptography entangled",
+            "message_received": "teleportation circuit cryptography entangled",
+            "qber": 0.16,
+            "fidelity": 99.67,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "hadamard deterministic entangled collapse",
+            "message_received": "hadamard deterministic entangled collapse",
+            "qber": 0.17,
+            "fidelity": 99.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli qubit degradation photon",
+            "message_received": "pauli qubit degradation photon",
+            "qber": 0.07,
+            "fidelity": 99.86,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

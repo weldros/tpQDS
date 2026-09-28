@@ -1,0 +1,48 @@
+{
+    "session_id": "5c32edb3",
+    "timestamp": "2026-09-28T21:31:37.576503",
+    "total_transmissions": 5,
+    "logs": [
+        {
+            "message_sent": "eavesdropper transmission signature hadamard",
+            "message_received": "eavesdropper transmission signature hadamard",
+            "qber": 0.17,
+            "fidelity": 99.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography channel qubit teleportation",
+            "message_received": "cryptography channel qubit teleportation",
+            "qber": 0.16,
+            "fidelity": 99.67,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "quantum bell eavesdropper fidelity",
+            "message_received": "quantum bell eavesdropper fidelity",
+            "qber": 0.11,
+            "fidelity": 99.78,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure channel verification pauli",
+            "message_received": "secure channel verification pauli",
+            "qber": 0.03,
+            "fidelity": 99.94,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli collapse deterministic qubit",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "haltedddddd",
+            "attack_type": "Intercept-Resend"
+        }
+    ]
+}

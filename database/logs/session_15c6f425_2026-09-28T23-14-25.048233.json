@@ -1,0 +1,15 @@
+{
+    "session_id": "15c6f425",
+    "timestamp": "2026-09-28T23:14:25.048233",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "photon hadamard entangled quantum",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 15.0,
+            "fidelity": 70.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

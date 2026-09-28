@@ -1,0 +1,15 @@
+{
+    "session_id": "016fb20d",
+    "timestamp": "2026-09-28T23:19:50.739833",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "signature deterministic degradation teleportation",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 12.0,
+            "fidelity": 76.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

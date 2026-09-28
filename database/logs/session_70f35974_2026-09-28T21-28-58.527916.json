@@ -1,0 +1,56 @@
+{
+    "session_id": "70f35974",
+    "timestamp": "2026-09-28T21:28:58.527916",
+    "total_transmissions": 6,
+    "logs": [
+        {
+            "message_sent": "quantum collapse channel hadamard",
+            "message_received": "quantum collapse channel hadamard",
+            "qber": 0.05,
+            "fidelity": 99.9,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise degradation signature bell",
+            "message_received": "noise degradation signature bell",
+            "qber": 0.14,
+            "fidelity": 99.72,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition collapse transmission basis",
+            "message_received": "superposition collapse transmission basis",
+            "qber": 0.18,
+            "fidelity": 99.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state collapse encryption gate",
+            "message_received": "state collapse encryption gate",
+            "qber": 0.19,
+            "fidelity": 99.61,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography collapse entangled degradation",
+            "message_received": "cryptography collapse entangled degradation",
+            "qber": 0.08,
+            "fidelity": 99.85,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon channel secure deterministic",
+            "message_received": "CORRUPTED_BY_EVE",
+            "qber": 100.0,
+            "fidelity": 0.0,
+            "verdict": "REJECT",
+            "status": "haltedddddd",
+            "attack_type": "Intercept-Resend"
+        }
+    ]
+}

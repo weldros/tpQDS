@@ -1,0 +1,8 @@
+{
+    "timestamp": "2026-09-28T21:25:59.096703",
+    "sender": "Alice",
+    "receiver": "Bob",
+    "text": "this is an attack test",
+    "qber": 0.14,
+    "verdict": "ACCEPT"
+}

@@ -1,0 +1,31 @@
+{
+    "session_id": "4b29bc97",
+    "timestamp": "2026-09-28T23:12:22.098728",
+    "total_transmissions": 3,
+    "logs": [
+        {
+            "message_sent": "eavesdropper superposition teleportation state",
+            "message_received": "eavesdropper superposition teleportation state",
+            "qber": 8.0,
+            "fidelity": 84.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification secure photon superposition",
+            "message_received": "verification secure photon superposition",
+            "qber": 7.0,
+            "fidelity": 86.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "hadamard superposition qubit channel",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 18.0,
+            "fidelity": 64.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

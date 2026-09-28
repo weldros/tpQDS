@@ -1,0 +1,15 @@
+{
+    "session_id": "83c09336",
+    "timestamp": "2026-09-28T22:13:15.241324",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "noise collapse circuit channel",
+            "message_received": "noise collapse circuit channel",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

@@ -1,0 +1,39 @@
+{
+    "session_id": "255215d5",
+    "timestamp": "2026-09-28T21:18:48.553492",
+    "total_transmissions": 4,
+    "logs": [
+        {
+            "message_sent": "deterministic measurement gate state",
+            "message_received": "deterministic measurement gate state",
+            "qber": 3.32,
+            "fidelity": 93.36,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic degradation noise photon",
+            "message_received": "deterministic degradation noise photon",
+            "qber": 3.26,
+            "fidelity": 93.48,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state entangled superposition degradation",
+            "message_received": "state entangled superposition degradation",
+            "qber": 3.23,
+            "fidelity": 93.53,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "eavesdropper quantum algorithm encryption",
+            "message_received": "eavesdropper quantum algorithm encryption",
+            "qber": 3.19,
+            "fidelity": 93.61,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

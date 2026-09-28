@@ -1,0 +1,8 @@
+{
+    "timestamp": "2026-09-28T23:16:27.412352",
+    "sender": "Alice",
+    "receiver": "Bob",
+    "text": "heello\n",
+    "qber": 13.0,
+    "verdict": "REJECT"
+}

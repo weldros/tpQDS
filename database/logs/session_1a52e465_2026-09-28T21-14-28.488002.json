@@ -1,0 +1,23 @@
+{
+    "session_id": "1a52e465",
+    "timestamp": "2026-09-28T21:14:28.488002",
+    "total_transmissions": 2,
+    "logs": [
+        {
+            "message_sent": "hadamard state gate superposition",
+            "message_received": "hadamard state gate superposition",
+            "qber": 3.23,
+            "fidelity": 93.53,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition transmission qubit pauli",
+            "message_received": "superposition transmission qubit pauli",
+            "qber": 3.15,
+            "fidelity": 93.69,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

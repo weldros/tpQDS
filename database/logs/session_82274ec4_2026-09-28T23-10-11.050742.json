@@ -1,0 +1,47 @@
+{
+    "session_id": "82274ec4",
+    "timestamp": "2026-09-28T23:10:11.050742",
+    "total_transmissions": 5,
+    "logs": [
+        {
+            "message_sent": "pauli state photon verification",
+            "message_received": "pauli state photon verification",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state measurement qubit pauli",
+            "message_received": "state measurement qubit pauli",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation qubit secure algorithm",
+            "message_received": "teleportation qubit secure algorithm",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "algorithm cryptography secure bell",
+            "message_received": "algorithm cryptography secure bell",
+            "qber": 9.0,
+            "fidelity": 82.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli entangled quantum state",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 16.0,
+            "fidelity": 68.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

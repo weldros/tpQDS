@@ -1,0 +1,23 @@
+{
+    "session_id": "435ea98a",
+    "timestamp": "2026-09-28T21:16:53.834570",
+    "total_transmissions": 2,
+    "logs": [
+        {
+            "message_sent": "collapse hadamard noise signature",
+            "message_received": "collapse hadamard noise signature",
+            "qber": 3.32,
+            "fidelity": 93.37,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel teleportation gate photon",
+            "message_received": "channel teleportation gate photon",
+            "qber": 3.16,
+            "fidelity": 93.67,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

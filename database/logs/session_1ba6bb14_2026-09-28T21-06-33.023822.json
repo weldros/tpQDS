@@ -1,0 +1,47 @@
+{
+    "session_id": "1ba6bb14",
+    "timestamp": "2026-09-28T21:06:33.023822",
+    "total_transmissions": 5,
+    "logs": [
+        {
+            "message_sent": "algorithm measurement cryptography gate",
+            "message_received": "algorithm measurement cryptography gate",
+            "qber": 0.03,
+            "fidelity": 99.94,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "hadamard pauli secure degradation",
+            "message_received": "hadamard pauli secure degradation",
+            "qber": 0.18,
+            "fidelity": 99.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon hadamard verification encryption",
+            "message_received": "photon hadamard verification encryption",
+            "qber": 0.12,
+            "fidelity": 99.75,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis bell circuit entangled",
+            "message_received": "basis bell circuit entangled",
+            "qber": 0.03,
+            "fidelity": 99.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "entangled degradation verification hadamard",
+            "message_received": "entangled degradation verification hadamard",
+            "qber": 0.17,
+            "fidelity": 99.66,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "session_id": "6240d53c",
+    "timestamp": "2026-09-28T23:12:52.500695",
+    "total_transmissions": 3,
+    "logs": [
+        {
+            "message_sent": "quantum deterministic degradation cryptography",
+            "message_received": "quantum deterministic degradation cryptography",
+            "qber": 11.0,
+            "fidelity": 78.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli entangled cryptography fidelity",
+            "message_received": "pauli entangled cryptography fidelity",
+            "qber": 11.0,
+            "fidelity": 78.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "degradation noise state signature",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 16.0,
+            "fidelity": 68.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

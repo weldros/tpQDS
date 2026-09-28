@@ -1,0 +1,127 @@
+{
+    "session_id": "02ac48a9",
+    "timestamp": "2026-09-28T22:14:27.708634",
+    "total_transmissions": 15,
+    "logs": [
+        {
+            "message_sent": "fidelity cryptography qubit secure",
+            "message_received": "fidelity cryptography qubit secure",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "gate photon algorithm circuit",
+            "message_received": "gate photon algorithm circuit",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "degradation cryptography noise entangled",
+            "message_received": "degradation cryptography noise entangled",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon circuit measurement gate",
+            "message_received": "photon circuit measurement gate",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic channel bell collapse",
+            "message_received": "deterministic channel bell collapse",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic state verification photon",
+            "message_received": "deterministic state verification photon",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition deterministic pauli channel",
+            "message_received": "superposition deterministic pauli channel",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon teleportation verification fidelity",
+            "message_received": "photon teleportation verification fidelity",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "gate circuit channel state",
+            "message_received": "gate circuit channel state",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit basis noise algorithm",
+            "message_received": "qubit basis noise algorithm",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit state cryptography gate",
+            "message_received": "circuit state cryptography gate",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "pauli photon collapse verification",
+            "message_received": "pauli photon collapse verification",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "photon degradation secure encryption",
+            "message_received": "photon degradation secure encryption",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit verification photon superposition",
+            "message_received": "qubit verification photon superposition",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit gate channel pauli",
+            "message_received": "qubit gate channel pauli",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

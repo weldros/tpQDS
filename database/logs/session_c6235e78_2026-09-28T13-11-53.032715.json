@@ -1,0 +1,183 @@
+{
+    "session_id": "c6235e78",
+    "timestamp": "2026-09-28T13:11:53.032715",
+    "total_transmissions": 22,
+    "logs": [
+        {
+            "message_sent": "channel gate secure measurement",
+            "message_received": "channel gate secure measurement",
+            "qber": 0.04,
+            "fidelity": 99.92,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "transmission eavesdropper pauli encryption",
+            "message_received": "transmission eavesdropper pauli encryption",
+            "qber": 0.17,
+            "fidelity": 99.67,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation photon qubit superposition",
+            "message_received": "teleportation photon qubit superposition",
+            "qber": 0.13,
+            "fidelity": 99.75,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit quantum transmission hadamard",
+            "message_received": "qubit quantum transmission hadamard",
+            "qber": 0.06,
+            "fidelity": 99.89,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography superposition measurement secure",
+            "message_received": "cryptography superposition measurement secure",
+            "qber": 0.06,
+            "fidelity": 99.87,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition encryption circuit quantum",
+            "message_received": "superposition encryption circuit quantum",
+            "qber": 0.04,
+            "fidelity": 99.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit bell circuit channel",
+            "message_received": "qubit bell circuit channel",
+            "qber": 0.04,
+            "fidelity": 99.93,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "qubit state photon quantum",
+            "message_received": "qubit state photon quantum",
+            "qber": 0.14,
+            "fidelity": 99.72,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography state quantum algorithm",
+            "message_received": "cryptography state quantum algorithm",
+            "qber": 0.03,
+            "fidelity": 99.94,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure encryption photon quantum",
+            "message_received": "secure encryption photon quantum",
+            "qber": 0.01,
+            "fidelity": 99.98,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity qubit bell transmission",
+            "message_received": "fidelity qubit bell transmission",
+            "qber": 0.02,
+            "fidelity": 99.95,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "deterministic gate encryption transmission",
+            "message_received": "deterministic gate encryption transmission",
+            "qber": 0.08,
+            "fidelity": 99.84,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "transmission secure verification state",
+            "message_received": "transmission secure verification state",
+            "qber": 0.17,
+            "fidelity": 99.65,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "basis secure cryptography quantum",
+            "message_received": "basis secure cryptography quantum",
+            "qber": 0.16,
+            "fidelity": 99.68,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "quantum gate algorithm state",
+            "message_received": "quantum gate algorithm state",
+            "qber": 0.1,
+            "fidelity": 99.79,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity gate pauli basis",
+            "message_received": "fidelity gate pauli basis",
+            "qber": 0.15,
+            "fidelity": 99.7,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "algorithm eavesdropper noise teleportation",
+            "message_received": "algorithm eavesdropper noise teleportation",
+            "qber": 0.12,
+            "fidelity": 99.75,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "algorithm basis entangled teleportation",
+            "message_received": "algorithm basis entangled teleportation",
+            "qber": 0.04,
+            "fidelity": 99.92,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "degradation hadamard state teleportation",
+            "message_received": "degradation hadamard state teleportation",
+            "qber": 0.07,
+            "fidelity": 99.86,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure photon gate deterministic",
+            "message_received": "secure photon gate deterministic",
+            "qber": 0.07,
+            "fidelity": 99.86,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse eavesdropper cryptography gate",
+            "message_received": "collapse eavesdropper cryptography gate",
+            "qber": 0.14,
+            "fidelity": 99.73,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation quantum fidelity channel",
+            "message_received": "teleportation quantum fidelity channel",
+            "qber": 0.11,
+            "fidelity": 99.78,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

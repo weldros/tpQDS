@@ -1,0 +1,15 @@
+{
+    "session_id": "af4aac97",
+    "timestamp": "2026-09-28T23:20:18.572461",
+    "total_transmissions": 1,
+    "logs": [
+        {
+            "message_sent": "noise quantum fidelity bell",
+            "message_received": "CORRUPTED_BY_NOISE",
+            "qber": 13.0,
+            "fidelity": 74.0,
+            "verdict": "REJECT",
+            "status": "SUCCESS"
+        }
+    ]
+}

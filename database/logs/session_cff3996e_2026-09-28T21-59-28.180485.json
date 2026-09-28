@@ -1,0 +1,87 @@
+{
+    "session_id": "cff3996e",
+    "timestamp": "2026-09-28T21:59:28.180485",
+    "total_transmissions": 10,
+    "logs": [
+        {
+            "message_sent": "quantum cryptography teleportation algorithm",
+            "message_received": "quantum cryptography teleportation algorithm",
+            "qber": 4.56,
+            "fidelity": 90.87,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse degradation entangled qubit",
+            "message_received": "collapse degradation entangled qubit",
+            "qber": 0.06,
+            "fidelity": 99.89,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography measurement superposition deterministic",
+            "message_received": "cryptography measurement superposition deterministic",
+            "qber": 4.0,
+            "fidelity": 92.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "bell circuit encryption entangled",
+            "message_received": "bell circuit encryption entangled",
+            "qber": 2.27,
+            "fidelity": 95.47,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation algorithm quantum deterministic",
+            "message_received": "teleportation algorithm quantum deterministic",
+            "qber": 1.69,
+            "fidelity": 96.62,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "circuit fidelity eavesdropper verification",
+            "message_received": "circuit fidelity eavesdropper verification",
+            "qber": 1.79,
+            "fidelity": 96.42,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "bell circuit encryption degradation",
+            "message_received": "bell circuit encryption degradation",
+            "qber": 0.63,
+            "fidelity": 98.75,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography algorithm teleportation bell",
+            "message_received": "cryptography algorithm teleportation bell",
+            "qber": 1.49,
+            "fidelity": 97.02,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "state deterministic transmission basis",
+            "message_received": "state deterministic transmission basis",
+            "qber": 3.97,
+            "fidelity": 92.06,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "superposition transmission secure pauli",
+            "message_received": "superposition transmission secure pauli",
+            "qber": 2.63,
+            "fidelity": 94.73,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}

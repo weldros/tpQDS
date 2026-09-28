@@ -1,0 +1,71 @@
+{
+    "session_id": "86135e8f",
+    "timestamp": "2026-09-28T23:09:29.287469",
+    "total_transmissions": 8,
+    "logs": [
+        {
+            "message_sent": "quantum verification superposition cryptography",
+            "message_received": "quantum verification superposition cryptography",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography superposition state verification",
+            "message_received": "cryptography superposition state verification",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "teleportation quantum signature verification",
+            "message_received": "teleportation quantum signature verification",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise qubit hadamard quantum",
+            "message_received": "noise qubit hadamard quantum",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity channel teleportation pauli",
+            "message_received": "fidelity channel teleportation pauli",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "verification quantum bell hadamard",
+            "message_received": "verification quantum bell hadamard",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "channel teleportation state qubit",
+            "message_received": "channel teleportation state qubit",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "secure noise state measurement",
+            "message_received": "secure noise state measurement",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}
