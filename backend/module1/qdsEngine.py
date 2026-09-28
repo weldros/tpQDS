@@ -57,33 +57,13 @@ def buildVerificationCircuit(basis: str) -> QuantumCircuit:
     return qc
 
 
-def runSignature(message: bytes, shots: int, execute_attack: bool = False, attack_type: str = None) -> dict:
-    """
-    Orchestrates generation, teleportation, and verification across all chunks.
-    Will run AerSimulator().run(transpile(qc, backend), shots=shots).
-    """
-    # [STEP 1: Hashing & Chunking]
-    # - Compute a secure hash (e.g., SHA-256) of the incoming file/message bytes.
-    # - Split the resulting hash bits into logical chunks.
+def runSignature(message: bytes, shots: int, execute_attack: bool = False, attack_type: str = None, noise_config_dict: dict = None) -> dict:
+    import math
+    from qiskit_aer import AerSimulator
+    from qiskit import ClassicalRegister
+    from backend.module2.noise import NoiseConfig, build_noise_model
     
-    # [STEP 2: Angle Mapping]
-    # - For each chunk, map the bit sequence to precise theta and phi rotation angles.
-    # - These angles define the unique quantum signature state for this file.
-    
-    # [STEP 3: Teleportation Loop]
-    # - Loop over each mapped angle pair (theta, phi).
-    # - For each pair, call `buildTeleportationCircuit(theta, phi)`.
-    # - Execute the circuit using AerSimulator to generate the classical correction bits (crz, crx).
-    
-    # [STEP 4: Aggregation]
-    # - Collect all resulting classical correction bits across all loops.
-    # - Package these bits alongside the classical file/message payload to be sent to Bob.
-    # - Bob will later use these correction bits to deterministically verify the signature via Module 3.
-    
-    import random
-    
-    # --- TEMPORARY MOCK LOGIC FOR API INTEGRATION ---
-    if execute_attack:
+    if execute_attack: #to be changed to attack_detected if detected then this block executes
         return {
             "qber": 100.0,
             "fidelity": 0.0,
@@ -91,12 +71,37 @@ def runSignature(message: bytes, shots: int, execute_attack: bool = False, attac
             "status": "haltedddddd",
             "attack_type": attack_type
         }
+    
+    # 1. Build the base teleportation circuit
+    # For testing QBER accurately without hashing logic, we send a |1> state in the X basis.
+    qc = buildTeleportationCircuit(math.pi/2, 0.0)
+    qc.h(2) # Switch Bob to X basis
+    
+    cr_bob = ClassicalRegister(1, "cr_bob")
+    qc.add_register(cr_bob)
+    qc.measure(2, cr_bob[0])
+    
+    # 2. Attach the hardware noise model if enabled
+    if noise_config_dict is None:
+        sim = AerSimulator()
+    else:
+        noise_cfg = NoiseConfig(**noise_config_dict)
+        noise_model = build_noise_model(noise_cfg)
+        sim = AerSimulator(noise_model=noise_model)
         
-    mock_qber = random.uniform(0.0, 0.2)
+    # 3. Execute the simulation
+    result = sim.run(qc, shots=100).result()
+    counts = result.get_counts()
+    
+    # Calculate QBER (Percentage of unexpected results)
+    errors = sum(count for bitstring, count in counts.items() if bitstring.split()[0] == '1')
+    total = sum(counts.values())
+    real_qber = (errors / total) * 100.0
+    
     return {
-        "qber": mock_qber,
-        "fidelity": 100 - (mock_qber * 2),
-        "verdict": "ACCEPT",
+        "qber": real_qber,
+        "fidelity": max(0.0, 100.0 - (real_qber * 2)),
+        "verdict": "REJECT" if real_qber > 11.0 else "ACCEPT",
         "status": "SUCCESS"
     }
 

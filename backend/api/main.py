@@ -7,6 +7,8 @@ import random
 import uuid
 from backend.api.db.storage import init_db, save_message, save_session
 import os
+from backend.module2.noise import NoiseConfig
+from dataclasses import asdict
 
 app = FastAPI(title="QDS Backend Engine")
 
@@ -56,6 +58,8 @@ class AppState:
         self.alice = None
         self.eve = None
         self.bob = None
+        self.noise_config = NoiseConfig()
+        self.noise_enabled = False
 
 state = AppState()
 
@@ -88,7 +92,8 @@ async def transmission_worker():
             message=payload.encode(),
             shots=1,
             execute_attack=state.execute_attack_flag,
-            attack_type=state.configured_attack_type
+            attack_type=state.configured_attack_type,
+            noise_config_dict=asdict(state.noise_config) if state.noise_enabled else None
         )
         
         # Convert payload to bits for QuNetSim physical routing
@@ -115,10 +120,20 @@ async def transmission_worker():
         
         # Check engine's verdict to dictate the halt signal
         if engine_result["verdict"] == "REJECT":
+            is_attack = "attack_type" in engine_result and engine_result["attack_type"] is not None
+            
+            if is_attack:
+                step_msg = f"ATTACK EXECUTED ({engine_result['attack_type']})! Wavefunction collapsed."
+                halt_reason = "ATTACK"
+            else:
+                step_msg = "EXCESSIVE NOISE DETECTED! (>11%). Transmission halted due to environmental decoherence."
+                halt_reason = "NOISE"
+                
             await broadcast({
-                "step": f"ATTACK EXECUTED ({engine_result.get('attack_type', 'UNKNOWN')})! Wavefunction collapsed.",
+                "step": step_msg,
                 "status": "HALTED",
-                "metrics": engine_result
+                "metrics": engine_result,
+                "halt_reason": halt_reason
             })
             state.continuous_running = False
             state.execute_attack_flag = False
@@ -126,7 +141,7 @@ async def transmission_worker():
             # Log interception and save entire session
             attack_log = {
                 "message_sent": payload,
-                "message_received": "CORRUPTED_BY_EVE",
+                "message_received": "CORRUPTED_BY_EVE" if is_attack else "CORRUPTED_BY_NOISE",
                 **engine_result
             }
             state.current_session_logs.append(attack_log)
@@ -168,7 +183,8 @@ async def transmit_message(req: TransmitRequest):
         message=req.text.encode(),
         shots=1,
         execute_attack=state.execute_attack_flag,
-        attack_type=state.configured_attack_type
+        attack_type=state.configured_attack_type,
+        noise_config_dict=asdict(state.noise_config) if state.noise_enabled else None
     )
     
     # Convert payload to bits for QuNetSim physical routing
@@ -216,6 +232,26 @@ async def execute_attack():
     
     state.execute_attack_flag = True
     return {"status": "Attack sent to the channel! Wavefunction will collapse."}
+
+
+class NoiseConfigRequest(BaseModel):
+    t1_enabled: bool = True
+    t1_us: float = 50.0
+    t2_enabled: bool = True
+    t2_us: float = 30.0
+    gate_time_ns: float = 100.0
+    depolarizing_enabled: bool = True
+    two_qubit_depolarizing_prob: float = 0.01
+
+@app.post("/noise/configure")
+async def configure_noise(req: NoiseConfigRequest):
+    state.noise_config = NoiseConfig(**req.dict())
+    return {"status": "Hardware noise model configured. Waiting for execution.", "noise_config": asdict(state.noise_config)}
+
+@app.post("/noise/execute")
+async def execute_noise():
+    state.noise_enabled = True
+    return {"status": "Hardware noise injected into the quantum channel!"}
 
 @app.post("/stream/start")
 async def start_stream():

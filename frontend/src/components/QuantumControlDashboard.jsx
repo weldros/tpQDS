@@ -41,7 +41,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
   const [livePayloads, setLivePayloads] = useState([]);
-  const [liveAttackAlert, setLiveAttackAlert] = useState(false);
+  const [liveAttackAlert, setLiveAttackAlert] = useState(null);
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -86,7 +86,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
       if (data.status === "HALTED") {
         setIsLiveActive(false);
-        setLiveAttackAlert(true);
+        setLiveAttackAlert({ reason: data.halt_reason || "ATTACK" });
       }
     };
 
@@ -192,7 +192,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       compileAuditReport();
     } else {
       setIsLiveActive(true);
-      setLiveAttackAlert(false);
+      setLiveAttackAlert(null);
       setLivePayloads([]);
       setAuditReport(null);
       await fetch("http://127.0.0.1:8000/stream/start", { method: "POST" });
@@ -764,10 +764,16 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </div>
 
             {liveAttackAlert && (
-              <div className="w-full bg-[#07090e] border border-red-500/40 rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg shadow-red-950/20">
-                <span className="text-2xl mb-1">🚨</span>
-                <span className="text-red-500 font-bold">TRANSMISSION HALTED</span>
-                <span className="text-red-300 text-center">Eavesdropper Interception Detected.<br/>Wavefunction Collapsed.</span>
+              <div className={`w-full bg-[#07090e] border rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg ${liveAttackAlert.reason === 'ATTACK' ? 'border-red-500/40 shadow-red-950/20' : 'border-amber-500/40 shadow-amber-950/20'}`}>
+                <span className="text-2xl mb-1">{liveAttackAlert.reason === 'ATTACK' ? '🚨' : '🌪️'}</span>
+                <span className={`font-bold ${liveAttackAlert.reason === 'ATTACK' ? 'text-red-500' : 'text-amber-500'}`}>
+                  TRANSMISSION HALTED
+                </span>
+                <span className={liveAttackAlert.reason === 'ATTACK' ? 'text-red-300 text-center' : 'text-amber-300 text-center'}>
+                  {liveAttackAlert.reason === 'ATTACK' 
+                    ? <>Eavesdropper Interception Detected.<br/>Wavefunction Collapsed.</>
+                    : <>Excessive Environmental Decoherence.<br/>Channel Noise exceeded safety threshold (11%).</>}
+                </span>
               </div>
             )}
 

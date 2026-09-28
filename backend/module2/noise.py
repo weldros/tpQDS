@@ -14,12 +14,12 @@ from qiskit_aer.noise import NoiseModel, thermal_relaxation_error, depolarizing_
 @dataclass
 class NoiseConfig:
     t1_enabled: bool = True
-    t1_us: float = 50.0
+    t1_us: float = 100.0
     t2_enabled: bool = True
-    t2_us: float = 30.0
+    t2_us: float = 100.0
     gate_time_ns: float = 100.0
     depolarizing_enabled: bool = True
-    two_qubit_depolarizing_prob: float = 0.01
+    two_qubit_depolarizing_prob: float = 0.05
 
 
 def build_noise_model(config: NoiseConfig) -> NoiseModel:
