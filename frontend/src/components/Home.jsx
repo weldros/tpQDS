@@ -108,8 +108,6 @@ function ParticleBackground() {
 
 export default function Home({ setActiveTab }) {
   const [openFaq, setOpenFaq] = useState(null);
-  const [integrity, setIntegrity] = useState(0);
-  const [confidence, setConfidence] = useState(0);
 
   const features = [
     {
@@ -172,35 +170,6 @@ export default function Home({ setActiveTab }) {
     },
   ];
 
-  useEffect(() => {
-    let integrityFrame;
-    let confidenceFrame;
-    const start = performance.now();
-
-    const animateIntegrity = (time) => {
-      const progress = Math.min((time - start) / 1200, 1);
-      setIntegrity((99.8 * progress).toFixed(1));
-      if (progress < 1)
-        integrityFrame = requestAnimationFrame(animateIntegrity);
-    };
-
-    const confidenceStart = performance.now();
-    const animateConfidence = (time) => {
-      const progress = Math.min((time - confidenceStart) / 1400, 1);
-      setConfidence(Math.floor(92 * progress));
-      if (progress < 1)
-        confidenceFrame = requestAnimationFrame(animateConfidence);
-    };
-
-    integrityFrame = requestAnimationFrame(animateIntegrity);
-    confidenceFrame = requestAnimationFrame(animateConfidence);
-
-    return () => {
-      cancelAnimationFrame(integrityFrame);
-      cancelAnimationFrame(confidenceFrame);
-    };
-  }, []);
-
   const launchSimulator = () => {
     if (setActiveTab) {
       setActiveTab("simulator");
@@ -256,19 +225,19 @@ export default function Home({ setActiveTab }) {
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(99,102,241,0.07),transparent_65%)]" />
           </div>
 
-          <div className="relative z-10 w-full max-w-[1400px] grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
+          <div className="relative z-10 w-full max-w-[1400px] flex flex-col items-center text-center space-y-8">
+            <div className="space-y-6 max-w-3xl">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-serif tracking-tight text-white leading-[1.08]">
                 Absolute security backed by quantum mechanics, not complexity.
               </h1>
 
-              <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed max-w-xl">
+              <p className="text-base sm:text-lg text-slate-300 font-light leading-relaxed">
                 A high-performance cryptographic simulation framework engineered
                 around Bell-state entanglement, real-time wave function
                 collapse, and zero-trust verification engines.
               </p>
 
-              <div className="flex flex-wrap items-center gap-4 pt-2 font-mono text-xs">
+              <div className="flex flex-wrap items-center justify-center gap-4 pt-2 font-mono text-xs">
                 <button
                   onClick={launchSimulator}
                   className="bg-indigo-600 hover:bg-indigo-500 text-white uppercase tracking-wider px-7 py-3.5 rounded-xl transition-all cursor-pointer shadow-lg shadow-indigo-950 font-semibold"
@@ -284,7 +253,7 @@ export default function Home({ setActiveTab }) {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs max-w-2xl mx-auto">
                 <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
                   <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Protocol
@@ -308,90 +277,6 @@ export default function Home({ setActiveTab }) {
                     Trust Model
                   </span>
                   <span className="text-white font-semibold">ZERO-TRUST</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="lg:col-span-5">
-              <div className="bg-[#0b0e17]/90 border border-slate-700 rounded-2xl p-7 space-y-5 shadow-xl backdrop-blur-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
-
-                <div className="flex items-center justify-between border-b border-slate-800 pb-3 font-mono text-xs">
-                  <span className="text-slate-300 uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                    Core Telemetry
-                  </span>
-                  <span className="text-indigo-400 font-semibold text-xs">
-                    [LIVE]
-                  </span>
-                </div>
-
-                <div className="flex items-center justify-between p-5 rounded-xl bg-[#07090e] border border-slate-800">
-                  <div>
-                    <span className="text-[10px] font-mono uppercase text-slate-400 block mb-1">
-                      System Integrity
-                    </span>
-                    <span className="text-3xl font-serif font-bold text-white">
-                      {integrity}%
-                    </span>
-                  </div>
-                  <div className="relative w-14 h-14 flex items-center justify-center">
-                    <div className="absolute inset-0 rounded-full border border-indigo-500/20" />
-                    <div className="absolute inset-1 rounded-full border border-indigo-500/40 rotate-slow" />
-                    <div className="absolute inset-2.5 rounded-full border border-emerald-400/40 rotate-reverse" />
-                    <div className="w-2 h-2 rounded-full bg-indigo-400 shadow-[0_0_12px_rgba(99,102,241,1)]" />
-                    <div className="absolute inset-0 rounded-full border border-indigo-500/30 pulse-ring" />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3 font-mono text-xs">
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-slate-400 uppercase text-[10px]">
-                      Entanglement
-                    </span>
-                    <span className="text-indigo-300 font-bold block text-xs">
-                      STABLE
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-slate-400 uppercase text-[10px]">
-                      No-Cloning
-                    </span>
-                    <span className="text-emerald-300 font-bold block text-xs">
-                      ACTIVE
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-slate-400 uppercase text-[10px]">
-                      Threat Level
-                    </span>
-                    <span className="text-white font-bold block text-xs">
-                      NOMINAL
-                    </span>
-                  </div>
-                  <div className="p-3.5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
-                    <span className="text-slate-400 uppercase text-[10px]">
-                      Response
-                    </span>
-                    <span className="text-indigo-300 font-bold block text-xs">
-                      READY
-                    </span>
-                  </div>
-                </div>
-
-                <div className="space-y-2 pt-1">
-                  <div className="flex justify-between font-mono text-xs text-slate-300">
-                    <span>Verification Confidence</span>
-                    <span className="text-indigo-400 font-bold">
-                      {confidence}%
-                    </span>
-                  </div>
-                  <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-slate-800">
-                    <div
-                      className="bg-indigo-500 h-full transition-all duration-300"
-                      style={{ width: `${confidence}%` }}
-                    />
-                  </div>
                 </div>
               </div>
             </div>
