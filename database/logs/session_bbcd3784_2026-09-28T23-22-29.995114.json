@@ -1,0 +1,63 @@
+{
+    "session_id": "bbcd3784",
+    "timestamp": "2026-09-28T23:22:29.995114",
+    "total_transmissions": 7,
+    "logs": [
+        {
+            "message_sent": "bell eavesdropper photon deterministic",
+            "message_received": "bell eavesdropper photon deterministic",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "fidelity degradation transmission entangled",
+            "message_received": "fidelity degradation transmission entangled",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "collapse cryptography bell hadamard",
+            "message_received": "collapse cryptography bell hadamard",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "noise channel measurement bell",
+            "message_received": "noise channel measurement bell",
+            "qber": 1.0,
+            "fidelity": 98.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "eavesdropper state gate entangled",
+            "message_received": "eavesdropper state gate entangled",
+            "qber": 0.0,
+            "fidelity": 100.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "signature basis qubit algorithm",
+            "message_received": "signature basis qubit algorithm",
+            "qber": 2.0,
+            "fidelity": 96.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        },
+        {
+            "message_sent": "cryptography quantum degradation transmission",
+            "message_received": "cryptography quantum degradation transmission",
+            "qber": 3.0,
+            "fidelity": 94.0,
+            "verdict": "ACCEPT",
+            "status": "SUCCESS"
+        }
+    ]
+}
