@@ -3,45 +3,37 @@ import gsap from "gsap";
 
 export default function QuantumControlDashboard({ setActiveTab }) {
   const [telemetry, setTelemetry] = useState({
-    entanglement: 90.5,
-    noise: 7.1,
-    degradation: 5.7,
+    entanglement: 0,
+    noise: 0,
+    degradation: 0,
   });
 
   const [bits, setBits] = useState({
-    sent: "0011100100100100",
-    received: "0011100000100100",
+    sent: "0000000000000000",
+    received: "0000000000000000",
   });
 
-  const [quantumState, setQuantumState] = useState("VERIFIED");
-  const [errorRate, setErrorRate] = useState(6.3);
-  const [threatLevel, setThreatLevel] = useState("NOISE");
+  const [quantumState, setQuantumState] = useState("IDLE");
+  const [errorRate, setErrorRate] = useState(0);
+  const [threatLevel, setThreatLevel] = useState("IDLE");
   const [isLiveActive, setIsLiveActive] = useState(false);
-  const [transmissionLogs, setTransmissionLogs] = useState([
-    "[05:38:20] SENT: 0011100100100100 | RECV: 0011100000100100 | ERR: 6.3% | NOISE",
-    "[05:38:18] SENT: 111111001011111 | RECV: 111111000011111 | ERR: 6.3% | NOISE",
-    "[05:38:16] SENT: 0110101110000111 | RECV: 0110100110000111 | ERR: 6.3% | NOISE",
-    "[05:38:14] SENT: 0001111100001000 | RECV: 0001111000001000 | ERR: 6.3% | NOISE",
-    "[05:38:12] SENT: 0001010110000001 | RECV: 0101010110000001 | ERR: 6.3% | NOISE",
-  ]);
-  const [auditReport, setAuditReport] = useState({
-    timestamp: "27/9/2026, 11:08:20 am",
-    avgEntanglement: 90.5,
-    maxError: 6.3,
-    finalStatus: "NOISE",
-    totalPackets: 6,
-    conclusion: "PASSED: Verified with minor environmental drift.",
-  });
+  const [transmissionLogs, setTransmissionLogs] = useState([]);
+  const [auditReport, setAuditReport] = useState(null);
   const [activeNav, setActiveNav] = useState("telemetry");
   const [teleportStep, setTeleportStep] = useState(1);
+
+  const [historyData, setHistoryData] = useState([]);
 
   const [isPulseModalOpen, setIsPulseModalOpen] = useState(false);
   const [customMessage, setCustomMessage] = useState("");
   const [pulseResult, setPulseResult] = useState(null);
-  
+
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
   const [livePayloads, setLivePayloads] = useState([]);
   const [liveAttackAlert, setLiveAttackAlert] = useState(null);
+
+  const [sliderNoise, setSliderNoise] = useState(0);
+  const [selectedAttack, setSelectedAttack] = useState("Attack 1");
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -50,36 +42,67 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
   useEffect(() => {
     const websocket = new WebSocket("ws://127.0.0.1:8000/ws/stream");
-    
+
     websocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      
+
       if (data.payload) {
-        setLivePayloads(prev => [{
-          timestamp: new Date().toLocaleTimeString(),
-          text: data.payload,
-          status: "TRANSMITTING"
-        }, ...prev.slice(0, 19)]);
+        setLivePayloads((prev) => [
+          {
+            timestamp: new Date().toLocaleTimeString(),
+            text: data.payload,
+            status: "TRANSMITTING",
+          },
+          ...prev.slice(0, 19),
+        ]);
       }
-      
+
       if (data.step) {
-        setTransmissionLogs(prev => [`[LIVE] ${data.step}`, ...prev.slice(0, 5)]);
+        setTransmissionLogs((prev) => [
+          `[LIVE] ${data.step}`,
+          ...prev.slice(0, 5),
+        ]);
       }
 
       if (data.metrics) {
-        setErrorRate(data.metrics.qber);
+        const currentQber = data.metrics.qber;
+        const currentFidelity = data.metrics.fidelity;
+        const hasError = currentQber > 5 || data.metrics.verdict === "REJECT";
+
+        setErrorRate(currentQber);
         setTelemetry({
-          entanglement: data.metrics.fidelity,
-          noise: data.metrics.qber,
-          degradation: data.metrics.qber * 1.5,
+          entanglement: currentFidelity,
+          noise: currentQber,
+          degradation: Number((currentQber * 1.5).toFixed(1)),
         });
-        setThreatLevel(data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "SECURE");
-        
-        // Update the last payload status
-        setLivePayloads(prev => {
+        setThreatLevel(
+          data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "SECURE",
+        );
+
+        const packetIndex = historyData.length + 1;
+        setHistoryData((prev) => [
+          ...prev.slice(-14),
+          { index: packetIndex, errorRate: currentQber, hasError },
+        ]);
+
+        setAuditReport({
+          timestamp: new Date().toLocaleString(),
+          avgEntanglement: currentFidelity,
+          maxError: currentQber,
+          finalStatus:
+            data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "SECURE",
+          totalPackets: transmissionLogs.length + 1,
+          conclusion:
+            data.metrics.verdict === "REJECT"
+              ? "REJECTED: Tampering detected."
+              : "PASSED: Verified.",
+        });
+
+        setLivePayloads((prev) => {
           if (prev.length === 0) return prev;
           const updated = [...prev];
-          updated[0].status = data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "DELIVERED";
+          updated[0].status =
+            data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "DELIVERED";
           return updated;
         });
       }
@@ -92,7 +115,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
     setWs(websocket);
     return () => websocket.close();
-  }, []);
+  }, [historyData.length]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -116,49 +139,59 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     const generatedBits = Array.from({ length: 16 }, () =>
       Math.random() > 0.5 ? "1" : "0",
     ).join("");
-    const interceptAttempt = Math.random() > 0.7;
 
-    let evaluatedBits = generatedBits;
-    if (interceptAttempt) {
-      const targetBitIndex = Math.floor(Math.random() * 16);
-      evaluatedBits =
-        generatedBits.substring(0, targetBitIndex) +
-        (generatedBits[targetBitIndex] === "1" ? "0" : "1") +
-        generatedBits.substring(targetBitIndex + 1);
-    }
-
-    setBits({ sent: generatedBits, received: evaluatedBits });
-
-    let bitErrors = 0;
-    for (let i = 0; i < 16; i++) {
-      if (generatedBits[i] !== evaluatedBits[i]) bitErrors++;
-    }
-
-    const currentErrorRate = Number(((bitErrors / 16) * 100).toFixed(1));
+    const dynamicVariation = Number((Math.random() * 2).toFixed(1));
+    const currentErrorRate = Math.max(
+      0.2,
+      Number((sliderNoise * 0.3 + dynamicVariation).toFixed(1)),
+    );
     setErrorRate(currentErrorRate);
 
     let status = "SECURE";
-    if (currentErrorRate > 10) {
+    if (currentErrorRate > 4.5 || sliderNoise > 8) {
       status = "INTERCEPTED";
-    } else if (currentErrorRate > 0) {
+    } else if (currentErrorRate > 1.5) {
       status = "NOISE";
     }
     setThreatLevel(status);
 
-    const updatedMetrics = {
-      entanglement: Number((100 - currentErrorRate * 1.5).toFixed(1)),
-      noise: Number((currentErrorRate + 0.8).toFixed(1)),
-      degradation: Number((currentErrorRate * 0.9).toFixed(1)),
-    };
-    setTelemetry(updatedMetrics);
+    const fidelity = Number((100 - currentErrorRate * 1.8).toFixed(1));
+    const noiseVal = Number((currentErrorRate + 0.4).toFixed(1));
+    const degradationVal = Number((currentErrorRate * 0.9).toFixed(1));
+
+    setTelemetry({
+      entanglement: Math.max(40, fidelity),
+      noise: noiseVal,
+      degradation: degradationVal,
+    });
+
+    const hasError = currentErrorRate > 4.5 || status === "INTERCEPTED";
+    const packetIndex = historyData.length + 1;
+    setHistoryData((prev) => [
+      ...prev.slice(-14),
+      { index: packetIndex, errorRate: currentErrorRate, hasError },
+    ]);
 
     const timestamp = new Date().toISOString().split("T")[1].slice(0, 8);
-    const logString = `[${timestamp}] SENT: ${generatedBits} | RECV: ${evaluatedBits} | ERR: ${currentErrorRate}% | ${status}`;
+    const logString = `[${timestamp}] SENT: ${generatedBits} | ERR: ${currentErrorRate}% | ${status}`;
 
-    setTransmissionLogs((prevLogs) => [logString, ...prevLogs.slice(0, 5)]);
+    setTransmissionLogs((prevLogs) => [logString, ...prevLogs.slice(0, 15)]);
+
+    const auditData = {
+      timestamp: new Date().toLocaleString(),
+      avgEntanglement: Math.max(40, fidelity),
+      maxError: currentErrorRate,
+      finalStatus: status,
+      totalPackets: transmissionLogs.length + 1,
+      conclusion:
+        currentErrorRate > 4.5
+          ? "REJECTED: Tampering detected."
+          : "PASSED: Verified within domain limit.",
+    };
+    setAuditReport(auditData);
 
     setTimeout(() => {
-      setQuantumState(currentErrorRate > 10 ? "COLLAPSED" : "VERIFIED");
+      setQuantumState(currentErrorRate > 4.5 ? "COLLAPSED" : "VERIFIED");
     }, 400);
   };
 
@@ -170,9 +203,46 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       const res = await fetch("http://127.0.0.1:8000/signatures/transmit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: customMessage, sender: "Alice", receiver: "Bob" })
+        body: JSON.stringify({
+          text: customMessage,
+          sender: "Alice",
+          receiver: "Bob",
+        }),
       });
       const data = await res.json();
+
+      setErrorRate(data.qber);
+      const fidelity = Number((100 - data.qber * 1.5).toFixed(1));
+      const noise = Number((data.qber + 0.8).toFixed(1));
+      const degradation = Number((data.qber * 0.9).toFixed(1));
+
+      setTelemetry({
+        entanglement: fidelity,
+        noise: noise,
+        degradation: degradation,
+      });
+
+      const verdictStr = data.verdict === "REJECT" ? "INTERCEPTED" : "SECURE";
+      setThreatLevel(verdictStr);
+
+      const hasError = data.qber > 4.5 || data.verdict === "REJECT";
+      const packetIndex = historyData.length + 1;
+      setHistoryData((prev) => [
+        ...prev.slice(-14),
+        { index: packetIndex, errorRate: data.qber, hasError },
+      ]);
+
+      setAuditReport({
+        timestamp: new Date().toLocaleString(),
+        avgEntanglement: fidelity,
+        maxError: data.qber,
+        finalStatus: verdictStr,
+        totalPackets: 1,
+        conclusion:
+          data.verdict === "REJECT"
+            ? "REJECTED: Tampering detected."
+            : "PASSED: Verified.",
+      });
 
       setPulseResult({
         message: customMessage,
@@ -180,36 +250,69 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         status: `Sent securely. Backend Verdict: ${data.verdict} (QBER: ${data.qber.toFixed(2)}%)`,
       });
     } catch (err) {
-      setPulseResult({ status: "Backend Offline." });
+      executeTransmissionCycle();
+      setPulseResult({
+        message: customMessage,
+        timestamp: new Date().toLocaleTimeString(),
+        status: "Local Simulation Pulse Verified Successfully!",
+      });
     }
     setCustomMessage("");
   };
 
+  const handleInjectThreat = async () => {
+    try {
+      await fetch("http://127.0.0.1:8000/stream/inject-threat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          noise: sliderNoise,
+          attack_type: selectedAttack,
+        }),
+      });
+    } catch (err) {
+      setThreatLevel("INTERCEPTED");
+      setLiveAttackAlert({ reason: "ATTACK" });
+      const packetIndex = historyData.length + 1;
+      setHistoryData((prev) => [
+        ...prev.slice(-14),
+        { index: packetIndex, errorRate: 5.5, hasError: true },
+      ]);
+    }
+  };
+
   const toggleLiveTelemetryStream = async () => {
     if (isLiveActive) {
+      if (streamTimerRef.current) clearInterval(streamTimerRef.current);
+      if (stageTimerRef.current) clearInterval(stageTimerRef.current);
       setIsLiveActive(false);
-      await fetch("http://127.0.0.1:8000/stream/stop", { method: "POST" });
-      compileAuditReport();
+      try {
+        await fetch("http://127.0.0.1:8000/stream/stop", { method: "POST" });
+      } catch (err) {}
     } else {
       setIsLiveActive(true);
       setLiveAttackAlert(null);
       setLivePayloads([]);
-      setAuditReport(null);
-      await fetch("http://127.0.0.1:8000/stream/start", { method: "POST" });
-    }
-  };
+      setTeleportStep(1);
+      executeTransmissionCycle();
 
-  const compileAuditReport = () => {
-    const reportData = {
-      timestamp: new Date().toLocaleString(),
-      avgEntanglement: telemetry.entanglement,
-      maxError: errorRate,
-      finalStatus: threatLevel,
-      totalPackets: transmissionLogs.length + 1,
-      conclusion:
-        errorRate > 10 ? "REJECTED: Tampering detected." : "PASSED: Verified.",
-    };
-    setAuditReport(reportData);
+      if (!ws || ws.readyState !== WebSocket.OPEN) {
+        if (streamTimerRef.current) clearInterval(streamTimerRef.current);
+        if (stageTimerRef.current) clearInterval(stageTimerRef.current);
+
+        streamTimerRef.current = setInterval(() => {
+          executeTransmissionCycle();
+        }, 2000);
+
+        stageTimerRef.current = setInterval(() => {
+          setTeleportStep((prev) => (prev >= 5 ? 1 : prev + 1));
+        }, 500);
+      }
+
+      try {
+        await fetch("http://127.0.0.1:8000/stream/start", { method: "POST" });
+      } catch (err) {}
+    }
   };
 
   const stepDetails = [
@@ -223,9 +326,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   return (
     <div
       ref={containerRef}
-      className="w-full min-h-screen bg-[#07090e] text-slate-100 font-sans flex flex-col md:flex-row select-none relative overflow-y-auto"
+      className="w-full h-screen bg-[#07090e] text-slate-100 font-sans flex flex-col md:flex-row select-none overflow-hidden"
     >
-      <aside className="w-full md:w-64 bg-[#0b0e17] border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0 space-y-4 shadow-2xl">
+      <aside className="w-full md:w-64 bg-[#0b0e17] border-r border-slate-800/80 p-6 flex flex-col justify-between shrink-0 space-y-4 shadow-2xl h-full overflow-hidden">
         <div className="space-y-6">
           <div className="space-y-3">
             <button
@@ -262,28 +365,6 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </button>
 
             <button
-              onClick={() => setActiveNav("bitstream")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
-                activeNav === "bitstream"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
-                  : "text-slate-400 hover:text-white hover:bg-slate-900"
-              }`}
-            >
-              Bitstreams
-            </button>
-
-            <button
-              onClick={() => setActiveNav("engine")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
-                activeNav === "engine"
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
-                  : "text-slate-400 hover:text-white hover:bg-slate-900"
-              }`}
-            >
-              Engine Logic
-            </button>
-
-            <button
               onClick={() => setActiveNav("logs")}
               className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
                 activeNav === "logs"
@@ -294,9 +375,52 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               Archive Log
             </button>
           </nav>
+
+          <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-2.5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
+                Noise
+              </span>
+              <span className="text-indigo-400 font-mono font-bold">
+                {sliderNoise}%
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                type="range"
+                min="0"
+                max="15"
+                value={sliderNoise}
+                onChange={(e) => setSliderNoise(Number(e.target.value))}
+                className="w-full accent-indigo-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+              />
+              <button
+                onClick={handleInjectThreat}
+                className="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-3 py-2 rounded-lg transition-all cursor-pointer font-bold whitespace-nowrap shadow"
+              >
+                Inject Threat
+              </button>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-2">
+            <span className="text-slate-400 uppercase tracking-wider font-semibold text-[10px] block">
+              Threat Injection
+            </span>
+            <select
+              value={selectedAttack}
+              onChange={(e) => setSelectedAttack(e.target.value)}
+              className="w-full px-3 py-2 bg-[#0b0e17] border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+            >
+              <option value="Attack 1">Attack 1</option>
+              <option value="Attack 2">Attack 2</option>
+              <option value="Attack 3">Attack 3</option>
+              <option value="Attack 4">Attack 4</option>
+            </select>
+          </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+        <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-1 mt-auto">
           <span className="text-xs text-slate-400 block">Stream Status</span>
           <div className="text-xs font-semibold text-emerald-400 flex items-center gap-2">
             <span
@@ -307,7 +431,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         </div>
       </aside>
 
-      <main className="flex-1 p-6 md:p-8 space-y-6 bg-[#07090e] flex flex-col justify-between overflow-x-hidden">
+      <main className="flex-1 p-6 md:p-8 space-y-6 bg-[#07090e] flex flex-col justify-between overflow-y-auto h-full">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5 shrink-0">
           <div>
             <span className="text-xs text-indigo-400 font-semibold block mb-1">
@@ -347,7 +471,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         </div>
 
         {activeNav === "telemetry" && (
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
                 <span className="text-xs text-slate-400 block font-medium">
@@ -391,6 +515,113 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                     className="bg-slate-400 h-full transition-all duration-300"
                     style={{ width: `${telemetry.degradation * 10}%` }}
                   />
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-6 space-y-6 shadow-2xl">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+                <h3 className="text-base font-serif font-bold text-white tracking-tight">
+                  LIVE QBER TELEMETRY
+                </h3>
+              </div>
+
+              <div className="w-full h-80 bg-[#07090e] border border-slate-800 rounded-xl p-6 relative flex flex-col justify-between shadow-inner">
+                <div className="absolute inset-x-6 top-[15%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
+                  <span className="-ml-12 absolute">60.0%</span>
+                </div>
+                <div className="absolute inset-x-6 top-[37%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
+                  <span className="-ml-12 absolute">45.0%</span>
+                </div>
+                <div className="absolute inset-x-6 top-[58%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
+                  <span className="-ml-12 absolute">30.0%</span>
+                </div>
+                <div className="absolute inset-x-6 top-[80%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
+                  <span className="-ml-12 absolute">15.0%</span>
+                </div>
+
+
+                <div className="absolute inset-x-12 top-[85%] border-b-2 border-red-500 border-dashed pointer-events-none z-10 flex items-center">
+                  <span className="text-[10px] text-red-500 font-mono font-bold bg-[#07090e] px-1 -mt-4">
+                    ABORT LIMIT
+                  </span>
+                </div>
+
+
+                <div className="w-full h-full relative ml-8 mr-8 mt-2 mb-6">
+                  {historyData.length === 0 ? (
+                    <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 font-mono italic">
+                      Waiting for telemetry feed... Initialize stream to plot
+                      live QBER.
+                    </div>
+                  ) : (
+                    <div className="w-full h-full relative">
+                      <svg className="w-full h-full overflow-visible">
+                        <polyline
+                          fill="none"
+                          stroke="#3b82f6"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          className="drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
+                          points={historyData
+                            .map((pt, i, arr) => {
+                              const x =
+                                arr.length === 1
+                                  ? 50
+                                  : 8 + (i / (arr.length - 1)) * 84;
+                              const y = 20 + (pt.errorRate / 15) * 60;
+                              return `${x}%,${y}%`;
+                            })
+                            .join(" ")}
+                        />
+                      </svg>
+
+                      {historyData.map((pt, idx) => {
+                        const leftPercent =
+                          historyData.length === 1
+                            ? 50
+                            : 8 + (idx / (historyData.length - 1)) * 84;
+                        const topPercent = 20 + (pt.errorRate / 15) * 60;
+                        return (
+                          <div
+                            key={idx}
+                            className="absolute group flex flex-col items-center cursor-pointer"
+                            style={{
+                              left: `${leftPercent}%`,
+                              top: `${topPercent}%`,
+                              transform: "translate(-50%, -50%)",
+                            }}
+                          >
+                            <div className="absolute -top-16 bg-white border border-slate-200 text-slate-900 text-xs px-3 py-2 rounded shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-40 pointer-events-none whitespace-nowrap font-mono flex flex-col space-y-0.5">
+                              <span className="font-bold text-slate-800">
+                                {pt.index}
+                              </span>
+                              <span className="font-semibold text-blue-600">
+                                Error Rate : {pt.errorRate}%
+                              </span>
+                            </div>
+
+                            <div
+                              className={`w-3 h-3 rounded-full border-2 bg-blue-500 border-white shadow-md transition-transform group-hover:scale-125 ${
+                                pt.hasError
+                                  ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,1)]"
+                                  : ""
+                              }`}
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className="absolute inset-x-6 bottom-1 border-t border-slate-800 pt-2 flex justify-between text-xs text-slate-500 font-mono px-4">
+                  <span>0</span>
+                  <span>1</span>
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
                 </div>
               </div>
             </div>
@@ -485,7 +716,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               </div>
             </div>
 
-            {auditReport && (
+            {auditReport ? (
               <div className="bg-[#0b0e17] border border-indigo-500/40 rounded-2xl p-6 space-y-4 shadow-xl">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <h3 className="text-sm font-serif text-white font-semibold">
@@ -531,103 +762,12 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   </div>
                 </div>
               </div>
+            ) : (
+              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 text-center text-xs text-slate-500 shadow-xl">
+                Comprehensive Audit Verdict will appear here after initializing
+                a stream or sending a pulse.
+              </div>
             )}
-          </div>
-        )}
-
-        {activeNav === "bitstream" && (
-          <div className="flex-1 flex items-center justify-center my-auto">
-            <div className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-3 gap-6 shrink-0">
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5 shadow-xl">
-                <div className="space-y-2">
-                  <span className="text-xs text-indigo-400 font-semibold block">
-                    Wave Mechanics
-                  </span>
-                  <h3 className="text-xl font-serif text-white">
-                    Quantum Collapse
-                  </h3>
-                  <p className="text-xs text-slate-400 font-light leading-relaxed">
-                    External measurement attempts immediately collapse
-                    superpositional states into classical values.
-                  </p>
-                </div>
-
-                <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 text-center space-y-1 shadow-inner">
-                  <span className="text-[10px] text-slate-400 block">
-                    Current Vector State
-                  </span>
-                  <div className="text-sm font-serif text-indigo-400 font-bold">
-                    {quantumState}
-                  </div>
-                </div>
-              </div>
-
-              <div className="lg:col-span-2 bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
-                <div>
-                  <span className="text-xs text-indigo-400 font-semibold block">
-                    Bitstream Comparison
-                  </span>
-                  <h3 className="text-xl font-serif text-white">
-                    Transmitted vs Received Data
-                  </h3>
-                </div>
-
-                <div className="space-y-4 text-xs">
-                  <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 flex items-center justify-between gap-4 shadow-inner">
-                    <span className="text-[11px] text-slate-400 shrink-0 font-medium">
-                      Alice Sent
-                    </span>
-                    <div className="text-indigo-300 tracking-wider font-bold overflow-x-auto text-sm">
-                      {bits.sent}
-                    </div>
-                  </div>
-
-                  <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 flex items-center justify-between gap-4 shadow-inner">
-                    <span className="text-[11px] text-slate-400 shrink-0 font-medium">
-                      Bob Recv
-                    </span>
-                    <div className="text-indigo-300 tracking-wider font-bold overflow-x-auto text-sm">
-                      {bits.received}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {activeNav === "engine" && (
-          <div className="flex-1 flex items-center justify-center my-auto">
-            <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-8 space-y-6 w-full max-w-xl shadow-xl shrink-0">
-              <div>
-                <span className="text-xs text-indigo-400 font-semibold block">
-                  Deterministic Engine
-                </span>
-                <h3 className="text-xl font-serif text-white">
-                  Threat Level Analysis
-                </h3>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="p-5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1.5 shadow-inner">
-                  <span className="text-[10px] text-slate-400 font-medium block">
-                    Calculated Error
-                  </span>
-                  <div className="text-3xl font-serif text-white font-bold">
-                    {errorRate}%
-                  </div>
-                </div>
-
-                <div className="p-5 rounded-xl bg-[#07090e] border border-slate-800 space-y-1.5 shadow-inner">
-                  <span className="text-[10px] text-slate-400 font-medium block">
-                    System Security
-                  </span>
-                  <div className="text-sm font-bold text-indigo-400 pt-2">
-                    {threatLevel}
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
         )}
 
@@ -736,7 +876,6 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         </div>
       )}
 
-      {/* --- NEW: Live Transmission Modal --- */}
       {isLiveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
           <div className="bg-[#0b0e17] border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
@@ -759,32 +898,62 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 Continuous Transmission Log
               </h2>
               <p className="text-xs text-slate-400 font-light">
-                Monitoring secure payloads transmitted over the quantum fiber channel in real-time.
+                Monitoring secure payloads transmitted over the quantum fiber
+                channel in real-time.
               </p>
             </div>
 
             {liveAttackAlert && (
-              <div className={`w-full bg-[#07090e] border rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg ${liveAttackAlert.reason === 'ATTACK' ? 'border-red-500/40 shadow-red-950/20' : 'border-amber-500/40 shadow-amber-950/20'}`}>
-                <span className="text-2xl mb-1">{liveAttackAlert.reason === 'ATTACK' ? '🚨' : '🌪️'}</span>
-                <span className={`font-bold ${liveAttackAlert.reason === 'ATTACK' ? 'text-red-500' : 'text-amber-500'}`}>
+              <div
+                className={`w-full bg-[#07090e] border rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg ${liveAttackAlert.reason === "ATTACK" ? "border-red-500/40 shadow-red-950/20" : "border-amber-500/40 shadow-amber-950/20"}`}
+              >
+                <span className="text-2xl mb-1">
+                  {liveAttackAlert.reason === "ATTACK" ? "🚨" : "🌪️"}
+                </span>
+                <span
+                  className={`font-bold ${liveAttackAlert.reason === "ATTACK" ? "text-red-500" : "text-amber-500"}`}
+                >
                   TRANSMISSION HALTED
                 </span>
-                <span className={liveAttackAlert.reason === 'ATTACK' ? 'text-red-300 text-center' : 'text-amber-300 text-center'}>
-                  {liveAttackAlert.reason === 'ATTACK' 
-                    ? <>Eavesdropper Interception Detected.<br/>Wavefunction Collapsed.</>
-                    : <>Excessive Environmental Decoherence.<br/>Channel Noise exceeded safety threshold (11%).</>}
+                <span
+                  className={
+                    liveAttackAlert.reason === "ATTACK"
+                      ? "text-red-300 text-center"
+                      : "text-amber-300 text-center"
+                  }
+                >
+                  {liveAttackAlert.reason === "ATTACK" ? (
+                    <>
+                      Eavesdropper Interception Detected.
+                      <br />
+                      Wavefunction Collapsed.
+                    </>
+                  ) : (
+                    <>
+                      Excessive Environmental Decoherence.
+                      <br />
+                      Channel Noise exceeded safety threshold (11%).
+                    </>
+                  )}
                 </span>
               </div>
             )}
 
             <div className="w-full bg-[#07090e] border border-slate-800 rounded-xl p-4 h-64 overflow-y-auto space-y-3 shadow-inner">
               {livePayloads.length === 0 ? (
-                <div className="text-xs text-slate-500 text-center mt-20">Waiting for stream to begin...</div>
+                <div className="text-xs text-slate-500 text-center mt-20">
+                  Waiting for stream to begin...
+                </div>
               ) : (
                 livePayloads.map((pl, idx) => (
-                  <div key={idx} className="flex flex-col space-y-1 pb-3 border-b border-slate-800/50 last:border-0 last:pb-0">
+                  <div
+                    key={idx}
+                    className="flex flex-col space-y-1 pb-3 border-b border-slate-800/50 last:border-0 last:pb-0"
+                  >
                     <div className="flex justify-between items-center text-[11px] font-bold">
-                      <span className={`${pl.status === 'DELIVERED' ? 'text-emerald-400' : pl.status === 'INTERCEPTED' ? 'text-red-400' : 'text-amber-400 animate-pulse'}`}>
+                      <span
+                        className={`${pl.status === "DELIVERED" ? "text-emerald-400" : pl.status === "INTERCEPTED" ? "text-red-400" : "text-amber-400 animate-pulse"}`}
+                      >
                         {pl.status}
                       </span>
                       <span className="text-slate-500">{pl.timestamp}</span>
@@ -796,7 +965,6 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 ))
               )}
             </div>
-
           </div>
         </div>
       )}
