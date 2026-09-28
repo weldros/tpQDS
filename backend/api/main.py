@@ -59,7 +59,7 @@ class AppState:
         self.eve = None
         self.bob = None
         self.noise_config = NoiseConfig()
-        self.noise_enabled = False
+        self.noise_enabled = True
 
 state = AppState()
 
@@ -85,6 +85,8 @@ async def transmission_worker():
         await asyncio.sleep(0.5)
         await broadcast({"step": "Entangling message qubit..."})
         await asyncio.sleep(0.5)
+        await broadcast({"step": "Measuring joint quantum states..."})
+        await asyncio.sleep(0.2)
         
         # Send to core engine
         from backend.module1.qdsEngine import runSignature
@@ -236,9 +238,9 @@ async def execute_attack():
 
 class NoiseConfigRequest(BaseModel):
     t1_enabled: bool = True
-    t1_us: float = 50.0
+    t1_us: float = 100.0
     t2_enabled: bool = True
-    t2_us: float = 30.0
+    t2_us: float = 100.0
     gate_time_ns: float = 100.0
     depolarizing_enabled: bool = True
     two_qubit_depolarizing_prob: float = 0.01

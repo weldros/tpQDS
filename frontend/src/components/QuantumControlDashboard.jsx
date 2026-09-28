@@ -33,6 +33,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [liveAttackAlert, setLiveAttackAlert] = useState(null);
 
   const [sliderNoise, setSliderNoise] = useState(0);
+  const [lineTooltip, setLineTooltip] = useState(null);
   const [selectedAttack, setSelectedAttack] = useState("Attack 1");
 
   const containerRef = useRef(null);
@@ -62,6 +63,12 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           `[LIVE] ${data.step}`,
           ...prev.slice(0, 5),
         ]);
+        
+        if (data.step.includes("Hashing")) setTeleportStep(1);
+        else if (data.step.includes("Entangling")) setTeleportStep(2);
+        else if (data.step.includes("Measuring")) setTeleportStep(3);
+        else if (data.step.includes("Applying Pauli")) setTeleportStep(4);
+        else if (data.step.includes("Transmission Complete")) setTeleportStep(5);
       }
 
       if (data.metrics) {
@@ -79,11 +86,13 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "SECURE",
         );
 
-        const packetIndex = historyData.length + 1;
-        setHistoryData((prev) => [
-          ...prev.slice(-14),
-          { index: packetIndex, errorRate: currentQber, hasError },
-        ]);
+        setHistoryData((prev) => {
+          const packetIndex = prev.length > 0 ? prev[prev.length - 1].index + 1 : 1;
+          return [
+            ...prev.slice(-49),
+            { index: packetIndex, errorRate: currentQber, fidelity: currentFidelity, hasError },
+          ];
+        });
 
         setAuditReport({
           timestamp: new Date().toLocaleString(),
@@ -115,7 +124,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
     setWs(websocket);
     return () => websocket.close();
-  }, [historyData.length]);
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -168,8 +177,8 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     const hasError = currentErrorRate > 4.5 || status === "INTERCEPTED";
     const packetIndex = historyData.length + 1;
     setHistoryData((prev) => [
-      ...prev.slice(-14),
-      { index: packetIndex, errorRate: currentErrorRate, hasError },
+      ...prev.slice(-49),
+      { index: packetIndex, errorRate: currentErrorRate, fidelity: 100 - (currentErrorRate * 2), hasError },
     ]);
 
     const timestamp = new Date().toISOString().split("T")[1].slice(0, 8);
@@ -228,7 +237,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       const hasError = data.qber > 4.5 || data.verdict === "REJECT";
       const packetIndex = historyData.length + 1;
       setHistoryData((prev) => [
-        ...prev.slice(-14),
+        ...prev.slice(-49),
         { index: packetIndex, errorRate: data.qber, hasError },
       ]);
 
@@ -260,24 +269,24 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     setCustomMessage("");
   };
 
-  const handleInjectThreat = async () => {
+  const handleInjectNoise = async () => {
     try {
-      await fetch("http://127.0.0.1:8000/stream/inject-threat", {
+      await fetch("http://127.0.0.1:8000/noise/configure", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          noise: sliderNoise,
-          attack_type: selectedAttack,
+          t1_enabled: true,
+          t1_us: 50.0,
+          t2_enabled: true,
+          t2_us: 30.0,
+          gate_time_ns: 100.0,
+          depolarizing_enabled: true,
+          two_qubit_depolarizing_prob: sliderNoise / 100.0
         }),
       });
+      await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
     } catch (err) {
-      setThreatLevel("INTERCEPTED");
-      setLiveAttackAlert({ reason: "ATTACK" });
-      const packetIndex = historyData.length + 1;
-      setHistoryData((prev) => [
-        ...prev.slice(-14),
-        { index: packetIndex, errorRate: 5.5, hasError: true },
-      ]);
+      console.error("Failed to inject noise:", err);
     }
   };
 
@@ -294,6 +303,8 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       setLiveAttackAlert(null);
       setLivePayloads([]);
       setTeleportStep(1);
+      setHistoryData([]);
+      setTransmissionLogs([]);
       executeTransmissionCycle();
 
       if (!ws || ws.readyState !== WebSocket.OPEN) {
@@ -355,7 +366,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           <nav className="space-y-2 text-sm">
             <button
               onClick={() => setActiveNav("telemetry")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
+              className={`w-full text-left px-4 py-3 rounded-md transition-all cursor-pointer font-medium ${
                 activeNav === "telemetry"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
@@ -366,7 +377,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
             <button
               onClick={() => setActiveNav("logs")}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all cursor-pointer font-medium ${
+              className={`w-full text-left px-4 py-3 rounded-md transition-all cursor-pointer font-medium ${
                 activeNav === "logs"
                   ? "bg-indigo-600 text-white shadow-lg shadow-indigo-950"
                   : "text-slate-400 hover:text-white hover:bg-slate-900"
@@ -376,7 +387,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </button>
           </nav>
 
-          <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-2.5">
+          <div className="p-4 rounded-md bg-[#07090e] border border-slate-800 space-y-2.5">
             <div className="flex justify-between items-center text-xs">
               <span className="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
                 Noise
@@ -385,46 +396,52 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 {sliderNoise}%
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="">
               <input
                 type="range"
                 min="0"
                 max="15"
                 value={sliderNoise}
                 onChange={(e) => setSliderNoise(Number(e.target.value))}
-                className="w-full accent-indigo-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg"
+                className="accent-indigo-500 cursor-pointer h-4 bg-slate-800 rounded"
               />
               <button
-                onClick={handleInjectThreat}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-3 py-2 rounded-lg transition-all cursor-pointer font-bold whitespace-nowrap shadow"
+                onClick={handleInjectNoise}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-2 py-2 rounded transition-all cursor-pointer font-bold whitespace-nowrap shadow"
               >
-                Inject Threat
+                Inject Noise
               </button>
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-2">
+          <div className="p-4 rounded-md bg-[#07090e] border border-slate-800 space-y-2">
             <span className="text-slate-400 uppercase tracking-wider font-semibold text-[10px] block">
               Threat Injection
             </span>
             <select
               value={selectedAttack}
               onChange={(e) => setSelectedAttack(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0b0e17] border border-slate-800 rounded-lg text-xs text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+              className="w-full px-3 py-2 bg-[#0b0e17] border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
             >
               <option value="Attack 1">Attack 1</option>
               <option value="Attack 2">Attack 2</option>
               <option value="Attack 3">Attack 3</option>
               <option value="Attack 4">Attack 4</option>
             </select>
+            <button
+                //onClick={handleInjectThreat}
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-2 py-2 rounded transition-all cursor-pointer font-bold whitespace-nowrap shadow"
+              >
+                Inject Threat
+              </button>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-[#07090e] border border-slate-800 space-y-1 mt-auto">
+        <div className="p-4 rounded-md bg-[#07090e] border border-slate-800 space-y-1 mt-auto">
           <span className="text-xs text-slate-400 block">Stream Status</span>
           <div className="text-xs font-semibold text-emerald-400 flex items-center gap-2">
             <span
-              className={`w-2 h-2 rounded-full ${isLiveActive ? "bg-emerald-400 animate-ping" : "bg-slate-600"}`}
+              className={`w-2 h-2 rounded-sm-full ${isLiveActive ? "bg-emerald-400 animate-ping" : "bg-slate-600"}`}
             />
             {isLiveActive ? "Active" : "Idle"}
           </div>
@@ -446,14 +463,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             <button
               onClick={() => setIsPulseModalOpen(true)}
               disabled={isLiveActive}
-              className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs px-5 py-3 rounded-xl transition-all cursor-pointer disabled:opacity-30 font-medium shadow"
+              className="bg-[#0b0e17] border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 text-xs px-5 py-3 rounded-md transition-all cursor-pointer disabled:opacity-30 font-medium shadow"
             >
               Test Single Pulse
             </button>
 
             <button
               onClick={toggleLiveTelemetryStream}
-              className={`text-xs px-6 py-3 rounded-xl transition-all cursor-pointer font-bold shadow-lg ${
+              className={`text-xs px-6 py-3 rounded-md transition-all cursor-pointer font-bold shadow-lg ${
                 isLiveActive
                   ? "bg-amber-500 text-slate-950 animate-pulse"
                   : "bg-indigo-600 hover:bg-indigo-500 text-white shadow-indigo-950"
@@ -463,7 +480,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </button>
             <button
               onClick={() => setIsLiveModalOpen(true)}
-              className="px-6 py-2 rounded-xl text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950 shadow-md"
+              className="px-6 py-2 rounded-md text-xs font-bold transition-all bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950 shadow-md"
             >
               View Live Transmission
             </button>
@@ -473,14 +490,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         {activeNav === "telemetry" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
+              <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-4 space-y-2 shadow-lg">
                 <span className="text-xs text-slate-400 block font-medium">
                   Entanglement Purity
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
-                  {telemetry.entanglement}%
+                  {Number(telemetry.entanglement).toFixed(2)}%
                 </div>
-                <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full bg-slate-900 h-1.5 rounded-sm-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-indigo-500 h-full transition-all duration-300"
                     style={{ width: `${telemetry.entanglement}%` }}
@@ -488,14 +505,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
 
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
+              <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-4 space-y-2 shadow-lg">
                 <span className="text-xs text-slate-400 block font-medium">
                   Channel Noise
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
-                  {telemetry.noise}%
+                  {Number(telemetry.noise).toFixed(2)}%
                 </div>
-                <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full bg-slate-900 h-1.5 rounded-sm-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-slate-400 h-full transition-all duration-300"
                     style={{ width: `${telemetry.noise * 10}%` }}
@@ -503,14 +520,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
 
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-4 space-y-2 shadow-lg">
+              <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-4 space-y-2 shadow-lg">
                 <span className="text-xs text-slate-400 block font-medium">
                   Degradation Factor
                 </span>
                 <div className="text-2xl font-serif text-white tracking-tight font-bold">
-                  {telemetry.degradation}%
+                  {Number(telemetry.degradation).toFixed(2)}%
                 </div>
-                <div className="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-slate-800">
+                <div className="w-full bg-slate-900 h-1.5 rounded-sm-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-slate-400 h-full transition-all duration-300"
                     style={{ width: `${telemetry.degradation * 10}%` }}
@@ -519,114 +536,162 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               </div>
             </div>
 
-            <div className="bg-[#0b0e17] border border-slate-800/80 rounded-2xl p-6 space-y-6 shadow-2xl">
+            <div className="bg-[#0b0e17] border border-slate-800/80 rounded-lg p-6 space-y-6 shadow-2xl">
               <div className="flex items-center justify-between border-b border-slate-800 pb-4">
                 <h3 className="text-base font-serif font-bold text-white tracking-tight">
                   LIVE QBER TELEMETRY
                 </h3>
               </div>
 
-              <div className="w-full h-80 bg-[#07090e] border border-slate-800 rounded-xl p-6 relative flex flex-col justify-between shadow-inner">
-                <div className="absolute inset-x-6 top-[15%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
-                  <span className="-ml-12 absolute">60.0%</span>
+              <div className="w-full h-80 bg-[#07090e] border border-slate-800 rounded-md p-4 flex flex-row shadow-inner">
+                {/* Y-axis Labels */}
+                <div className="flex flex-col justify-between items-end h-full py-2 pr-4 w-12 border-r border-slate-800 shrink-0">
+                  <span className="text-[10px] text-slate-500 font-mono">100%</span>
+                  <span className="text-[10px] text-slate-500 font-mono">75%</span>
+                  <span className="text-[10px] text-slate-500 font-mono">50%</span>
+                  <span className="text-[10px] text-slate-500 font-mono">25%</span>
+                  <span className="text-[10px] text-slate-500 font-mono">0%</span>
                 </div>
-                <div className="absolute inset-x-6 top-[37%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
-                  <span className="-ml-12 absolute">45.0%</span>
-                </div>
-                <div className="absolute inset-x-6 top-[58%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
-                  <span className="-ml-12 absolute">30.0%</span>
-                </div>
-                <div className="absolute inset-x-6 top-[80%] border-b border-slate-800/60 border-dashed pointer-events-none flex items-center text-[11px] text-slate-500 font-mono">
-                  <span className="-ml-12 absolute">15.0%</span>
-                </div>
-
-
-                <div className="absolute inset-x-12 top-[85%] border-b-2 border-red-500 border-dashed pointer-events-none z-10 flex items-center">
-                  <span className="text-[10px] text-red-500 font-mono font-bold bg-[#07090e] px-1 -mt-4">
-                    ABORT LIMIT
-                  </span>
-                </div>
-
-
-                <div className="w-full h-full relative ml-8 mr-8 mt-2 mb-6">
+                
+                {/* SVG Chart Area */}
+                <div className="flex-1 relative h-full py-2 pl-4">
                   {historyData.length === 0 ? (
                     <div className="w-full h-full flex items-center justify-center text-xs text-slate-500 font-mono italic">
-                      Waiting for telemetry feed... Initialize stream to plot
-                      live QBER.
+                      Waiting for telemetry feed... Initialize stream to plot live QBER.
                     </div>
                   ) : (
                     <div className="w-full h-full relative">
-                      <svg className="w-full h-full overflow-visible">
-                        <polyline
-                          fill="none"
-                          stroke="#3b82f6"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          className="drop-shadow-[0_0_8px_rgba(59,130,246,0.6)]"
-                          points={historyData
-                            .map((pt, i, arr) => {
-                              const x =
-                                arr.length === 1
-                                  ? 50
-                                  : 8 + (i / (arr.length - 1)) * 84;
-                              const y = 20 + (pt.errorRate / 15) * 60;
-                              return `${x}%,${y}%`;
-                            })
-                            .join(" ")}
-                        />
-                      </svg>
+                      {(() => {
+                        const fidPoints = historyData.map((pt, i, arr) => ({
+                          x: arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100,
+                          y: 100 - (pt.fidelity || 100)
+                        }));
+                        const noisePoints = historyData.map((pt, i, arr) => ({
+                          x: arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100,
+                          y: 100 - pt.errorRate
+                        }));
 
-                      {historyData.map((pt, idx) => {
-                        const leftPercent =
-                          historyData.length === 1
-                            ? 50
-                            : 8 + (idx / (historyData.length - 1)) * 84;
-                        const topPercent = 20 + (pt.errorRate / 15) * 60;
+                        const generateSmoothPath = (points) => {
+                          if (points.length === 0) return "";
+                          if (points.length === 1) return `M ${points[0].x},${points[0].y}`;
+                          let d = `M ${points[0].x},${points[0].y}`;
+                          for (let i = 1; i < points.length; i++) {
+                            const prev = points[i - 1];
+                            const curr = points[i];
+                            const cx = (prev.x + curr.x) / 2;
+                            d += ` C ${cx},${prev.y} ${cx},${curr.y} ${curr.x},${curr.y}`;
+                          }
+                          return d;
+                        };
+
                         return (
-                          <div
-                            key={idx}
-                            className="absolute group flex flex-col items-center cursor-pointer"
-                            style={{
-                              left: `${leftPercent}%`,
-                              top: `${topPercent}%`,
-                              transform: "translate(-50%, -50%)",
-                            }}
-                          >
-                            <div className="absolute -top-16 bg-white border border-slate-200 text-slate-900 text-xs px-3 py-2 rounded shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity z-40 pointer-events-none whitespace-nowrap font-mono flex flex-col space-y-0.5">
-                              <span className="font-bold text-slate-800">
-                                {pt.index}
-                              </span>
-                              <span className="font-semibold text-blue-600">
-                                Error Rate : {pt.errorRate}%
-                              </span>
-                            </div>
+                          <div className="w-full h-full relative">
+                            <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="w-full h-full overflow-visible absolute inset-0">
+                              {/* Grid Lines */}
+                              <line x1="0" y1="0" x2="100" y2="0" stroke="#1e293b" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeDasharray="4 4" />
+                              <line x1="0" y1="25" x2="100" y2="25" stroke="#1e293b" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeDasharray="4 4" />
+                              <line x1="0" y1="50" x2="100" y2="50" stroke="#1e293b" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeDasharray="4 4" />
+                              <line x1="0" y1="75" x2="100" y2="75" stroke="#1e293b" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeDasharray="4 4" />
+                              <line x1="0" y1="100" x2="100" y2="100" stroke="#1e293b" strokeWidth="1" vectorEffect="non-scaling-stroke" strokeDasharray="4 4" />
+                              
+                              {/* Fidelity Line (Purple) */}
+                              <g 
+                                className="cursor-pointer"
+                                onMouseMove={(e) => setLineTooltip({ text: 'Correctness', x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY })}
+                                onMouseLeave={() => setLineTooltip(null)}
+                              >
+                                {/* Invisible Fat Hitbox */}
+                                <path
+                                  fill="none"
+                                  stroke="transparent"
+                                  strokeWidth="10"
+                                  vectorEffect="non-scaling-stroke"
+                                  d={generateSmoothPath(fidPoints)}
+                                />
+                                {/* Visible Line */}
+                                <path
+                                  fill="none"
+                                  stroke="#6366f1"
+                                  strokeWidth="2"
+                                  vectorEffect="non-scaling-stroke"
+                                  className="drop-shadow-[0_0_8px_rgba(99,102,241,0.4)] transition-all"
+                                  d={generateSmoothPath(fidPoints)}
+                                />
+                              </g>
+                              
+                              {/* Noise Line (Gray) */}
+                              <g 
+                                className="cursor-pointer"
+                                onMouseMove={(e) => setLineTooltip({ text: 'Noise', x: e.nativeEvent.offsetX, y: e.nativeEvent.offsetY })}
+                                onMouseLeave={() => setLineTooltip(null)}
+                              >
+                                {/* Invisible Fat Hitbox */}
+                                <path
+                                  fill="none"
+                                  stroke="transparent"
+                                  strokeWidth="10"
+                                  vectorEffect="non-scaling-stroke"
+                                  d={generateSmoothPath(noisePoints)}
+                                />
+                                {/* Visible Line */}
+                                <path
+                                  fill="none"
+                                  stroke="#94a3b8"
+                                  strokeWidth="2"
+                                  vectorEffect="non-scaling-stroke"
+                                  className="drop-shadow-[0_0_8px_rgba(148,163,184,0.4)] transition-all"
+                                  d={generateSmoothPath(noisePoints)}
+                                />
+                              </g>
+                            </svg>
+                            {lineTooltip && (
+                              <div 
+                                className="absolute bg-[#0b0e17] border border-slate-700 text-slate-300 text-[10px] px-2 py-1 rounded-sm shadow-xl pointer-events-none whitespace-nowrap z-50 font-sans font-medium"
+                                style={{ left: lineTooltip.x, top: lineTooltip.y - 25, transform: 'translateX(-50%)' }}
+                              >
+                                {lineTooltip.text}
+                              </div>
+                            )}
 
-                            <div
-                              className={`w-3 h-3 rounded-full border-2 bg-blue-500 border-white shadow-md transition-transform group-hover:scale-125 ${
-                                pt.hasError
-                                  ? "bg-red-500 shadow-[0_0_10px_rgba(239,68,68,1)]"
-                                  : ""
-                              }`}
-                            />
+                            {/* HTML Data Point Circles (Perfectly Circular & Interactive) */}
+                            {historyData.map((pt, i, arr) => {
+                              const x = arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100;
+                              const yFid = 100 - (pt.fidelity || 100);
+                              const yNoise = 100 - pt.errorRate;
+                              return (
+                                <div key={pt.index}>
+                                  {/* Fidelity Dot */}
+                                  <div 
+                                    className="absolute w-2 h-2 rounded-sm-full bg-indigo-400 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer hover:scale-150 transition-all hover:bg-indigo-300 hover:shadow-[0_0_8px_rgba(129,140,248,1)] z-20"
+                                    style={{ left: `${x}%`, top: `${yFid}%` }}
+                                  >
+                                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#0b0e17] border border-slate-700 text-indigo-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium">
+                                      Purity: {Number(pt.fidelity || 100).toFixed(2)}%
+                                    </div>
+                                  </div>
+                                  
+                                  {/* Noise Dot */}
+                                  <div 
+                                    className="absolute w-2 h-2 rounded-sm-full bg-slate-400 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer hover:scale-150 transition-all hover:bg-slate-200 hover:shadow-[0_0_8px_rgba(203,213,225,1)] z-20"
+                                    style={{ left: `${x}%`, top: `${yNoise}%` }}
+                                  >
+                                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#0b0e17] border border-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium">
+                                      Noise: {Number(pt.errorRate).toFixed(2)}%
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
                           </div>
                         );
-                      })}
+                      })()}
                     </div>
                   )}
-                </div>
-
-                <div className="absolute inset-x-6 bottom-1 border-t border-slate-800 pt-2 flex justify-between text-xs text-slate-500 font-mono px-4">
-                  <span>0</span>
-                  <span>1</span>
-                  <span>2</span>
-                  <span>3</span>
-                  <span>4</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
+            <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-6 space-y-5 shadow-xl">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800 pb-3">
                 <div>
                   <span className="text-xs text-indigo-400 block font-medium">
@@ -645,10 +710,10 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between px-8 py-4 bg-[#07090e] border border-slate-800 rounded-xl text-xs shadow-inner">
+              <div className="flex items-center justify-between px-8 py-4 bg-[#07090e] border border-slate-800 rounded-md text-xs shadow-inner">
                 <div className="flex flex-col items-center space-y-1.5">
                   <div
-                    className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-bold text-sm transition-all ${teleportStep >= 1 ? "border-indigo-500 text-indigo-300 bg-indigo-950/60 shadow-[0_0_15px_rgba(99,102,241,0.5)]" : "border-slate-800 text-slate-600 bg-slate-900"}`}
+                    className={`w-12 h-12 rounded-md border-2 flex items-center justify-center font-bold text-sm transition-all ${teleportStep >= 1 ? "border-indigo-500 text-indigo-300 bg-indigo-950/60 shadow-[0_0_15px_rgba(99,102,241,0.5)]" : "border-slate-800 text-slate-600 bg-slate-900"}`}
                   >
                     A
                   </div>
@@ -674,7 +739,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
                 <div className="flex flex-col items-center space-y-1.5">
                   <div
-                    className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center font-bold text-sm transition-all ${teleportStep >= 5 ? "border-emerald-400 text-emerald-300 bg-emerald-950/60 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : "border-slate-800 text-slate-600 bg-slate-900"}`}
+                    className={`w-12 h-12 rounded-md border-2 flex items-center justify-center font-bold text-sm transition-all ${teleportStep >= 5 ? "border-emerald-400 text-emerald-300 bg-emerald-950/60 shadow-[0_0_15px_rgba(52,211,153,0.5)]" : "border-slate-800 text-slate-600 bg-slate-900"}`}
                   >
                     B
                   </div>
@@ -693,7 +758,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                     <div
                       key={idx}
                       onClick={() => setTeleportStep(currentIdx)}
-                      className={`p-4 rounded-xl border transition-all cursor-pointer space-y-1.5 shadow ${
+                      className={`p-4 rounded-md border transition-all cursor-pointer space-y-1.5 shadow ${
                         isActive
                           ? "bg-indigo-950/40 border-indigo-500 shadow-lg shadow-indigo-950/50 ring-1 ring-indigo-500"
                           : "bg-[#07090e] border-slate-800 hover:border-slate-700"
@@ -717,7 +782,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </div>
 
             {auditReport ? (
-              <div className="bg-[#0b0e17] border border-indigo-500/40 rounded-2xl p-6 space-y-4 shadow-xl">
+              <div className="bg-[#0b0e17] border border-indigo-500/40 rounded-lg p-6 space-y-4 shadow-xl">
                 <div className="flex items-center justify-between border-b border-slate-800 pb-3">
                   <h3 className="text-sm font-serif text-white font-semibold">
                     Comprehensive Audit Verdict
@@ -728,7 +793,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                  <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                  <div className="p-3 rounded-md bg-[#07090e] border border-slate-800 space-y-1">
                     <span className="text-[10px] text-slate-400 block font-medium">
                       Avg Entanglement
                     </span>
@@ -736,7 +801,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                       {auditReport.avgEntanglement}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                  <div className="p-3 rounded-md bg-[#07090e] border border-slate-800 space-y-1">
                     <span className="text-[10px] text-slate-400 block font-medium">
                       Max Error Rate
                     </span>
@@ -744,7 +809,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                       {auditReport.maxError}%
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                  <div className="p-3 rounded-md bg-[#07090e] border border-slate-800 space-y-1">
                     <span className="text-[10px] text-slate-400 block font-medium">
                       Total Packets
                     </span>
@@ -752,7 +817,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                       {auditReport.totalPackets}
                     </span>
                   </div>
-                  <div className="p-3 rounded-xl bg-[#07090e] border border-slate-800 space-y-1">
+                  <div className="p-3 rounded-md bg-[#07090e] border border-slate-800 space-y-1">
                     <span className="text-[10px] text-slate-400 block font-medium">
                       Final Verdict
                     </span>
@@ -763,7 +828,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 text-center text-xs text-slate-500 shadow-xl">
+              <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-6 text-center text-xs text-slate-500 shadow-xl">
                 Comprehensive Audit Verdict will appear here after initializing
                 a stream or sending a pulse.
               </div>
@@ -773,7 +838,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
         {activeNav === "logs" && (
           <div className="flex-1 flex items-center justify-center my-auto">
-            <div className="bg-[#0b0e17] border border-slate-800 rounded-2xl p-6 flex flex-col justify-between space-y-5 w-full max-w-2xl shadow-xl shrink-0">
+            <div className="bg-[#0b0e17] border border-slate-800 rounded-lg p-6 flex flex-col justify-between space-y-5 w-full max-w-2xl shadow-xl shrink-0">
               <div>
                 <span className="text-xs text-indigo-400 font-semibold block">
                   Event Ledger
@@ -783,7 +848,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 </h3>
               </div>
 
-              <div className="bg-[#07090e] border border-slate-800 rounded-xl p-5 h-48 overflow-y-auto text-xs space-y-2.5 text-slate-300 shadow-inner">
+              <div className="bg-[#07090e] border border-slate-800 rounded-md p-5 h-48 overflow-y-auto text-xs space-y-2.5 text-slate-300 shadow-inner">
                 {transmissionLogs.length === 0 ? (
                   <span className="text-slate-500 italic font-light">
                     No historical entries available. Run a pulse or start
@@ -804,8 +869,8 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
       {isPulseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#0b0e17] border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-[#0b0e17] border border-slate-800 rounded-xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-sm-full blur-2xl pointer-events-none" />
 
             <div className="flex items-center justify-between border-b border-slate-800 pb-4 text-xs">
               <span className="text-indigo-400 font-bold">
@@ -846,20 +911,20 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   placeholder="Type your secure message here..."
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
-                  className="w-full px-4 py-3 bg-[#07090e] border border-slate-800 rounded-xl text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all shadow-inner resize-none"
+                  className="w-full px-4 py-3 bg-[#07090e] border border-slate-800 rounded-md text-sm text-white placeholder-slate-600 focus:outline-none focus:border-indigo-500 transition-all shadow-inner resize-none"
                 />
               </div>
 
               <button
                 type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-xl transition-all cursor-pointer font-bold shadow-lg shadow-indigo-950"
+                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white py-3.5 rounded-md transition-all cursor-pointer font-bold shadow-lg shadow-indigo-950"
               >
                 Send Message &rarr;
               </button>
             </form>
 
             {pulseResult && (
-              <div className="p-4 rounded-xl bg-[#07090e] border border-emerald-500/40 space-y-2 text-xs">
+              <div className="p-4 rounded-md bg-[#07090e] border border-emerald-500/40 space-y-2 text-xs">
                 <div className="flex items-center justify-between text-emerald-400 font-bold">
                   <span>{pulseResult.status}</span>
                   <span>{pulseResult.timestamp}</span>
@@ -878,8 +943,8 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
       {isLiveModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-[#0b0e17] border border-slate-800 rounded-3xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-[#0b0e17] border border-slate-800 rounded-xl p-8 w-full max-w-lg shadow-2xl space-y-6 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-emerald-500/10 rounded-sm-full blur-2xl pointer-events-none" />
 
             <div className="flex items-center justify-between border-b border-slate-800 pb-4 text-xs">
               <span className="text-emerald-400 font-bold">
@@ -905,7 +970,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
             {liveAttackAlert && (
               <div
-                className={`w-full bg-[#07090e] border rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg ${liveAttackAlert.reason === "ATTACK" ? "border-red-500/40 shadow-red-950/20" : "border-amber-500/40 shadow-amber-950/20"}`}
+                className={`w-full bg-[#07090e] border rounded-md p-4 flex flex-col items-center justify-center space-y-2 text-xs shadow-lg ${liveAttackAlert.reason === "ATTACK" ? "border-red-500/40 shadow-red-950/20" : "border-amber-500/40 shadow-amber-950/20"}`}
               >
                 <span className="text-2xl mb-1">
                   {liveAttackAlert.reason === "ATTACK" ? "🚨" : "🌪️"}
@@ -939,7 +1004,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               </div>
             )}
 
-            <div className="w-full bg-[#07090e] border border-slate-800 rounded-xl p-4 h-64 overflow-y-auto space-y-3 shadow-inner">
+            <div className="w-full bg-[#07090e] border border-slate-800 rounded-md p-4 h-64 overflow-y-auto space-y-3 shadow-inner">
               {livePayloads.length === 0 ? (
                 <div className="text-xs text-slate-500 text-center mt-20">
                   Waiting for stream to begin...
