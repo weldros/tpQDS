@@ -5,11 +5,28 @@ from qunetsim.components import Host
 
 @dataclass
 class AttackConfig:
+    attack_type: Optional[str] = None
     intercept_resend_enabled: bool = False
     intercept_resend_rate: float = 0.0
     classical_tamper_enabled: bool = False
     classical_tamper_rate: float = 0.0
     replay_enabled: bool = False
+    impersonation_enabled: bool = False
+    forgery_enabled: bool = False
+
+    @staticmethod
+    def from_attack_type(attack_type: str, intercept_rate: float = 1.0) -> "AttackConfig":
+        config = AttackConfig(attack_type=attack_type)
+        if attack_type == "INTERCEPT_RESEND":
+            config.intercept_resend_enabled = True
+            config.intercept_resend_rate = intercept_rate
+        elif attack_type == "REPLAY":
+            config.replay_enabled = True
+        elif attack_type == "IMPERSONATION":
+            config.impersonation_enabled = True
+        elif attack_type == "FORGERY":
+            config.forgery_enabled = True
+        return config
 
 class RedTeam:
     def __init__(self, attack_config: AttackConfig, verbose: bool = False):

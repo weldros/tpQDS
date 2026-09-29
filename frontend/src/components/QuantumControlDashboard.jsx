@@ -32,9 +32,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [livePayloads, setLivePayloads] = useState([]);
   const [liveAttackAlert, setLiveAttackAlert] = useState(null);
 
-  const [sliderNoise, setSliderNoise] = useState(0);
+  const [sliderNoise, setSliderNoise] = useState(5);
   const [lineTooltip, setLineTooltip] = useState(null);
-  const [selectedAttack, setSelectedAttack] = useState("Attack 1");
+  const [selectedAttack, setSelectedAttack] = useState("FORGERY");
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -276,9 +276,9 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           t1_enabled: true,
-          t1_us: 50.0,
+          t1_us: 100.0,
           t2_enabled: true,
-          t2_us: 30.0,
+          t2_us: 100.0,
           gate_time_ns: 100.0,
           depolarizing_enabled: true,
           two_qubit_depolarizing_prob: sliderNoise / 100.0
@@ -287,6 +287,22 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
     } catch (err) {
       console.error("Failed to inject noise:", err);
+    }
+  };
+
+  const handleInjectAttack = async () => {
+    try {
+      await fetch("http://127.0.0.1:8000/attacks/configure", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          attack_type: selectedAttack,
+          intercept_rate: 1.0
+        }),
+      });
+      await fetch("http://127.0.0.1:8000/attacks/execute", { method: "POST" });
+    } catch (err) {
+      console.error("Failed to inject attack:", err);
     }
   };
 
@@ -429,7 +445,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               <option value="Attack 4">Attack 4</option>
             </select>
             <button
-                //onClick={handleInjectThreat}
+                onClick={handleInjectAttack}
                 className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-2 py-2 rounded transition-all cursor-pointer font-bold whitespace-nowrap shadow"
               >
                 Inject Threat

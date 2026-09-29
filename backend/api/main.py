@@ -106,11 +106,19 @@ async def transmission_worker():
         loop = asyncio.get_running_loop()
         import concurrent.futures
         from backend.module2.networkTopology import run_topology_test
+        from backend.module2.attackSimulation import AttackConfig
         with concurrent.futures.ThreadPoolExecutor() as pool:
+            attack_config = None
+            if state.execute_attack_flag and state.configured_attack_type:
+                attack_config = AttackConfig.from_attack_type(state.configured_attack_type, state.configured_intercept_rate)
+
             network_log = await loop.run_in_executor(
                 pool, 
                 run_topology_test, 
-                state.alice, state.eve, state.bob, len(bits), bits, None, None, 3, False
+                state.alice, state.eve, state.bob, len(bits), bits, 
+                state.noise_config if state.noise_enabled else None, 
+                attack_config, 
+                3, False
             )
             
         topology_qber = network_log["qber"] * 100.0
@@ -197,10 +205,18 @@ async def transmit_message(req: TransmitRequest):
     import concurrent.futures
     from backend.module2.networkTopology import run_topology_test
     with concurrent.futures.ThreadPoolExecutor() as pool:
+        from backend.module2.attackSimulation import AttackConfig
+        attack_config = None
+        if state.execute_attack_flag and state.configured_attack_type:
+            attack_config = AttackConfig.from_attack_type(state.configured_attack_type, state.configured_intercept_rate)
+
         network_log = await loop.run_in_executor(
             pool, 
             run_topology_test, 
-            state.alice, state.eve, state.bob, len(bits), bits, None, None, 3, False
+            state.alice, state.eve, state.bob, len(bits), bits, 
+            state.noise_config if state.noise_enabled else None, 
+            attack_config, 
+            3, False
         )
         
     topology_qber = network_log["qber"] * 100.0

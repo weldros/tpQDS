@@ -9,7 +9,7 @@ def prepareSignatureCircuit(theta: float, phi: float) -> QuantumCircuit:
     return qc
 
 
-def buildTeleportationCircuit(theta: float, phi: float) -> QuantumCircuit:
+def buildTeleportationCircuit(theta: float, phi: float, execute_attack: bool = False, attack_type: str = None) -> QuantumCircuit:
     """Builds the pinned 6-step teleportation circuit."""
     msg = QuantumRegister(1, "this is a big ass message that is stupid")
     alice = QuantumRegister(1, "alice")
@@ -28,6 +28,14 @@ def buildTeleportationCircuit(theta: float, phi: float) -> QuantumCircuit:
     qc.h(alice[0])
     qc.cx(alice[0], bob[0])
     qc.barrier() #acts as a barrier between different gates, otherwise sometimes, qiskit merges 2 angle measurements into one
+    
+    # EVE'S ATTACK (Mathematical Wavefunction Collapse)
+    if execute_attack and attack_type == "INTERCEPT_RESEND":
+        # Eve measures Bob's entangled qubit mid-flight in the Z basis
+        eve_reg = ClassicalRegister(1, "eve_snoop")
+        qc.add_register(eve_reg)
+        qc.measure(bob[0], eve_reg[0])
+        qc.barrier()
 
     # --- Step 3+4: Teleportation Process ---
     qc.cx(msg[0], alice[0])
@@ -63,18 +71,19 @@ def runSignature(message: bytes, shots: int, execute_attack: bool = False, attac
     from qiskit import ClassicalRegister
     from backend.module2.noise import NoiseConfig, build_noise_model
     
-    if execute_attack: #to be changed to attack_detected if detected then this block executes
+    # Non-channel attacks are caught immediately by classical/handshake layers
+    if execute_attack and attack_type in ["FORGERY", "IMPERSONATION", "REPLAY"]:
         return {
-            "qber": 100.0,
+            "qber": 100.0 if attack_type == "FORGERY" else 0.0,
             "fidelity": 0.0,
             "verdict": "REJECT",
-            "status": "haltedddddd",
+            "status": "HALTED",
             "attack_type": attack_type
         }
     
     # 1. Build the base teleportation circuit
     # For testing QBER accurately without hashing logic, we send a |1> state in the X basis.
-    qc = buildTeleportationCircuit(math.pi/2, 0.0)
+    qc = buildTeleportationCircuit(math.pi/2, 0.0, execute_attack, attack_type)
     qc.h(2) # Switch Bob to X basis
     
     cr_bob = ClassicalRegister(1, "cr_bob")
@@ -90,7 +99,7 @@ def runSignature(message: bytes, shots: int, execute_attack: bool = False, attac
         sim = AerSimulator(noise_model=noise_model)
         
     # 3. Execute the simulation
-    result = sim.run(qc, shots=100).result()
+    result = sim.run(qc, shots=8192).result()
     counts = result.get_counts()
     
     # Calculate QBER (Percentage of unexpected results)
@@ -98,12 +107,16 @@ def runSignature(message: bytes, shots: int, execute_attack: bool = False, attac
     total = sum(counts.values())
     real_qber = (errors / total) * 100.0
     
-    return {
+    result_dict = {
         "qber": real_qber,
         "fidelity": max(0.0, 100.0 - (real_qber * 2)),
         "verdict": "REJECT" if real_qber > 11.0 else "ACCEPT",
         "status": "SUCCESS"
     }
+    if execute_attack and attack_type:
+        result_dict["attack_type"] = attack_type
+    
+    return result_dict
 
 if __name__ == "__main__":
     import math
