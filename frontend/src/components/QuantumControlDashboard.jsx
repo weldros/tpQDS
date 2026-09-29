@@ -499,16 +499,6 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             </div>
           </div>
         </div>
-
-        <div className="p-4 rounded-md bg-[#07090e] border border-slate-800 space-y-1 mt-auto">
-          <span className="text-xs text-slate-400 block">Stream Status</span>
-          <div className="text-xs font-semibold text-emerald-400 flex items-center gap-2">
-            <span
-              className={`w-2 h-2 rounded-sm-full ${isLiveActive ? "bg-emerald-400 animate-ping" : "bg-slate-600"}`}
-            />
-            {isLiveActive ? "Active" : "Idle"}
-          </div>
-        </div>
       </aside>
 
       <main className="flex-1 p-6 md:p-8 space-y-6 bg-[#07090e] flex flex-col justify-between overflow-y-auto h-full">
@@ -721,6 +711,14 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                               const x = arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100;
                               const yFid = Math.max(0, Math.min(100, 100 - (pt.fidelity || 100)));
                               const yNoise = Math.max(0, Math.min(100, 100 - pt.errorRate));
+                              
+                              // Dynamically position the tooltip to prevent horizontal overflow
+                              const tooltipPosition = x > 85 
+                                ? "right-1/2" 
+                                : x < 15 
+                                  ? "left-1/2" 
+                                  : "left-1/2 -translate-x-1/2";
+
                               return (
                                 <div key={pt.index}>
                                   {/* Fidelity Dot */}
@@ -728,7 +726,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                                     className="absolute w-2 h-2 rounded-sm-full bg-indigo-400 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer hover:scale-150 transition-all hover:bg-indigo-300 hover:shadow-[0_0_8px_rgba(129,140,248,1)] z-20"
                                     style={{ left: `${x}%`, top: `${yFid}%` }}
                                   >
-                                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#0b0e17] border border-slate-700 text-indigo-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium">
+                                    <div className={`absolute bottom-3 ${tooltipPosition} bg-[#0b0e17] border border-slate-700 text-indigo-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium`}>
                                       Purity: {Number(pt.fidelity || 100).toFixed(2)}%
                                     </div>
                                   </div>
@@ -738,7 +736,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                                     className="absolute w-2 h-2 rounded-sm-full bg-slate-400 transform -translate-x-1/2 -translate-y-1/2 group cursor-pointer hover:scale-150 transition-all hover:bg-slate-200 hover:shadow-[0_0_8px_rgba(203,213,225,1)] z-20"
                                     style={{ left: `${x}%`, top: `${yNoise}%` }}
                                   >
-                                    <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#0b0e17] border border-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium">
+                                    <div className={`absolute bottom-3 ${tooltipPosition} bg-[#0b0e17] border border-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium`}>
                                       QBER rate: {Number(pt.errorRate).toFixed(2)}%{pt.attackName ? ` [${pt.attackName}]` : ""}
                                     </div>
                                   </div>

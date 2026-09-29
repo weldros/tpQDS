@@ -145,7 +145,7 @@ export default function Footer({ setActiveTab }) {
 
           <div className="flex items-center gap-4">
             <a
-              href="https://github.com"
+              href="https://github.com/weldros/tpQKD"
               target="_blank"
               rel="noreferrer"
               title="GitHub Repository"

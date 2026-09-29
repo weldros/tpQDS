@@ -253,30 +253,27 @@ export default function Home({ setActiveTab }) {
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs max-w-2xl mx-auto">
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+              {/* UPDATED 3-COLUMN METRICS GRID */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-slate-800/80 font-mono text-xs max-w-2xl mx-auto w-full">
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80 shadow-lg">
                   <span className="text-slate-400 uppercase text-[10px] block mb-1">
                     Protocol
                   </span>
-                  <span className="text-white font-semibold">QDS / AQS</span>
+                  <span className="text-white font-semibold">Quantum Digital Signatures</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80 shadow-lg">
                   <span className="text-slate-400 uppercase text-[10px] block mb-1">
-                    Encryption
+                    Transport
                   </span>
-                  <span className="text-indigo-300 font-semibold">QUANTUM</span>
+                  <span className="text-indigo-400 font-semibold">Teleportation based Quantum Mechanism</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
+                
+                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80 shadow-lg">
                   <span className="text-slate-400 uppercase text-[10px] block mb-1">
-                    Detection
+                    Verification
                   </span>
-                  <span className="text-emerald-300 font-semibold">ACTIVE</span>
-                </div>
-                <div className="p-3.5 rounded-xl bg-[#0b0e17]/90 border border-slate-700/80">
-                  <span className="text-slate-400 uppercase text-[10px] block mb-1">
-                    Trust Model
-                  </span>
-                  <span className="text-white font-semibold">ZERO-TRUST</span>
+                  <span className="text-emerald-400 font-semibold">Mathematical Detection Engine</span>
                 </div>
               </div>
             </div>
@@ -296,32 +293,37 @@ export default function Home({ setActiveTab }) {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
-            {features.map((feat, idx) => (
-              <div
-                key={idx}
-                className="p-6 rounded-2xl border bg-[#0b0e17] border-slate-700/90 flex flex-col justify-between min-h-[300px] shadow-lg hover:border-indigo-500/60 transition-all"
-              >
-                <div className="space-y-1">
-                  <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-indigo-400 block">
-                    Stage {feat.tag}
-                  </span>
-                </div>
+           <div className="grid grid-cols-1 md:grid-cols-5 gap-5">
+  {features.map((feat, idx) => (
+    <div
+      key={idx}
+      /* Changed to justify-center and relative to contain absolute positioning */
+      className="group p-6 rounded-2xl border bg-[#0b0e17] border-slate-700/90 flex flex-col justify-center min-h-[140px] shadow-lg hover:border-indigo-500/60 transition-all cursor-default relative overflow-hidden"
+    >
+      
+      {/* 1. Main Content: Centered by default, slides up on hover */}
+      <div className="transition-transform duration-500 ease-out group-hover:-translate-y-10">
+        <div className="space-y-1 mb-2">
+          <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-indigo-400 block transition-colors group-hover:text-indigo-300">
+            Stage {feat.tag}
+          </span>
+        </div>
+        
+        <h3 className="text-sm sm:text-base font-serif text-white font-semibold leading-snug">
+          {feat.title}
+        </h3>
+      </div>
 
-                <div className="py-4">
-                  <h3 className="text-sm sm:text-base font-serif text-white font-semibold leading-snug">
-                    {feat.title}
-                  </h3>
-                </div>
-
-                <div className="pt-4 border-t border-slate-800">
-                  <p className="text-xs text-slate-300 font-sans font-normal leading-relaxed">
-                    {feat.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* 2. Hidden Description: Positioned at the bottom, fades in and slides up */}
+      <div className="absolute left-6 right-6 bottom-6 pt-4 border-t border-slate-800 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-out pointer-events-none">
+        <p className="text-xs text-slate-300 font-sans font-normal leading-relaxed">
+          {feat.desc}
+        </p>
+      </div>
+      
+    </div>
+  ))}
+</div>
         </section>
 
         <section className="py-20 px-8 sm:px-12 lg:px-20 max-w-[1400px] mx-auto space-y-8 border-b border-slate-800/80 w-full">
