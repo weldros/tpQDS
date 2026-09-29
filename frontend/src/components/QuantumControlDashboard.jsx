@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function QuantumControlDashboard({ setActiveTab }) {
+  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const WS_URL = API_URL.replace("http", "ws");
+
   const [telemetry, setTelemetry] = useState({
     entanglement: 0,
     noise: 0,
@@ -43,7 +46,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [ws, setWs] = useState(null);
 
   useEffect(() => {
-    const websocket = new WebSocket("ws://127.0.0.1:8000/ws/stream");
+    const websocket = new WebSocket(`${WS_URL}/ws/stream`);
 
     websocket.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -215,7 +218,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
     if (!customMessage.trim()) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/signatures/transmit", {
+      const res = await fetch(`${API_URL}/signatures/transmit`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -277,7 +280,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
   const handleInjectNoise = async () => {
     try {
-      await fetch("http://127.0.0.1:8000/noise/configure", {
+      await fetch(`${API_URL}/noise/configure`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -290,7 +293,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           two_qubit_depolarizing_prob: (sliderNoise / 0.75) / 100.0
         }),
       });
-      await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
+      await fetch(`${API_URL}/noise/execute`, { method: "POST" });
     } catch (err) {
       console.error("Failed to inject noise:", err);
     }
@@ -298,7 +301,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
 
   const handleInjectAttack = async () => {
     try {
-      await fetch("http://127.0.0.1:8000/attacks/configure", {
+      await fetch(`${API_URL}/attacks/configure`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -306,7 +309,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           intercept_rate: attackRate / 100.0
         }),
       });
-      await fetch("http://127.0.0.1:8000/attacks/execute", { method: "POST" });
+      await fetch(`${API_URL}/attacks/execute`, { method: "POST" });
     } catch (err) {
       console.error("Failed to inject attack:", err);
     }
@@ -318,7 +321,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       if (stageTimerRef.current) clearInterval(stageTimerRef.current);
       setIsLiveActive(false);
       try {
-        await fetch("http://127.0.0.1:8000/stream/stop", { method: "POST" });
+        await fetch(`${API_URL}/stream/stop`, { method: "POST" });
       } catch (err) {}
     } else {
       setIsLiveActive(true);
@@ -331,7 +334,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       // Reset noise to 0% per user request
       setSliderNoise(0);
       try {
-        await fetch("http://127.0.0.1:8000/noise/configure", {
+        await fetch(`${API_URL}/noise/configure`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -344,7 +347,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             two_qubit_depolarizing_prob: 0.0
           }),
         });
-        await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
+        await fetch(`${API_URL}/noise/execute`, { method: "POST" });
       } catch (err) {
         console.error("Failed to reset noise:", err);
       }
@@ -365,7 +368,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       }
 
       try {
-        await fetch("http://127.0.0.1:8000/stream/start", { method: "POST" });
+        await fetch(`${API_URL}/stream/start`, { method: "POST" });
       } catch (err) {}
     }
   };
