@@ -134,9 +134,23 @@ async def transmission_worker():
         engine_result["qber"] = round(total_qber, 2)
         engine_result["fidelity"] = round(max(0.0, 100.0 - (total_qber * 2)), 2)
         
-        # Override verdict if total QBER crosses threshold (e.g., from physical topology attacks)
-        if total_qber > 11.0:
-            engine_result["verdict"] = "REJECT"
+        # Use Module 3 Statistical Engine instead of hardcoded 11.0 threshold
+        from backend.module3.threatDetection import evaluateTransmission
+        m_shots = 8192
+        k_errors = int((total_qber / 100.0) * m_shots)
+        
+        verdictRecord = evaluateTransmission(
+            m=m_shots, 
+            k=k_errors, 
+            noise_config_dict=asdict(state.noise_config) if state.noise_enabled else None
+        )
+        
+        # If the engine already rejected it at the handshake layer (e.g. Impersonation/Replay), preserve the REJECT verdict
+        if engine_result.get("verdict") != "REJECT":
+            engine_result["verdict"] = verdictRecord["verdict"]
+            
+        engine_result["p_value"] = verdictRecord["p_value"]
+        engine_result["dynamic_threshold"] = verdictRecord["threshold_percentage"]
             
         # Check engine's verdict to dictate the halt signal
         if engine_result["verdict"] == "REJECT":
@@ -239,7 +253,15 @@ async def transmit_message(req: TransmitRequest):
     
     mock_qber = round(total_qber, 2)
     engine_result["fidelity"] = round(max(0.0, 100.0 - (total_qber * 2)), 2)
-    verdict = engine_result["verdict"]
+    
+    from backend.module3.threatDetection import evaluateTransmission
+    m_shots = 8192
+    k_errors = int((total_qber / 100.0) * m_shots)
+    verdictRecord = evaluateTransmission(m_shots, k_errors, asdict(state.noise_config) if state.noise_enabled else None)
+    
+    verdict = engine_result.get("verdict")
+    if verdict != "REJECT":
+        verdict = verdictRecord["verdict"]
     
     filepath = save_message(req.sender, req.receiver, req.text, mock_qber, verdict)
     

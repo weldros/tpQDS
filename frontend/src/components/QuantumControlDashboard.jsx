@@ -35,7 +35,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [sliderNoise, setSliderNoise] = useState(5);
   const [lineTooltip, setLineTooltip] = useState(null);
   const [selectedAttack, setSelectedAttack] = useState("FORGERY");
-  const [attackRate, setAttackRate] = useState(100);
+  const [attackRate, setAttackRate] = useState(50);
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -91,7 +91,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           const packetIndex = prev.length > 0 ? prev[prev.length - 1].index + 1 : 1;
           return [
             ...prev.slice(-49),
-            { index: packetIndex, errorRate: currentQber, fidelity: currentFidelity, hasError },
+            { index: packetIndex, errorRate: currentQber, fidelity: currentFidelity, hasError, attackName: data.metrics.attack_type || null },
           ];
         });
 
@@ -104,22 +104,27 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           totalPackets: transmissionLogs.length + 1,
           conclusion:
             data.metrics.verdict === "REJECT"
-              ? "REJECTED: Tampering detected."
-              : "PASSED: Verified.",
+              ? `REJECTED: Tampering detected (p < ${Number(data.metrics.p_value).toExponential(2)}).`
+              : `PASSED: Verified against threshold (q0=${Number(data.metrics.dynamic_threshold).toFixed(1)}%).`,
         });
 
         setLivePayloads((prev) => {
           if (prev.length === 0) return prev;
           const updated = [...prev];
           updated[0].status =
-            data.metrics.verdict === "REJECT" ? "INTERCEPTED" : "DELIVERED";
+            data.metrics.verdict === "REJECT" ? 
+            (data.metrics.attack_type ? `INTERCEPTED [${data.metrics.attack_type}]` : "INTERCEPTED [NOISE]") 
+            : "DELIVERED";
           return updated;
         });
       }
 
       if (data.status === "HALTED") {
         setIsLiveActive(false);
-        setLiveAttackAlert({ reason: data.halt_reason || "ATTACK" });
+        setLiveAttackAlert({ 
+          reason: data.halt_reason || "ATTACK",
+          metrics: data.metrics 
+        });
       }
     };
 
@@ -282,7 +287,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
           t2_us: 100.0,
           gate_time_ns: 100.0,
           depolarizing_enabled: true,
-          two_qubit_depolarizing_prob: sliderNoise / 100.0
+          two_qubit_depolarizing_prob: (sliderNoise / 0.75) / 100.0
         }),
       });
       await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
@@ -322,6 +327,28 @@ export default function QuantumControlDashboard({ setActiveTab }) {
       setTeleportStep(1);
       setHistoryData([]);
       setTransmissionLogs([]);
+      
+      // Reset noise to 0% per user request
+      setSliderNoise(0);
+      try {
+        await fetch("http://127.0.0.1:8000/noise/configure", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            t1_enabled: true,
+            t1_us: 100.0,
+            t2_enabled: true,
+            t2_us: 100.0,
+            gate_time_ns: 100.0,
+            depolarizing_enabled: true,
+            two_qubit_depolarizing_prob: 0.0
+          }),
+        });
+        await fetch("http://127.0.0.1:8000/noise/execute", { method: "POST" });
+      } catch (err) {
+        console.error("Failed to reset noise:", err);
+      }
+      
       executeTransmissionCycle();
 
       if (!ws || ws.readyState !== WebSocket.OPEN) {
@@ -417,7 +444,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               <input
                 type="range"
                 min="0"
-                max="15"
+                max="50"
                 value={sliderNoise}
                 onChange={(e) => setSliderNoise(Number(e.target.value))}
                 className="accent-indigo-500 cursor-pointer h-4 bg-slate-800 rounded"
@@ -458,7 +485,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
               <input
                 type="range"
                 min="0"
-                max="100"
+                max="50"
                 value={attackRate}
                 onChange={(e) => setAttackRate(Number(e.target.value))}
                 className="accent-rose-500 cursor-pointer h-4 bg-slate-800 rounded-sm w-full"
@@ -551,7 +578,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 <div className="w-full bg-slate-900 h-1.5 rounded-sm-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-slate-400 h-full transition-all duration-300"
-                    style={{ width: `${telemetry.noise * 10}%` }}
+                    style={{ width: `${telemetry.noise * 2}%` }}
                   />
                 </div>
               </div>
@@ -566,7 +593,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 <div className="w-full bg-slate-900 h-1.5 rounded-sm-full overflow-hidden border border-slate-800">
                   <div
                     className="bg-slate-400 h-full transition-all duration-300"
-                    style={{ width: `${telemetry.degradation * 10}%` }}
+                    style={{ width: `${telemetry.degradation * 1.33}%` }}
                   />
                 </div>
               </div>
@@ -712,7 +739,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                                     style={{ left: `${x}%`, top: `${yNoise}%` }}
                                   >
                                     <div className="absolute bottom-3 left-1/2 transform -translate-x-1/2 bg-[#0b0e17] border border-slate-700 text-slate-300 text-[10px] px-2 py-0.5 rounded-sm shadow-xl opacity-0 group-hover:opacity-100 pointer-events-none whitespace-nowrap font-sans font-medium">
-                                      Noise: {Number(pt.errorRate).toFixed(2)}%
+                                      QBER rate: {Number(pt.errorRate).toFixed(2)}%{pt.attackName ? ` [${pt.attackName}]` : ""}
                                     </div>
                                   </div>
                                 </div>
@@ -1019,21 +1046,27 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                 <span
                   className={
                     liveAttackAlert.reason === "ATTACK"
-                      ? "text-red-300 text-center"
-                      : "text-amber-300 text-center"
+                      ? "text-red-300 text-center leading-relaxed"
+                      : "text-amber-300 text-center leading-relaxed"
                   }
                 >
                   {liveAttackAlert.reason === "ATTACK" ? (
                     <>
-                      Eavesdropper Interception Detected.
-                      <br />
-                      Wavefunction Collapsed.
+                      Eavesdropper Interception Detected. Wavefunction Collapsed.
+                      {liveAttackAlert.metrics && (
+                        <span className="font-mono text-[10px] text-red-400 opacity-90 block mt-1">
+                          STATISTICAL ENGINE: Probability of Forgery: p &lt; {Number(liveAttackAlert.metrics.p_value).toExponential(2)}
+                        </span>
+                      )}
                     </>
                   ) : (
                     <>
                       Excessive Environmental Decoherence.
-                      <br />
-                      Channel Noise exceeded safety threshold (11%).
+                      {liveAttackAlert.metrics && (
+                        <span className="font-mono text-[10px] text-amber-400 opacity-90 block mt-1">
+                          STATISTICAL ENGINE: QBER exceeded dynamic Hoeffding bound ({Number(liveAttackAlert.metrics.dynamic_threshold).toFixed(1)}%).
+                        </span>
+                      )}
                     </>
                   )}
                 </span>
@@ -1053,7 +1086,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                   >
                     <div className="flex justify-between items-center text-[11px] font-bold">
                       <span
-                        className={`${pl.status === "DELIVERED" ? "text-emerald-400" : pl.status === "INTERCEPTED" ? "text-red-400" : "text-amber-400 animate-pulse"}`}
+                        className={`${pl.status === "DELIVERED" ? "text-emerald-400" : pl.status.startsWith("INTERCEPTED") ? "text-red-400" : "text-amber-400 animate-pulse"}`}
                       >
                         {pl.status}
                       </span>
