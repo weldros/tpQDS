@@ -13,7 +13,7 @@ export default function Navbar({ activeTab, setActiveTab }) {
           className="flex items-center gap-2 cursor-pointer text-left"
         >
           <span className="text-sm font-serif tracking-tight text-white font-semibold">
-            QDS<span className="text-indigo-400">.</span>ENGINE
+            tp<span className="text-indigo-400"></span>QDS
           </span>
         </button>
 
