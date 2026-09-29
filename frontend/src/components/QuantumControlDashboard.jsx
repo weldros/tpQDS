@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import gsap from "gsap";
 
 export default function QuantumControlDashboard({ setActiveTab }) {
-  const API_URL = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const raw_api = import.meta.env.VITE_BACKEND_URL || "http://127.0.0.1:8000";
+  const API_URL = raw_api.replace(/\/$/, ""); // Strip trailing slash if present
   const WS_URL = API_URL.replace("http", "ws");
 
   const [telemetry, setTelemetry] = useState({
