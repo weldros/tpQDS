@@ -88,12 +88,18 @@ async def transmission_worker():
         await broadcast({"step": "Measuring joint quantum states..."})
         await asyncio.sleep(0.2)
         
+        # Evaluate probabilistic interception per-packet
+        current_attack_flag = False
+        if state.execute_attack_flag:
+            if random.random() < state.configured_intercept_rate:
+                current_attack_flag = True
+
         # Send to core engine
         from backend.module1.qdsEngine import runSignature
         engine_result = runSignature(
             message=payload.encode(),
             shots=1,
-            execute_attack=state.execute_attack_flag,
+            execute_attack=current_attack_flag,
             attack_type=state.configured_attack_type,
             noise_config_dict=asdict(state.noise_config) if state.noise_enabled else None
         )
@@ -109,7 +115,7 @@ async def transmission_worker():
         from backend.module2.attackSimulation import AttackConfig
         with concurrent.futures.ThreadPoolExecutor() as pool:
             attack_config = None
-            if state.execute_attack_flag and state.configured_attack_type:
+            if current_attack_flag and state.configured_attack_type:
                 attack_config = AttackConfig.from_attack_type(state.configured_attack_type, state.configured_intercept_rate)
 
             network_log = await loop.run_in_executor(
@@ -128,6 +134,10 @@ async def transmission_worker():
         engine_result["qber"] = round(total_qber, 2)
         engine_result["fidelity"] = round(max(0.0, 100.0 - (total_qber * 2)), 2)
         
+        # Override verdict if total QBER crosses threshold (e.g., from physical topology attacks)
+        if total_qber > 11.0:
+            engine_result["verdict"] = "REJECT"
+            
         # Check engine's verdict to dictate the halt signal
         if engine_result["verdict"] == "REJECT":
             is_attack = "attack_type" in engine_result and engine_result["attack_type"] is not None
@@ -189,10 +199,15 @@ async def transmit_message(req: TransmitRequest):
     # This endpoint is now solely for the "Test Single Pulse" UI button
     from backend.module1.qdsEngine import runSignature
     
+    current_attack_flag = False
+    if state.execute_attack_flag:
+        if random.random() < state.configured_intercept_rate:
+            current_attack_flag = True
+
     engine_result = runSignature(
         message=req.text.encode(),
         shots=1,
-        execute_attack=state.execute_attack_flag,
+        execute_attack=current_attack_flag,
         attack_type=state.configured_attack_type,
         noise_config_dict=asdict(state.noise_config) if state.noise_enabled else None
     )
@@ -207,7 +222,7 @@ async def transmit_message(req: TransmitRequest):
     with concurrent.futures.ThreadPoolExecutor() as pool:
         from backend.module2.attackSimulation import AttackConfig
         attack_config = None
-        if state.execute_attack_flag and state.configured_attack_type:
+        if current_attack_flag and state.configured_attack_type:
             attack_config = AttackConfig.from_attack_type(state.configured_attack_type, state.configured_intercept_rate)
 
         network_log = await loop.run_in_executor(

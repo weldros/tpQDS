@@ -43,16 +43,33 @@ class RedTeam:
 
     def quantum_eve(self, sender, receiver, qubit):
         self.stats["qubits_relayed"] += 1
+        
+        # INTERCEPT_RESEND: Measure the entangled qubit mid-flight
         if self.config.intercept_resend_enabled and random.random() < self.config.intercept_resend_rate:
             self.stats["qubits_intercepted"] += 1
             qubit.measure(non_destructive=True)
             if self.verbose:
                 print(f"[Eve] intercepted qubit #{self.stats['qubits_relayed']}", flush=True)
+                
+        # FORGERY: Blindly apply unauthorized gates to manipulate the signature state
+        if self.config.forgery_enabled:
+            qubit.X()
+            qubit.Z()
+            if self.verbose:
+                print(f"[Eve] forged state on qubit #{self.stats['qubits_relayed']}", flush=True)
 
     def classical_eve(self, sender, receiver, msg):
         self.stats["messages_relayed"] += 1
+        
+        # REPLAY: Archive messages for future resubmission
         if self.config.replay_enabled:
             self.captured_messages.append(msg.content)
+            
+        # IMPERSONATION: Aggressively sniff handshake parameters
+        if self.config.impersonation_enabled:
+            self.captured_messages.append(f"IMPERSONATED_HANDSHAKE_{msg.content}")
+            
+        # CLASSICAL TAMPER: Flip the classical Pauli correction bits
         if self.config.classical_tamper_enabled and random.random() < self.config.classical_tamper_rate:
             self.stats["messages_tampered"] += 1
             msg.content = msg.content[::-1]

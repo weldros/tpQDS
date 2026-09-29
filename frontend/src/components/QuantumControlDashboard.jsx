@@ -35,6 +35,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
   const [sliderNoise, setSliderNoise] = useState(5);
   const [lineTooltip, setLineTooltip] = useState(null);
   const [selectedAttack, setSelectedAttack] = useState("FORGERY");
+  const [attackRate, setAttackRate] = useState(100);
 
   const containerRef = useRef(null);
   const streamTimerRef = useRef(null);
@@ -297,7 +298,7 @@ export default function QuantumControlDashboard({ setActiveTab }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           attack_type: selectedAttack,
-          intercept_rate: 1.0
+          intercept_rate: attackRate / 100.0
         }),
       });
       await fetch("http://127.0.0.1:8000/attacks/execute", { method: "POST" });
@@ -437,19 +438,38 @@ export default function QuantumControlDashboard({ setActiveTab }) {
             <select
               value={selectedAttack}
               onChange={(e) => setSelectedAttack(e.target.value)}
-              className="w-full px-3 py-2 bg-[#0b0e17] border border-slate-800 rounded text-xs text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
+              className="w-full px-3 py-2 bg-[#0b0e17] border border-slate-800 rounded-sm text-xs text-white focus:outline-none focus:border-indigo-500 transition-all cursor-pointer"
             >
-              <option value="Attack 1">Attack 1</option>
-              <option value="Attack 2">Attack 2</option>
-              <option value="Attack 3">Attack 3</option>
-              <option value="Attack 4">Attack 4</option>
+              <option value="FORGERY" title="Fails — no-cloning prevents copying an unknown state; QBER spikes">Signature Forgery</option>
+              <option value="IMPERSONATION" title="Fails at the handshake stage — no valid basis/key agreement is reached">Impersonation</option>
+              <option value="REPLAY" title="Caught classically by per-signer sequence-number check">Replay Attack</option>
+              <option value="INTERCEPT_RESEND" title="Introduces detectable error into the reconstructed state; QBER rises">Channel Tampering</option>
             </select>
-            <button
+            
+            <div className="flex justify-between items-center text-xs mt-2">
+              <span className="text-slate-400 uppercase tracking-wider font-semibold text-[10px]">
+                Interception Rate
+              </span>
+              <span className="text-rose-400 font-mono font-bold">
+                {attackRate}%
+              </span>
+            </div>
+            <div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={attackRate}
+                onChange={(e) => setAttackRate(Number(e.target.value))}
+                className="accent-rose-500 cursor-pointer h-4 bg-slate-800 rounded-sm w-full"
+              />
+              <button
                 onClick={handleInjectAttack}
-                className="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-mono uppercase tracking-wider px-2 py-2 rounded transition-all cursor-pointer font-bold whitespace-nowrap shadow"
+                className="w-full mt-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-mono uppercase tracking-wider px-2 py-2 rounded-sm transition-all cursor-pointer font-bold whitespace-nowrap shadow"
               >
                 Inject Threat
               </button>
+            </div>
           </div>
         </div>
 
@@ -580,11 +600,11 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                       {(() => {
                         const fidPoints = historyData.map((pt, i, arr) => ({
                           x: arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100,
-                          y: 100 - (pt.fidelity || 100)
+                          y: Math.max(0, Math.min(100, 100 - (pt.fidelity || 100)))
                         }));
                         const noisePoints = historyData.map((pt, i, arr) => ({
                           x: arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100,
-                          y: 100 - pt.errorRate
+                          y: Math.max(0, Math.min(100, 100 - pt.errorRate))
                         }));
 
                         const generateSmoothPath = (points) => {
@@ -672,8 +692,8 @@ export default function QuantumControlDashboard({ setActiveTab }) {
                             {/* HTML Data Point Circles (Perfectly Circular & Interactive) */}
                             {historyData.map((pt, i, arr) => {
                               const x = arr.length === 1 ? 50 : (i / (arr.length - 1)) * 100;
-                              const yFid = 100 - (pt.fidelity || 100);
-                              const yNoise = 100 - pt.errorRate;
+                              const yFid = Math.max(0, Math.min(100, 100 - (pt.fidelity || 100)));
+                              const yNoise = Math.max(0, Math.min(100, 100 - pt.errorRate));
                               return (
                                 <div key={pt.index}>
                                   {/* Fidelity Dot */}
